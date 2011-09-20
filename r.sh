@@ -22,16 +22,6 @@ notify(){                       # gnome notify first argument
     exec 10>&-
 }
 
-# mkdir -p $todir || {
-#     message="rsync $fromdir > $todir: Target dir is not writable."
-#     {
-#         echo "$header"
-#         echo "$message"
-#     } >>$errorlog
-#     notify "$message"
-#     exit 1
-# }
-
 if [ "$size_fromdir" -lt 1000 ]; then  # size is less than 1MB
     message="Size of $fromdir is less than 1MB, so did not back up in case files are unexpectedly lost."
     {
