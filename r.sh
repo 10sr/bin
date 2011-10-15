@@ -1,6 +1,6 @@
 #!/bin/bash
 
-fromdir="$HOME/Dropbox/"        # must end with "/"
+fromdir="$HOME/.xdg-dirs/Dropbox/"        # must end with "/"
 todir="$HOME/bu/dropbox/"
 log="$HOME/bu/tb/cronrsync.log"
 errorlog="$HOME/bu/tb/cronrsyncerror.log"
