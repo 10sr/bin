@@ -15,7 +15,7 @@ else
     # if [ -n "${dir}" ]; then
     #     audacious "${dir}" &
     # fi
-    audacious -i gtkui &
+    audacious &
 fi
 
 #echo ${dir}
