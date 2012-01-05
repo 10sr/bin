@@ -15,7 +15,7 @@ else
     # if [ -n "${dir}" ]; then
     #     audacious "${dir}" &
     # fi
-    audacious &
+    exec audacious
 fi
 
 #echo ${dir}

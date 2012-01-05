@@ -4,15 +4,15 @@
 
 if test -t 1; then
  if test $# = 0; then
-   gvim --cmd 'let no_plugin_maps = 1' -c 'runtime! macros/less.vim' -
+   exec gvim --cmd 'let no_plugin_maps = 1' -c 'runtime! macros/less.vim' -
   else
-   gvim --cmd 'let no_plugin_maps = 1' -c 'runtime! macros/less.vim' "$@"
+   exec gvim --cmd 'let no_plugin_maps = 1' -c 'runtime! macros/less.vim' "$@"
   fi
 else
   # Output is not a terminal, cat arguments or stdin
   if test $# = 0; then
-    cat
+    exec cat
   else
-    cat "$@"
+    exec cat "$@"
   fi
 fi
