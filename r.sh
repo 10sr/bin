@@ -1,9 +1,12 @@
 #!/bin/bash
 
-fromdir="$HOME/.xdg-dirs/Dropbox/"        # must end with "/"
-todir="$HOME/bu/dropbox/"
+src="$HOME/.xdg-dirs/Dropbox/"
+dst="$HOME/bu/Dropbox/"
 log="$HOME/bu/tb/cronrsync.log"
 errorlog="$HOME/bu/tb/cronrsyncerror.log"
+
+fromdir="$src/"        # must end with "/"
+todir="$dst/newest/"
 
 export DISPLAY=:0.0
 export LANG=ja_JP.UTF-8
@@ -31,9 +34,10 @@ if [ "$size_fromdir" -lt 1000 ]; then  # size is less than 1MB
     echo "$message" 1>&2
     returncode=1
 else
+    mkdir -p $todir
     {
         echo "$header"
-        rsync -avh --stats --delete $fromdir $todir
+        rsync -avh --stats --delete --backup --backup-dir=../`date +%Y%m%d-%H%M%S` $fromdir $todir
     } >>$log 2>>$errorlog
     returncode=$?
     if [ $returncode -eq 0 ]; then
