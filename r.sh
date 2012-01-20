@@ -5,12 +5,12 @@ dst="$HOME/bu/Dropbox/"
 log="$HOME/bu/tb/cronrsync.log"
 errorlog="$HOME/bu/tb/cronrsyncerror.log"
 
-fromdir="$src/"        # must end with "/"
-todir="$dst/newest/"
-
 export DISPLAY=:0.0
 export LANG=ja_JP.UTF-8
 export LC_TIME=C
+
+fromdir="$src/"        # must end with "/"
+todir="$dst/newest/"
 
 size_fromdir=$(du -s "$fromdir" | awk '{print $1}')
 header=$(printf "\nCRON rsync $fromdir > $todir: run at "; date;)
