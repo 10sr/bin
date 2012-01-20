@@ -13,4 +13,4 @@
         echo '</body></html>'
     } >/tmp/$$.html
 
-} exec && $BROWSER /tmp/$$.html
+} && exec $BROWSER /tmp/$$.html
