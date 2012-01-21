@@ -1,7 +1,7 @@
 #!/bin/sh
 
 usage(){
-    echo "$0 UUID IP" 2>&1
+    echo "$0 UUID IP" 1>&2
 }
 
 start(){
