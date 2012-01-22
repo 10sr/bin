@@ -20,22 +20,31 @@ header=$(printf "\nCRON rsync $fromdir > $todir: run at "; date;)
 date_num=`date +%Y%m%d-%H%M%S`
 returncode=0
 message=""
+archivemsg=""
 
 notify(){                       # gnome notify first argument
     exec 10> >(zenity --notification --listen --window-icon "/usr/share/pixmaps/gnome-set-time.png")
     echo "visible: false" >&10
     echo "message: $1" >&10
+    test -n "$2" && echo "message: $2" >&10
     sleep 1
     exec 10>&-
 }
 
-archive(){                      # $ archive dir
+archive_bak(){                      # $ archive dir
     dir="$dst"
     files="$(find $(echo ${dir}/*) -maxdepth 0 '!' -name newest -type d)"
-    arc="`format ${dir}/${pack_out} ${date_num}`"
-    test `echo $files | wc -w` -gt 100 &&
-    ${pack_cmd} "${arc}" ${files} &&
-    echo rm -rf ${files}
+    arc="`printf ${dir}/${pack_out} ${date_num}`"
+    if test `echo $files | wc -w` -gt 100
+    then
+        if ${pack_cmd} "${arc}" ${files} &&
+            rm -rf ${files}
+        then
+            archivemsg="Archiving backup file successfully."
+        else
+            archivemsg="!!! Tried to archive backup file but failed!"
+        fi
+    fi
 }
 
 if [ "$size_fromdir" -lt 1000 ]; then  # size is less than 1MB
@@ -62,5 +71,12 @@ else
     fi
 fi
 
-notify "$message"
+if archive_bak >>$log 2>>$errorlog
+then
+    test -n "$archivemsg" && echo "$archivemsg"
+else
+    test -n "$archivemsg" && echo "$archivemsg" 1>&2
+fi
+
+notify "$message" "$archivemsg"
 exit $returncode
