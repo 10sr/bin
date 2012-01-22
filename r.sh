@@ -1,5 +1,4 @@
 #!/bin/bash
-# todo : examine what happens about simlink and enable archive().
 
 src="$HOME/.xdg-dirs/Dropbox/"
 dst="$HOME/bu/Dropbox/"
@@ -17,24 +16,24 @@ todir="$dst/newest/"
 
 size_fromdir=$(du -s "$fromdir" | awk '{print $1}')
 header=$(printf "\nCRON rsync $fromdir > $todir: run at "; date;)
-date_num=`date +%Y%m%d-%H%M%S`
+ctime=`date +%Y%m%d-%H%M%S`
 returncode=0
 message=""
 archivemsg=""
 
 notify(){                       # gnome notify first argument
-    exec 10> >(zenity --notification --listen --window-icon "/usr/share/pixmaps/gnome-set-time.png")
-    echo "visible: false" >&10
-    echo "message: $1" >&10
-    test -n "$2" && echo "message: $2" >&10
+    exec 5> >(zenity --notification --listen --window-icon "/usr/share/pixmaps/gnome-set-time.png")
+    echo "visible: false" >&5
+    echo "message: $1" >&5
+    test -n "$2" && echo "message: $2" >&5
     sleep 1
-    exec 10>&-
+    exec 5>&-
 }
 
 archive_bak(){                      # $ archive dir
     dir="$dst"
     files="$(find $(echo ${dir}/*) -maxdepth 0 '!' -name newest -type d)"
-    arc="`printf ${dir}/${pack_out} ${date_num}`"
+    arc="`printf ${dir}/${pack_out} ${ctime}`"
     if test `echo $files | wc -w` -gt 100
     then
         if ${pack_cmd} "${arc}" ${files} &&
@@ -59,7 +58,7 @@ else
     mkdir -p $todir
     {
         echo "$header"
-        rsync -avh --stats --delete --backup --backup-dir=../${date_num} $fromdir $todir
+        rsync -avh --stats --delete --backup --backup-dir=../${ctime} $fromdir $todir
     } >>$log 2>>$errorlog
     returncode=$?
     if [ $returncode -eq 0 ]; then
