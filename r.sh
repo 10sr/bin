@@ -34,14 +34,19 @@ archive_bak(){                      # $ archive dir
     dir="$dst"
     files="$(find $(echo ${dir}/*) -maxdepth 0 '!' -name newest -type d)"
     arc="`printf ${dir}/${pack_out} ${ctime}`"
-    if test `echo $files | wc -w` -gt 100
+    if test `echo $files | wc -w` -gt 150
     then
-        if ${pack_cmd} "${arc}" ${files} &&
+        if echo "Start packing backup files" &&
+            ${pack_cmd} "${arc}" ${files} &&
             rm -rf ${files}
         then
-            archivemsg="Archiving backup file successfully."
+            archivemsg="Archiving backup files successfully."
+            echo $archivemsg
+            return 0
         else
-            archivemsg="!!! Tried to archive backup file but failed!"
+            archivemsg="!!! Tried to archive backup files but failed!"
+            echo $archivemsg 1>&2
+            return 1
         fi
     fi
 }
