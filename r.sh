@@ -1,9 +1,9 @@
 #!/bin/bash
 
 src="$HOME/.xdg-dirs/Dropbox/"
-dst="$HOME/bu/Dropbox/"
-log="$HOME/bu/tb/cronrsync.log"
-errorlog="$HOME/bu/tb/cronrsyncerror.log"
+dst="$HOME/.backup/Dropbox/"
+log="${dst}/cronrsync.log"
+errorlog="${dst}/cronrsyncerror.log"
 pack_cmd="7z a"
 pack_out="%s.7z"
 
@@ -22,12 +22,15 @@ message=""
 archivemsg=""
 
 notify(){                       # gnome notify first argument
-    exec 5> >(zenity --notification --listen --window-icon "/usr/share/pixmaps/gnome-set-time.png")
-    echo "visible: false" >&5
-    echo "message: $1" >&5
-    test -n "$2" && echo "message: $2" >&5
-    sleep 1
-    exec 5>&-
+    if type zenity >/dev/null 2>&1
+    then
+        exec 5> >(zenity --notification --listen --window-icon "/usr/share/pixmaps/gnome-set-time.png")
+        echo "visible: false" >&5
+        echo "message: $1" >&5
+        test -n "$2" && echo "message: $2" >&5
+        sleep 1
+        exec 5>&-
+    fi
 }
 
 archive_bak(){                      # $ archive dir
