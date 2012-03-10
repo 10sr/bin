@@ -21,18 +21,6 @@ returncode=0
 message=""
 archivemsg=""
 
-notify(){                       # gnome notify first argument
-    if type zenity >/dev/null 2>&1
-    then
-        exec 5> >(zenity --notification --listen --window-icon "/usr/share/pixmaps/gnome-set-time.png")
-        echo "visible: false" >&5
-        echo "message: $1" >&5
-        test -n "$2" && echo "message: $2" >&5
-        sleep 1
-        exec 5>&-
-    fi
-}
-
 archive_bak(){                      # $ archive dir
     dir="$dst"
     files="$(find $(echo ${dir}/*) -maxdepth 0 '!' -name newest -type d)"
@@ -85,5 +73,10 @@ else
     test -n "$archivemsg" && echo "$archivemsg" 1>&2
 fi
 
-notify "$message" "$archivemsg"
+if type notify-send >/dev/null 2>&1
+then
+    notify-send "r.sh" "$message"
+    test -n "$archivemsg" && notify-send "r.sh" "$archivemsg"
+fi
+
 exit $returncode
