@@ -1,9 +1,9 @@
 #!/bin/sh
 
 # add crontab as below to run this every 10 min
-# */10 * * * * sh batterystate.sh
+# */10 * * * * sh batterystatus.sh
 
-file=$HOME/.batterystatus
+file=/tmp/batterystatus
 
 batterystatus(){
     local dir=/sys/class/power_supply/BAT0
@@ -13,7 +13,7 @@ batterystatus(){
         local full=$(cat $dir/charge_full)
         local now=$(cat $dir/charge_now)
         local rate=$(expr $now \* 100 / $full)
-        printf $1 "${st}:${rate}%"
+        printf "$1" "${st}:${rate}%"
     fi
 }
 
