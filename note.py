@@ -14,7 +14,7 @@ import datetime
 dir = os.path.expanduser(dir)
 trash = os.path.expanduser(trash)
 
-def print_list(dir, func):
+def print_list(func):
     #list = filter(filter_trash, os.listdir(dir))
     #list = (f for f in os.listdir(dir) if f != trash)
     list = os.listdir(dir)
@@ -24,33 +24,33 @@ def print_list(dir, func):
         print("%2d : " % i, end = "")
         print(f)
     if(func):
-        ask_open(dir, list, func)
+        ask_open(list, func)
 
 # def nth(iterable, n, default=None):
 #     "Returns the nth item or a default value"
 #     return next(it.islice(iterable, n, None), default)
 
-def ask_open(dir, list, func):
+def ask_open(list, func):
     s = input("Input num: ")
     if(s == ""):
         exit()
     else:
-        func(dir, list[int(s) - 1])
+        func(list[int(s) - 1])
 
-def edit_file(dir, name):
+def edit_file(name):
     #path = os.path.join(dir, name)
     os.chdir(dir)
     os.access(name, os.F_OK) or os.mknod(name, 0o644)
     sp.call([program, name])
 
-def cat_file(dir, name):
+def cat_file(name):
     os.chdir(dir)
     for l in fileinput.input(name):
         print(l, end = "")
     print("")
 
-def remove_file(dir, name):
-    cat_file(dir, name)
+def remove_file(name):
+    cat_file(name)
     time = datetime.datetime.today().strftime("%Y-%m-%dT%H-%M-%S")
     s = input("Really remove %s? [y/N]: " % name)
     if(s == "y"):
@@ -67,24 +67,24 @@ os.makedirs(dir, 0o755, True)
 os.makedirs(trash, 0o755, True)
 if(len(sys.argv) == 3):
     if(sys.argv[1] == "e"):
-        edit_file(dir, sys.argv[2])
+        edit_file(sys.argv[2])
     elif(sys.argv[1] == "c"):
-        cat_file(dir, sys.argv[2])
+        cat_file(sys.argv[2])
     elif(sys.argv[1] == "rm"):
-        remove_file(dir, sys.argv[2])
+        remove_file(sys.argv[2])
     else:
         print_help()
 elif(len(sys.argv) == 2):
     if(sys.argv[1] == "e"):
-        print_list(dir, edit_file)
+        print_list(edit_file)
     elif(sys.argv[1] == "c"):
-        print_list(dir, cat_file)
+        print_list(cat_file)
     elif(sys.argv[1] == "rm"):
-        print_list(dir, remove_file)
+        print_list(remove_file)
     elif(sys.argv[1] == "l"):
-        print_list(dir, None)
+        print_list(None)
     else:
         print_help()
 else:
-    print_list(dir, None)
+    print_list(None)
 
