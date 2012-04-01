@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 program = "pcmanfm"
-dir = "~/dbx/note"
+notedir = "~/dbx/note"
 trash = "~/.backup/memo"
 
 import os
@@ -11,13 +11,13 @@ import fileinput
 import itertools as it
 import datetime
 
-dir = os.path.expanduser(dir)
+notedir = os.path.expanduser(notedir)
 trash = os.path.expanduser(trash)
 
 def print_list(func):
-    #list = filter(filter_trash, os.listdir(dir))
-    #list = (f for f in os.listdir(dir) if f != trash)
-    list = os.listdir(dir)
+    #list = filter(filter_trash, os.listdir(notedir))
+    #list = (f for f in os.listdir(notedir) if f != trash)
+    list = os.listdir(notedir)
     i = 0
     for f in list:
         i = i + 1
@@ -38,13 +38,13 @@ def ask_open(list, func):
         func(list[int(s) - 1])
 
 def edit_file(name):
-    #path = os.path.join(dir, name)
-    os.chdir(dir)
+    #path = os.path.join(notedir, name)
+    os.chdir(notedir)
     os.access(name, os.F_OK) or os.mknod(name, 0o644)
     sp.call([program, name])
 
 def cat_file(name):
-    os.chdir(dir)
+    os.chdir(notedir)
     for l in fileinput.input(name):
         print(l, end = "")
     print("")
@@ -54,7 +54,7 @@ def remove_file(name):
     time = datetime.datetime.today().strftime("%Y-%m-%dT%H-%M-%S")
     s = input("Really remove %s? [y/N]: " % name)
     if(s == "y"):
-        os.rename(os.path.join(dir, name),
+        os.rename(os.path.join(notedir, name),
                   os.path.join(trash, name + "." + time))
 
 def print_help():
@@ -63,7 +63,7 @@ def print_help():
     pass
 
 
-os.makedirs(dir, 0o755, True)
+os.makedirs(notedir, 0o755, True)
 os.makedirs(trash, 0o755, True)
 if(len(sys.argv) == 3):
     if(sys.argv[1] == "e"):
