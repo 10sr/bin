@@ -10,30 +10,27 @@ import fileinput
 
 dir = os.path.expanduser(dir)
 
-def print_list(dir, p):
+def print_list(dir, func):
     list = os.listdir(dir)
-    i = 1
+    i = 0
     for f in list:
-        print("%2d : " % i, end = "")
         i = i + 1
+        print("%2d : " % i, end = "")
         print(f)
-    ask_open(dir, list, p)
+    if(func):
+        ask_open(dir, list, func)
 
-def ask_open(dir, list, p):
-    s = input("Input num or c: ")
+def ask_open(dir, list, func):
+    s = input("Input num: ")
     if(s == ""):
         exit()
-    elif(s == "c"):
-        num = int(input("Input num: "))
-        cat_file(dir, list[num - 1])
     else:
-        open_file(dir, list[int(s) - 1], p)
-    
+        func(dir, list[int(s) - 1])
 
-def open_file(dir, name, p):
+def edit_file(dir, name):
     #path = os.path.join(dir, name)
     os.chdir(dir)
-    sp.call([p, name])
+    sp.call([program, name])
 
 def cat_file(dir, name):
     os.chdir(dir)
@@ -41,13 +38,25 @@ def cat_file(dir, name):
         print(l, end = "")
     print("")
 
+def print_help():
+    pass
+
 if(len(sys.argv) == 3):
     if(sys.argv[1] == "e"):
-        open_file(dir, sys.argv[2], program)
+        edit_file(dir, sys.argv[2])
     elif(sys.argv[1] == "c"):
         cat_file(dir, sys.argv[2])
     else:
-        print_list(dir, program)
+        print_help()
+elif(len(sys.argv) == 2):
+    if(sys.argv[1] == "e"):
+        print_list(dir, edit_file)
+    elif(sys.argv[1] == "c"):
+        print_list(dir, cat_file)
+    elif(sys.argv[1] == "l"):
+        print_list(dir, None)
+    else:
+        print_help()
 else:
-    print_list(dir, program)
+    print_list(dir, None)
 
