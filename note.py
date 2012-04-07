@@ -77,5 +77,7 @@ def main():
     else:
         print_list(None)
 
-os.makedirs(os.path.join(notepath, trash), 0o755, True)
+os.access(os.path.join(notepath, trash), os.W_OK) or \
+os.makedirs(os.path.join(notepath, trash), 0o755)
+
 main()
