@@ -18,7 +18,7 @@ mkdir -p "$dst"
 git_ci(){
     echo "$header"
     cd $src
-    test -d $dst/rep || git init
+    test -d $GIT_DIR || git init
     git add -v -A .
     if test -n "`git status -s -uno`"
     then
