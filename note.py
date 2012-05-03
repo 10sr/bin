@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-program = "pcmanfm"
+program = "leafpad"
 notepath = "~/dbx/note"
 
 import os
