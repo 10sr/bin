@@ -26,7 +26,7 @@ def save_conf(media):
             if(s != "y"):
                 fd.close()
                 return
-            fd.close()
+        fd.close()
     fd = open(conf, mode="w+")
     fd.write(media)
     fd.close()

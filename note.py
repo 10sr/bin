@@ -29,23 +29,23 @@ def ask_open(flist, func):
     else:
         func(flist[int(s) - 1])
 
-def edit_file(name):
+def edit_file(filename):
     os.chdir(notepath)
-    os.access(name, os.F_OK) or os.mknod(name, 0o644)
-    sp.call([program, name])
+    os.access(filename, os.F_OK) or os.mknod(filename, 0o644)
+    sp.call([program, filename])
 
-def cat_file(name):
-    for l in fileinput.input(os.path.join(notepath, name)):
+def cat_file(filename):
+    for l in fileinput.input(os.path.join(notepath, filename)):
         print(l, end = "")
     print("")
 
-def remove_file(name):
-    cat_file(name)
+def remove_file(filename):
+    cat_file(filename)
     time = datetime.datetime.today().strftime("%Y-%m-%dT%H-%M-%S")
-    s = input("Really remove %s? [y/N]: " % name)
+    s = input("Really remove %s? [y/N]: " % filename)
     if(s == "y"):
-        os.rename(os.path.join(notepath, name),
-                  os.path.join(notepath, trash, name + "." + time))
+        os.rename(os.path.join(notepath, filename),
+                  os.path.join(notepath, trash, filename + "." + time))
 
 def print_help():
     b = os.path.basename(sys.argv[0])
