@@ -12,6 +12,7 @@ def get_latest_media(url):
     data = urllib.request.urlopen(url)
     dom = parseString(data.read().decode('utf-8'))
     media = dom.getElementsByTagName("enclosure")[0].getAttribute("url")
+    print("Latest %s" % media)
     save_conf(media)
 
 def play(media):
