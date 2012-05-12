@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-url = "http://www3.nhk.or.jp/rj/podcast/rss/english.xml"
+feed = "http://www3.nhk.or.jp/rj/podcast/rss/english.xml"
 player = "mpg123 -C -v --title"
 
 from urllib.request import urlopen
@@ -13,9 +13,7 @@ def get_latest_media(url):
     dom = parseString(data.read().decode('utf-8'))
     media = dom.getElementsByTagName("enclosure")[0].getAttribute("url")
     print("Latest media is %s." % media)
-    if(check_new(media)):
-        play(media)
-        save_conf(media)
+    return media
 
 def play(media):
     sp.call(player + " " + media, shell=True)
@@ -50,4 +48,10 @@ def save_conf(media):
     fd.write(media)
     fd.close()
 
-get_latest_media(url)
+def main():
+    media = get_latest_media(feed)
+    if(check_new(media)):
+        play(media)
+        save_conf(media)
+
+main()
