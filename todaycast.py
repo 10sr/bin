@@ -12,25 +12,38 @@ def get_latest_media(url):
     data = urllib.request.urlopen(url)
     dom = parseString(data.read().decode('utf-8'))
     media = dom.getElementsByTagName("enclosure")[0].getAttribute("url")
-    print("Latest %s" % media)
-    save_conf(media)
+    print("Latest media is %s." % media)
+    if(check_conf(media)):
+        play(media)
+        save_conf(media)
 
 def play(media):
     sp.call(player + " " + media, shell=True)
 
-def save_conf(media):
-    conf = os.path.expanduser("~/.config/todaycast.conf")
+def conf_file():
+    return os.path.expanduser("~/.config/todaycast.conf")
+
+def check_conf(media):
+    "test if media is new"
+    conf = conf_file()
     if(os.access(conf, os.R_OK)):
         fd = open(conf, mode="r")
-        if(fd.readable() and fd.read() == media):
-            s = input("Already played! Play again? [y/N]: ")
-            if(s != "y"):
-                fd.close()
-                return
+        last = fd.read() if fd.readable() else ""
         fd.close()
-    fd = open(conf, mode="w+")
+        if(last == media):
+            s = input("Already played! Play again? [y/N]: ")
+            if(s == "y"):
+                return True
+            else:
+                return False
+        else:
+            return True
+    else:
+        return True
+
+def save_conf(media):
+    fd = open(conf_file(), mode="w+")
     fd.write(media)
     fd.close()
-    play(media)
 
 get_latest_media(url)
