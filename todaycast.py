@@ -3,17 +3,17 @@
 url = "http://www3.nhk.or.jp/rj/podcast/rss/english.xml"
 player = "mpg123 -C -v --title"
 
-import urllib.request
+from urllib.request import urlopen
 from xml.dom.minidom import parseString
 import subprocess as sp
 import os
 
 def get_latest_media(url):
-    data = urllib.request.urlopen(url)
+    data = urlopen(url)
     dom = parseString(data.read().decode('utf-8'))
     media = dom.getElementsByTagName("enclosure")[0].getAttribute("url")
     print("Latest media is %s." % media)
-    if(check_conf(media)):
+    if(check_new(media)):
         play(media)
         save_conf(media)
 
@@ -21,9 +21,13 @@ def play(media):
     sp.call(player + " " + media, shell=True)
 
 def conf_file():
-    return os.path.expanduser("~/.config/todaycast.conf")
+    env = "XDG_CONFIG_HOME"
+    if(env in os.environ):
+        return os.environ[env] + "/todaycast.conf"
+    else:
+        return os.path.expanduser("~/.todaycast.conf")
 
-def check_conf(media):
+def check_new(media):
     "test if media is new"
     conf = conf_file()
     if(os.access(conf, os.R_OK)):
