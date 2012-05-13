@@ -9,13 +9,13 @@ dmenu_dir(){
 }
 
 get_file(){
-    test -e $1 || return 1
+    test -e "$1" || return 1
 
-    if test -f $1
+    if test -f "$1"
     then
-        exec xdg-open $1
+        exec xdg-open "$1"
     else
-        file=$(dmenu_dir $1)
+        file="$(dmenu_dir "$1")"
         test -n "$file" || return 1
         get_file "$(realpath "$1/${file}")"
     fi
