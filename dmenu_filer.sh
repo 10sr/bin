@@ -5,7 +5,7 @@ dir=.
 args=("$@")
 
 dmenu_dir(){
-    ls -1 --color=never "$1" | dmenu "${args[@]}" -p "$1"
+    ls -1 --color=never "$1" | dmenu "${args[@]}" -p "$1/"
 }
 
 get_file(){
@@ -17,7 +17,12 @@ get_file(){
     else
         file="$(dmenu_dir "$1")"
         test -n "$file" || return 1
-        get_file "$(realpath "$1/${file}")"
+        if test "$file" == "."
+        then
+            exec xdg-open "$1"
+        else
+            get_file "$(realpath "$1/${file}")"
+        fi
     fi
 }
 
