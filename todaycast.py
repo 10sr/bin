@@ -28,20 +28,18 @@ def conf_file():
 def check_new(media):
     "test if media is new"
     conf = conf_file()
-    if(os.access(conf, os.R_OK)):
-        fd = open(conf, mode="r")
-        last = fd.read() if fd.readable() else ""
-        fd.close()
-        if(last == media):
-            s = input("Already played! Play again? [y/N]: ")
-            if(s == "y"):
-                return True
-            else:
-                return False
-        else:
-            return True
-    else:
-        return True
+
+    if(not os.access(conf, os.R_OK)): return True
+
+    fd = open(conf, mode="r")
+    last = fd.read() if fd.readable() else ""
+    fd.close()
+    if(last != media): return True
+
+    s = input("Already played! Play again? [y/N]: ")
+    if(s == "y"): return True
+
+    return False
 
 def save_conf(media):
     fd = open(conf_file(), mode="w+")
