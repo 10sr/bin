@@ -1,7 +1,7 @@
 #!/bin/bash
 
 src="$HOME/.xdg-dirs/Dropbox/"
-dst="$HOME/.backup/Dropbox/"
+dst="$HOME/.my/Dropbox/"
 log="${dst}/cronrsync.log"
 errorlog="${dst}/cronrsyncerror.log"
 pack_cmd="7z a"

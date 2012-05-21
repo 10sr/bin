@@ -1,7 +1,7 @@
 #!/bin/bash
 
 src="$HOME/.xdg-dirs/Dropbox/"
-dst="$HOME/.backup/Dropbox_git/"
+dst="$HOME/.my/Dropbox_git/"
 log="${dst}/rgit.log"
 
 export DISPLAY=:0.0
