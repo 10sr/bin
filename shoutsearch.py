@@ -4,10 +4,10 @@ shoutcast = "http://www.shoutcast.com/"
 player = "mpg123 -C -v --title -@"
 
 from urllib.request import urlopen
-#from xml.dom.minidom import parse
 from html.parser import HTMLParser
 from subprocess import call
 import os
+import sys
 
 class MyHTMLParser(HTMLParser):
     playlists = []
@@ -17,9 +17,19 @@ class MyHTMLParser(HTMLParser):
 
         pstr = "http://yp.shoutcast.com/sbin/tunein-station.pls"
 
+        title = ""
+        url = ""
         for a in attrs :
             if a[0] == "href" and pstr in a[1] :
-                self.playlists.append(a[1])
+                url = a[1]
+            elif a[0] == "title" :
+                title = a[1]
+            elif a[0] == "class" and "playimage" in a[1] :
+                # if tag has playimage class ignore the url
+                return
+
+        if url != "" :
+            self.playlists.append([title, url])
 
 def play(url):
     call(player + " " + url, shell=True)
@@ -35,8 +45,10 @@ def get_playlists(url):
 
 
 def main():
-    url = search("alternative")
+    if len(sys.argv) <= 1 : return
+    url = search(sys.argv[1])
     p = get_playlists(url)
-    play(p[0])
+    for s in p :
+        print("%s %s" % (s[0], s[1]))
 
 main()
