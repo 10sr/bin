@@ -79,14 +79,13 @@ def choose(stations):
     for s in stations :
         if i >= 5 : break
         i = i + 1
-        #print("%2d : %s" % (i, s["title"]))
-        print("%2d : " % i, end = "")
+        print("%2d : %s | %s" % (i, s["title"], s["recent"]))
+        print ("     ", end = "")
         for k, v in s.items() :
-            # if k == "url" :
-            #     continue
-            if k != "title" :
-                print ("     ", end = "")
-            print("%9s : %s" % (k, v))
+            if k != "url" and k != "title" and k != "recent" :
+                print("%s : %s  " % (k, v), end = "")
+        print("")
+        print("")
 
     s = input("Input num: ")
     if s == "" or not s.isdigit() :
