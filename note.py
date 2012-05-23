@@ -18,12 +18,12 @@ def print_list(func):
     for f in flist:
         i = i + 1
         print("%2d : %s" % (i, f))
-    if(func):
+    if func :
         ask_open(flist, func)
 
 def ask_open(flist, func):
     s = input("Input num: ")
-    if(s == ""):
+    if s == "":
         exit()
     else:
         func(flist[int(s) - 1])
@@ -42,7 +42,7 @@ def remove_file(filename):
     cat_file(filename)
     time = datetime.datetime.today().strftime("%Y-%m-%dT%H-%M-%S")
     s = input("Really remove %s? [y/N]: " % filename)
-    if(s == "y"):
+    if s == "y" :
         os.rename(os.path.join(notepath, filename),
                   os.path.join(notepath, trash, filename + "." + time))
 
