@@ -17,8 +17,7 @@ def print_list(func):
     i = 0
     for f in flist:
         i = i + 1
-        print("%2d : " % i, end = "")
-        print(f)
+        print("%2d : %s" % (i, f))
     if(func):
         ask_open(flist, func)
 
