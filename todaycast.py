@@ -21,7 +21,7 @@ def play(media):
 
 def conf_file():
     env = "XDG_CONFIG_HOME"
-    if(env in os.environ):
+    if env in os.environ :
         return os.environ[env] + "/todaycast.conf"
     else:
         return os.path.expanduser("~/.todaycast.conf")
@@ -30,15 +30,15 @@ def check_new(media):
     "test if media is new"
     conf = conf_file()
 
-    if(not os.access(conf, os.R_OK)): return True
+    if not os.access(conf, os.R_OK) : return True
 
     fd = open(conf, mode="r")
     last = fd.read() if fd.readable() else ""
     fd.close()
-    if(last != media): return True
+    if last != media : return True
 
     s = input("Already played! Play again? [y/N]: ")
-    if(s == "y"): return True
+    if s == "y" : return True
 
     return False
 
@@ -49,7 +49,7 @@ def save_conf(media):
 
 def main():
     media = get_latest_media(feed)
-    if(check_new(media)):
+    if check_new(media) :
         play(media)
         save_conf(media)
 
