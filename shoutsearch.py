@@ -35,21 +35,23 @@ class MyHTMLParser(HTMLParser):
 
         elif tag == "div" :
             for a in attrs :
-                if a[0] != "class" : break
+                if a[0] != "class" : continue
 
                 if a[1] == "playingtext" : 
                     self.current = "recent"
                 elif a[1] == "dirgenre" :
                     self.current = "genre"
-                elif a[1] == "dirlisteners" :
-                    self.current = "listerns"
+                elif a[1] == "dirlistners" : # wrong spelling!
+                    self.current = "listeners"
                 elif a[1] == "dirbitrate" :
                     self.current = "bitrate"
                 elif a[1] == "dirtype" :
                     self.current = "type"
 
     def handle_data(self, data):
-        if data == "" or data.strip(" \n") == "Recently played:" or  self.current == "" :
+        if data == "" or  self.current == "" : return
+
+        if "Recently played:" in data or "Now playing:" in data or "Now Playing:" in data:
             return
 
         ix = len(self.stations) - 1
@@ -75,11 +77,19 @@ def choose(stations):
 
     i = 0
     for s in stations :
+        if i >= 5 : break
         i = i + 1
-        print("%2d : %s" % (i, s["title"]))
+        #print("%2d : %s" % (i, s["title"]))
+        print("%2d : " % i, end = "")
+        for k, v in s.items() :
+            # if k == "url" :
+            #     continue
+            if k != "title" :
+                print ("     ", end = "")
+            print("%9s : %s" % (k, v))
 
     s = input("Input num: ")
-    if s == "" :
+    if s == "" or not s.isdigit() :
         return None
     else :
         return stations[int(s) - 1]["url"]
