@@ -4,13 +4,14 @@ feed = "http://www3.nhk.or.jp/rj/podcast/rss/english.xml"
 player = "mpg123 -C -v --title"
 
 from urllib.request import urlopen
-from xml.dom.minidom import parseString
+from xml.dom.minidom import parse
 import subprocess as sp
 import os
 
 def get_latest_media(url):
     data = urlopen(url)
-    dom = parseString(data.read().decode('utf-8'))
+    # dom = parseString(data.read().decode('utf-8'))
+    dom = parse(data)
     media = dom.getElementsByTagName("enclosure")[0].getAttribute("url")
     print("Latest media is %s." % media)
     return media
