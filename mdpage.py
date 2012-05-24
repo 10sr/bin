@@ -44,47 +44,54 @@ def update_list_file(flist, dlist):
     return True
 
 def gen_menu(flist, dlist):
-    str = "<ul class=\"menu\">\n"
+    s = "<ul class=\"menu\">\n"
 
     flist.sort()
     dlist.sort()
 
     for f in dlist :
-        str = str + "<li><a href=\"%s\">%s</a><br /></li>\n" % (f, f)
+        s = s + "<li><a href=\"%s\">%s</a><br /></li>\n" % (f, f)
     for f in flist :
-        str = str + "<li><a href=\"%s.html\">%s</a><br /></li>\n" % (f, f)
+        s = s + "<li><a href=\"%s.html\">%s</a><br /></li>\n" % (f, f)
 
-    str = str + "</ul>\n"
-    return str
+    s = s + "</ul>\n"
+    return s
 
-def gen_header(file):
+def get_header(f):
 
-    if os.access(file, os.R_OK) :
-        fd = open(file, mode="r", encoding="utf-8")
-        str = fd.read()
+    if os.access(f, os.R_OK) :
+        fd = open(f, mode="r", encoding="utf-8")
+        s = fd.read()
         fd.close()
     else :
-        str = """<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        s = """<html>
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>{name}</title>
 </head>
 <body>
 """
+        fd = open(f, mode="w", encoding="utf-8")
+        fd.write(s)
+        fd.close()
 
-    return str
+    return s
 
-def gen_footer(file):
+def get_footer(f):
 
-    if os.access(file, os.R_OK) :
-        fd = open(file, mode="r", encoding="utf-8")
-        str = fd.read()
+    if os.access(f, os.R_OK) :
+        fd = open(f, mode="r", encoding="utf-8")
+        s = fd.read()
         fd.close()
     else :
-        str = """</body>
+        s = """</body>
 </html>
 """
+        fd = open(f, mode="w", encoding="utf-8")
+        fd.write(s)
+        fd.close()
 
-    return str
+    return s
 
 def is_file_updated(f, flist):
     if not os.path.isfile(f) : return False
@@ -97,40 +104,39 @@ def is_file_updated(f, flist):
 
 def gen_html(flist, dlist):
     """generate html file from file list"""
-    md = Markdown()
 
     headerfile = ".header.html"
     footerfile = ".footer.html"
+    header = get_header(headerfile)
+    footer = get_footer(footerfile)
 
     if update_list_file(flist, dlist) :
-        print("file list updated.")
+        print("File list updated.")
         uplist = flist
     elif is_file_updated(headerfile, flist):
-        print("header file updated.")
+        print("Header file updated.")
         uplist = flist
     elif is_file_updated(footerfile, flist):
-        print("footer file updated.")
+        print("Footer file updated.")
         uplist = flist
     else :
         uplist = (f for f in flist if is_updated(f))
 
-    header = gen_header(headerfile)
-    footer = gen_footer(footerfile)
     menu = gen_menu(flist, dlist)
 
+    md = Markdown()
     for f in uplist :
-        print("updating %s.html." % f)
         out = BytesIO()
-        #out = open(f + ".html")
-        out.write(header.format(name=f).encode("utf-8"))
-        out.write(menu.encode("utf-8"))
         md.convertFile(input=f + ".md", output=out, encoding="utf-8")
-        out.write(footer.format(name=f).encode("utf-8"))
         #print(out.getvalue().decode("utf-8"))
         htmlfd = open(f + ".html", mode="w", encoding="utf-8")
+        htmlfd.write(header.format(name=f))
+        htmlfd.write(menu)
         htmlfd.write(out.getvalue().decode("utf-8"))
-        htmlfd.close()
+        htmlfd.write(footer.format(name=f))
         out.close()
+        htmlfd.close()
+        print("Update %s.html." % f)
 
 def main():
     # for f in make_file_list():
