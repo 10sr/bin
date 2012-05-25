@@ -7,7 +7,6 @@ from urllib.request import urlopen
 from urllib.parse import urlencode
 from html.parser import HTMLParser
 from subprocess import call
-import os
 import sys
 
 class MyHTMLParser(HTMLParser):
