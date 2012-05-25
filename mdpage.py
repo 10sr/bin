@@ -70,6 +70,8 @@ def get_header(f):
 <title>{name}</title>
 </head>
 <body>
+<h1><a href="index.html">Title</a></h1>
+Description<br />
 """
         fd = open(f, mode="w", encoding="utf-8")
         fd.write(s)
