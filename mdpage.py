@@ -7,13 +7,13 @@ from io import BytesIO
 def make_file_list():
     """Return list of md file without .md extension"""
     l = os.listdir()
-    return list((f for f, e in map(os.path.splitext, l) \
-                if not f.startswith(".") and e == ".md" and os.path.isfile(f + e)))
+    return [f for f, e in map(os.path.splitext, l) \
+                if not f.startswith(".") and e == ".md" and os.path.isfile(f + e)]
 
 def make_dir_list():
     """return list of directory name"""
     l = os.listdir()
-    return list((d + "/" for d in l if os.path.isdir(d) and not d.startswith(".")))
+    return [d + "/" for d in l if os.path.isdir(d) and not d.startswith(".")]
 
 def is_updated(f):
     """Return True if html file is not exist or markdown file is newer than htmls"""
@@ -120,7 +120,7 @@ def gen_html(flist, dlist):
         print("Footer file updated.")
         uplist = flist
     else :
-        uplist = (f for f in flist if is_updated(f))
+        uplist = [f for f in flist if is_updated(f)]
 
     menu = gen_menu(flist, dlist)
 
