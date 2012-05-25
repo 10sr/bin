@@ -13,7 +13,7 @@ notepath = os.path.expanduser(notepath)
 trash = ".trash"
 
 def print_list(func):
-    flist = list((f for f in os.listdir(notepath) if f != trash))
+    flist = [f for f in os.listdir(notepath) if f != trash]
     i = 0
     for f in flist:
         i = i + 1
