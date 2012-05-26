@@ -64,12 +64,18 @@ def get_header(f):
         s = fd.read()
         fd.close()
     else :
-        s = """<html>
+        s = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>{name}</title>
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<!-- <link rel="stylesheet" href="style.css" type="text/css" /> -->
+<title>{name} | title</title>
 </head>
 <body>
+<h1 class="title">{name} | title</h1>
+<h2 class="subtitle">subtitle</h2>
 """
         fd = open(f, mode="w", encoding="utf-8")
         fd.write(s)
