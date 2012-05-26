@@ -64,7 +64,8 @@ def get_header(f):
         s = fd.read()
         fd.close()
     else :
-        s = """<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        s = """<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -74,7 +75,7 @@ def get_header(f):
 <title>{name} | title</title>
 </head>
 <body>
-<h1 class="title">{name} | title</h1>
+<h1 class="title">{name} | <a href="index.html">title</a></h1>
 <h2 class="subtitle">subtitle</h2>
 """
         fd = open(f, mode="w", encoding="utf-8")
@@ -132,15 +133,17 @@ def gen_html(flist, dlist):
 
     md = Markdown()
     for f in uplist :
-        out = BytesIO()
-        md.convertFile(input=f + ".md", output=out, encoding="utf-8")
-        #print(out.getvalue().decode("utf-8"))
+        tmp = BytesIO()
+        md.convertFile(input=f + ".md", output=tmp, encoding="utf-8")
+        #print(tmp.getvalue().decode("utf-8"))
         htmlfd = open(f + ".html", mode="w", encoding="utf-8")
         htmlfd.write(header.format(name=f))
         htmlfd.write(menu)
-        htmlfd.write(out.getvalue().decode("utf-8"))
+        htmlfd.write("<div class=\"content\">\n")
+        htmlfd.write(tmp.getvalue().decode("utf-8"))
+        htmlfd.write("\n</div>\n")
         htmlfd.write(footer.format(name=f))
-        out.close()
+        tmp.close()
         htmlfd.close()
         print("Update %s.html." % f)
 
