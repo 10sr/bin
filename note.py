@@ -14,7 +14,7 @@ trash = ".trash"
 
 def print_list(func):
     flist = [f for f in os.listdir(notepath) \
-                 if f != trash and not f.endswith(".html")]
+                 if f != trash and not f.startswith(".") and not f.endswith(".html")]
     i = 0
     for f in flist:
         i = i + 1
