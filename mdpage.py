@@ -3,6 +3,7 @@
 import os
 from markdown import Markdown
 from io import BytesIO
+from sys import argv
 
 def make_file_list():
     """Return list of md file without .md extension"""
@@ -155,5 +156,13 @@ def main():
     fl = make_file_list()
     dl = make_dir_list()
     gen_html(fl, dl)
+    if argv[1] == "make" :
+        pass
+    elif argv[1] == "check" :
+        pass
+    elif argv[1] == "help" :
+        pass
+    elif argv[1] == "force" :
+        pass
 
 main()
