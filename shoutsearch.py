@@ -10,7 +10,7 @@ from subprocess import call
 import os
 import sys
 
-class MyHTMLParser(HTMLParser):
+class ScParser(HTMLParser):
     stations = []
     current = ""
 
@@ -66,7 +66,7 @@ def search(word):
 
 def get_stations(url):
     data = urlopen(url)
-    parser = MyHTMLParser()
+    parser = ScParser()
     parser.feed(data.read().decode("utf-8"))
     return parser.stations
 
