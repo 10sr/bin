@@ -7,13 +7,13 @@ from io import BytesIO
 def make_file_list():
     """Return list of md file without .md extension"""
     l = os.listdir()
-    return list((f for f, e in map(os.path.splitext, l) \
-                if not f.startswith(".") and e == ".md" and os.path.isfile(f + e)))
+    return [f for f, e in map(os.path.splitext, l) \
+                if not f.startswith(".") and e == ".md" and os.path.isfile(f + e)]
 
 def make_dir_list():
     """return list of directory name"""
     l = os.listdir()
-    return list((d + "/" for d in l if os.path.isdir(d) and not d.startswith(".")))
+    return [d + "/" for d in l if os.path.isdir(d) and not d.startswith(".")]
 
 def is_updated(f):
     """Return True if html file is not exist or markdown file is newer than htmls"""
@@ -64,14 +64,19 @@ def get_header(f):
         s = fd.read()
         fd.close()
     else :
-        s = """<html>
+        s = """<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>{name}</title>
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<!-- <link rel="stylesheet" href="style.css" type="text/css" /> -->
+<title>{name} | title</title>
 </head>
 <body>
-<h1><a href="index.html">Title</a></h1>
-Description<br />
+<h1 class="title">{name} | <a href="index.html">title</a></h1>
+<h2 class="subtitle">subtitle</h2>
 """
         fd = open(f, mode="w", encoding="utf-8")
         fd.write(s)
@@ -122,21 +127,23 @@ def gen_html(flist, dlist):
         print("Footer file updated.")
         uplist = flist
     else :
-        uplist = (f for f in flist if is_updated(f))
+        uplist = [f for f in flist if is_updated(f)]
 
     menu = gen_menu(flist, dlist)
 
     md = Markdown()
     for f in uplist :
-        out = BytesIO()
-        md.convertFile(input=f + ".md", output=out, encoding="utf-8")
-        #print(out.getvalue().decode("utf-8"))
+        tmp = BytesIO()
+        md.convertFile(input=f + ".md", output=tmp, encoding="utf-8")
+        #print(tmp.getvalue().decode("utf-8"))
         htmlfd = open(f + ".html", mode="w", encoding="utf-8")
         htmlfd.write(header.format(name=f))
         htmlfd.write(menu)
-        htmlfd.write(out.getvalue().decode("utf-8"))
+        htmlfd.write("<div class=\"content\">\n")
+        htmlfd.write(tmp.getvalue().decode("utf-8"))
+        htmlfd.write("\n</div>\n")
         htmlfd.write(footer.format(name=f))
-        out.close()
+        tmp.close()
         htmlfd.close()
         print("Update %s.html." % f)
 
