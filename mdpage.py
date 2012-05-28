@@ -50,7 +50,7 @@ def gen_menu(flist, dlist):
     dlist.sort()
 
     for f in dlist :
-        s = s + "<li><a href=\"%s\index.html">%s</a><br /></li>\n" % (f, f)
+        s = s + "<li><a href=\"%s/index.html\">%s</a><br /></li>\n" % (f, f)
     for f in flist :
         s = s + "<li><a href=\"%s.html\">%s</a><br /></li>\n" % (f, f)
 
