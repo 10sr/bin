@@ -5,6 +5,127 @@ from markdown import Markdown
 from io import BytesIO
 from sys import argv
 
+class MDPage:
+    md = None
+
+    file_list = []
+    dir_list = []
+    update_list = []
+
+    header_file = ".header.html"
+    footer_file = ".footer.html"
+    header = None
+    footer = None
+    header_def = """<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta http-equiv="Content-Style-Type" content="text/css" />
+<!-- <link rel="stylesheet" href="style.css" type="text/css" /> -->
+<title>{name} | title</title>
+</head>
+<body>
+<h1 class="title">{name} | <a href="index.html">title</a></h1>
+<h2 class="subtitle">subtitle</h2>
+"""
+    footer_def = """</body>
+</html>
+"""
+
+    list_file = ".files.lst"
+
+    menu = ""
+
+    update_all = False
+
+    def __init__(self):
+
+        self.md = Markdown()
+
+        l = os.listdir()
+        self.file_list = sort([f for f, e in map(os.path.splitext, l) \
+                          if not f.startswith(".") and e == ".md" and os.path.isfile(f + e)])
+        self.dir_list = sort([d + "/" for d in l if os.path.isdir(d) and not d.startswith(".")])
+        self.update_list = [f for f in self.file_list if self.is_updated(f)]
+
+    def is_md_updated(self, f):
+        """Return True if html file is not exist or markdown file is newer than htmls"""
+        return not os.path.isfile(f + ".html") or self.file_newer(f + ".md", f + ".html")
+
+    def file_newer(self, f1, f2):
+        """Return True if f1 is newer than f2"""
+        return os.path.getmtime(f1) > os.path.getmtime(f2)
+
+    def is_file_updated(self, file):
+        """judge if file is newer than any of html file in filelist"""
+        if not os.path.isfile(file) :
+            # i think error must be raised in this situation
+            return
+        
+        for f2 in self.file_list :
+            if os.path.isfile(f2 + ".html") and file_newer(file, f2 + ".html") :
+                self.update_all = True
+
+    def gen_header(self):
+        """get header or generate file newly if needed"""
+        if os.access(self.header_file, os.R_OK) :
+            fd = open(self.header_file, mode="r", encoding="utf-8")
+            self.header = fd.read()
+            fd.close()
+        else :
+            fd = open(self_header_file, mode="w", encoding="utf-8")
+            fd.write(self.header_def)
+            fd.close()
+
+    def gen_footer(self):
+        """get footer or generate file newly if needed"""
+        if os.access(self.footer_file, os.R_OK) :
+            fd = open(self.footer, mode="r", encoding="utf-8")
+            self.footer = fd.read()
+            fd.close()
+        else :
+            fd = open(self.footer, mode="w", encoding="utf-8")
+            fd.write(self.footer_def)
+            fd.close()
+
+    def gen_menu(self):
+        """generate menu ul"""
+        s = "<ul class=\"menu\">\n"
+
+        for f in self.dirlist :
+            s = s + "<li><a href=\"%s/index.html\">%s</a><br /></li>\n" % (f, f) # this <br /> seems to be unnecessary
+        for f in self.filelist :
+            s = s + "<li><a href=\"%s.html\">%s</a><br /></li>\n" % (f, f)
+
+        s = s + "</ul>\n"
+
+        self.menu = s
+
+    def update_file_list(self):
+        """judge if file is newly created or removed sinse last make and update file list if needed"""
+
+        if os.access(self.list_file, os.R_OK) :
+            fd = open(self.list_file, mode="r", encoding="utf-8")
+            oldlist = fd.read().split("\n")[:-1]
+            fd.close()
+            if set(oldlist) == set(self.file_list + self.dir_list) :
+                return
+
+        self.update_all = True
+        fd = open(self.list_file, mode="w", encoding="utf-8")
+        for d in self.dir_list :
+            fd.write(d + "\n")
+        for f in self.file_list :
+            fd.write(f + "\n")
+        fd.close
+
+    def update_filelist(self):
+
+
+        
+
 def make_file_list():
     """Return list of md file without .md extension"""
     l = os.listdir()
@@ -124,7 +245,7 @@ def gen_html(flist, dlist):
     elif is_file_updated(headerfile, flist):
         print("Header file updated.")
         uplist = flist
-    elif is_file_updated(footerfile, flist):
+    elif isp_file_updated(footerfile, flist):
         print("Footer file updated.")
         uplist = flist
     else :
