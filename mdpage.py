@@ -349,13 +349,13 @@ def main2():
 
 def main():
     mp = MDPage()
-    if argv[1] == "make" :
-        mp.make()
-    elif argv[1] == "check" :
+    if len(argv) == 1 or argv[1] == "check" :
         mp.check()
-    elif argv[1] == "help" :
-        pass
+    elif argv[1] == "make" :
+        mp.make()
     elif argv[1] == "force" :
         mp.force()
+    else :
+        pass
 
 main()
