@@ -100,9 +100,9 @@ class MDPage:
         s = "<ul class=\"menu\">\n"
 
         for f in self.dir_list :
-            s = s + "<li><a href=\"%s/index.html\">%s</a><br /></li>\n" % (f, f) # this <br /> seems to be unnecessary
+            s = s + "<li><a href=\"%s/index.html\">%s</a></li>\n" % (f, f) # this <br /> seems to be unnecessary
         for f in self.file_list :
-            s = s + "<li><a href=\"%s.html\">%s</a><br /></li>\n" % (f, f)
+            s = s + "<li><a href=\"%s.html\">%s</a></li>\n" % (f, f)
 
         s = s + "</ul>\n"
 
@@ -133,21 +133,21 @@ class MDPage:
 
     def check(self):
         if not os.path.isfile(self.header_file) :
-            print("Header file is not exist.")
+            print("Header file does not exist.")
             self.header_updated = True
         elif self.is_file_updated(self.header_file) :
             print("Header file is updated.")
             self.header_updated = True
 
         if not os.path.isfile(self.footer_file) :
-            print("Footer file is not exist.")
+            print("Footer file does not exist.")
             self.footer_updated = True
         elif self.is_file_updated(self.footer_file) :
             print("Footer file is updated.")
             self.footer_updated = True
 
         if not os.path.isfile(self.list_file) :
-            print("List file is not exist.")
+            print("List file does not exist.")
             self.filelist_updated = True
         elif self.is_filelist_updated() :
             print("File list is updated.")
@@ -156,12 +156,12 @@ class MDPage:
     def force(self):
         self.check()
         self.update_all = True
-        print("Force update all.")
         self.run()
 
     def run(self):
         """do check() before call this"""
         if self.update_all or self.header_updated or self.footer_updated or self.filelist_updated :
+            print("Updating all files.")
             fl = self.file_list
         else :
             fl = self.updated_list
