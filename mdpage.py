@@ -167,7 +167,7 @@ class MDPage:
             fl = self.updated_list
 
         if not fl :
-            print("No file to convert.")
+            print("No files to convert.")
             return
 
         if self.update_all or self.filelist_updated :
@@ -192,6 +192,9 @@ class MDPage:
             htmlfd.close()
             print("Update %s.html." % f)
 
+def help():
+    pass
+
 def main():
     mp = MDPage()
     if len(argv) == 1 or argv[1] == "check" :
@@ -201,6 +204,6 @@ def main():
     elif argv[1] == "force" :
         mp.force()
     else :
-        pass
+        help()
 
 main()
