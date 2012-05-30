@@ -100,7 +100,7 @@ class MDPage:
         s = "<ul class=\"menu\">\n"
 
         for f in self.dir_list :
-            s = s + "<li><a href=\"%s/index.html\">%s</a></li>\n" % (f, f) # this <br /> seems to be unnecessary
+            s = s + "<li><a href=\"%s/index.html\">%s</a></li>\n" % (f, f)
         for f in self.file_list :
             s = s + "<li><a href=\"%s.html\">%s</a></li>\n" % (f, f)
 
