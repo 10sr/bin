@@ -167,7 +167,7 @@ class MDPage:
             fl = self.updated_list
 
         if not fl :
-            print("No files to convert.")
+            print("No file to update.")
             return
 
         if self.update_all or self.filelist_updated :
