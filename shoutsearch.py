@@ -93,7 +93,9 @@ def choose(stations):
         return stations[int(s) - 1]["url"]
 
 def main():
-    if len(sys.argv) <= 1 : return
+    if len(sys.argv) <= 1 :
+        print("No search word given.", file=sys.stderr)
+        return
     url = search(sys.argv[1])
     s = get_stations(url)
     # print(s[0])
