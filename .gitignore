@@ -1,0 +1,5 @@
+arch/*
+!arch/README.md
+!arch/fixwicd.sh
+!arch/mymap.diff
+!arch/updatefiles.sh
