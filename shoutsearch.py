@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 shoutcast = "http://www.shoutcast.com/"
-player = "mpg123 -C -v --title -@"
+player = "mpg123 -C -v --title"
 
 from urllib.request import urlopen
 from urllib.parse import urlencode
@@ -58,7 +58,17 @@ class ScParser(HTMLParser):
         self.current = ""
 
 def play(url):
-    call(player + " " + url, shell=True)
+    """play pls file"""
+    data = urlopen(url)
+    track = parse_pls(data)
+    data.close()
+    call(player + " " + track, shell=True)
+
+def parse_pls(file):
+    lines = file.read().decode("utf-8").splitlines()
+    for line in lines:
+        if line.startswith("File1="):
+            return line.replace("File1=", "")
 
 def search(word):
     return shoutcast + "Internet-Radio/" + word
@@ -67,6 +77,7 @@ def get_stations(url):
     data = urlopen(url)
     parser = ScParser()
     parser.feed(data.read().decode("utf-8"))
+    data.close()
     return parser.stations
 
 def choose(stations):
