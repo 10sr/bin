@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 program = "leafpad"
-notepath = "~/dbx/note"
+notepath = "~/dbx/note/note2"
 
 import os
 import subprocess as sp
