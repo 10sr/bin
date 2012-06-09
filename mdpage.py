@@ -5,6 +5,10 @@ from markdown import Markdown
 from io import BytesIO
 from sys import argv
 
+# import locale
+# locale.setlocale(locale.LC_ALL, '')
+# code = locale.getpreferredencoding()
+
 class MDPage:
     md = None
 
