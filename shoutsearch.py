@@ -2,6 +2,7 @@
 
 shoutcast = "http://www.shoutcast.com/"
 player = "mpg123 -C -v --title"
+#player = "mocp -l"
 
 from urllib.request import urlopen
 from urllib.parse import urlencode

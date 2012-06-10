@@ -157,6 +157,10 @@ class MDPage:
             print("File list is updated.")
             self.filelist_updated = True
 
+    def print_updated(self):
+        for f in self.updated_list:
+            print("%s.md updated." % f)
+
     def force(self):
         self.check()
         self.update_all = True
@@ -203,6 +207,7 @@ def main():
     mp = MDPage()
     if len(argv) == 1 or argv[1] == "check" :
         mp.check()
+        mp.print_updated()
     elif argv[1] == "update" :
         mp.make()
     elif argv[1] == "force" :
