@@ -62,13 +62,15 @@ def play(url):
     data = urlopen(url)
     track = parse_pls(data)
     data.close()
-    call(player + " " + track, shell=True)
+    if track:
+        call(player + " " + track, shell=True)
 
 def parse_pls(file):
     lines = file.read().decode("utf-8").splitlines()
     for line in lines:
         if line.startswith("File1="):
             return line.replace("File1=", "")
+    return None
 
 def search(word):
     return shoutcast + "Internet-Radio/" + word
