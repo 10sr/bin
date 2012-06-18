@@ -213,6 +213,7 @@ def main():
     elif argv[1] == "force" :
         mp.force()
     else :
+        print("Invalid argument: %s." % argv[1])
         help()
 
 main()
