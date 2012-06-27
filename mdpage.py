@@ -103,10 +103,13 @@ class MDPage:
         """generate menu ul"""
         s = "<ul class=\"menu\">\n"
 
+        if "index" in self.file_list :
+            s = s + "<li><a href=\"%s.html\">%s</a></li>\n" % ("index", "index")
         for f in self.dir_list :
             s = s + "<li><a href=\"%sindex.html\">%s</a></li>\n" % (f, f)
         for f in self.file_list :
-            s = s + "<li><a href=\"%s.html\">%s</a></li>\n" % (f, f)
+            if f != "index" :
+                s = s + "<li><a href=\"%s.html\">%s</a></li>\n" % (f, f)
 
         s = s + "</ul>\n"
 
