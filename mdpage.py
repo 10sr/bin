@@ -116,7 +116,7 @@ class MDPage:
         self.menu = s
 
     def update_filelist(self):
-        """update file list"""
+        """update list_file"""
         fd = open(self.list_file, mode="w", encoding="utf-8")
         for d in self.dir_list :
             fd.write(d + "\n")
@@ -125,7 +125,7 @@ class MDPage:
         fd.close
 
     def is_filelist_updated(self):
-        """judge if file is newly created or removed sinse last make. list file must be exist."""
+        """judge if there is any file newly created or removed sinse last update. list_file must be exist."""
         fd = open(self.list_file, mode="r", encoding="utf-8")
         oldlist = fd.read().split("\n")[:-1]
         fd.close()
