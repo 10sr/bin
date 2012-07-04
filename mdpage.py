@@ -134,6 +134,13 @@ class MDPage:
         else :
             return True
 
+    def clean(self):
+        for f in os.listdir() :
+            if not os.path.isdir(f) and f.endswith(".html") and not f.startswith(".") and \
+                    not os.path.splitext(f)[0] in self.file_list :
+                print("Remove %s." % f)
+                os.remove(f)
+
     def make(self):
         self.check()
         self.run()
@@ -162,7 +169,7 @@ class MDPage:
 
     def print_updated(self):
         for f in self.updated_list:
-            print("%s.md updated." % f)
+            print("Update : %s" % f)
 
     def force(self):
         self.check()
@@ -172,7 +179,7 @@ class MDPage:
     def run(self):
         """do check() before call this"""
         if self.update_all or self.header_updated or self.footer_updated or self.filelist_updated :
-            print("Updating all files.")
+            print("all files need to be updated.")
             fl = self.file_list
         else :
             fl = self.updated_list
@@ -201,12 +208,12 @@ class MDPage:
             htmlfd.write((self.footer or self.footer_def).replace("{name}", f))
             tmp.close()
             htmlfd.close()
-            print("Update %s.html." % f)
+            print("Regenerate %s.html." % f)
 
 def help():
     pass
 
-def main():
+def main(argv):
     mp = MDPage()
     if len(argv) == 1 or argv[1] == "check" :
         mp.check()
@@ -215,8 +222,10 @@ def main():
         mp.make()
     elif argv[1] == "force" :
         mp.force()
+    elif argv[1] == "clean" :
+        mp.clean()
     else :
         print("Invalid argument: %s." % argv[1])
         help()
 
-main()
+main(argv)
