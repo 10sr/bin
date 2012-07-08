@@ -182,7 +182,7 @@ class MDPage:
     def run(self):
         """do check() before call this"""
         if self.update_all or self.header_updated or self.footer_updated or self.filelist_updated :
-            print("all files need to be updated.")
+            print("all files are to be updated.")
             fl = self.file_list
         else :
             fl = self.updated_list
