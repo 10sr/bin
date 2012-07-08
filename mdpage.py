@@ -12,6 +12,9 @@ from sys import argv
 class MDPage:
     md = None
 
+    enc = "utf-8"
+    dec = "utf-8"
+
     file_list = []
     dir_list = []
     updated_list = []
@@ -80,22 +83,22 @@ class MDPage:
     def gen_header(self):
         """get header or generate file newly if needed"""
         if os.access(self.header_file, os.R_OK) :
-            fd = open(self.header_file, mode="r", encoding="utf-8")
+            fd = open(self.header_file, mode="r", encoding=self.enc)
             self.header = fd.read()
             fd.close()
         else :
-            fd = open(self.header_file, mode="w", encoding="utf-8")
+            fd = open(self.header_file, mode="w", encoding=self.dec)
             fd.write(self.header_def)
             fd.close()
 
     def gen_footer(self):
         """get footer or generate file newly if needed"""
         if os.access(self.footer_file, os.R_OK) :
-            fd = open(self.footer_file, mode="r", encoding="utf-8")
+            fd = open(self.footer_file, mode="r", encoding=self.enc)
             self.footer = fd.read()
             fd.close()
         else :
-            fd = open(self.footer_file, mode="w", encoding="utf-8")
+            fd = open(self.footer_file, mode="w", encoding=self.dec)
             fd.write(self.footer_def)
             fd.close()
 
@@ -117,7 +120,7 @@ class MDPage:
 
     def update_filelist(self):
         """update file list"""
-        fd = open(self.list_file, mode="w", encoding="utf-8")
+        fd = open(self.list_file, mode="w", encoding=self.dec)
         for d in self.dir_list :
             fd.write(d + "\n")
         for f in self.file_list :
@@ -126,7 +129,7 @@ class MDPage:
 
     def is_filelist_updated(self):
         """judge if file is newly created or removed sinse last make. list file must be exist."""
-        fd = open(self.list_file, mode="r", encoding="utf-8")
+        fd = open(self.list_file, mode="r", encoding=self.enc)
         oldlist = fd.read().split("\n")[:-1]
         fd.close()
         if set(oldlist) == set(self.file_list + self.dir_list) :
@@ -197,13 +200,13 @@ class MDPage:
 
         for f in fl :
             tmp = BytesIO()
-            self.md.convertFile(input=f + ".md", output=tmp, encoding="utf-8")
+            self.md.convertFile(input=f + ".md", output=tmp, encoding=self.enc)
             # print(tmp.getvalue().decode("utf-8"))
-            htmlfd = open(f + ".html", mode="w", encoding="utf-8")
+            htmlfd = open(f + ".html", mode="w", encoding=self.dec)
             htmlfd.write((self.header or self.header_def).replace("{name}", f)) # format() cant be used because str might contain unexpected { or }
             htmlfd.write(self.menu)
             htmlfd.write("<div class=\"content\">\n")
-            htmlfd.write(tmp.getvalue().decode("utf-8"))
+            htmlfd.write(tmp.getvalue().decode(self.dec))
             htmlfd.write("\n</div>\n")
             htmlfd.write((self.footer or self.footer_def).replace("{name}", f))
             tmp.close()
