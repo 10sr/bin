@@ -90,6 +90,7 @@ class MDPage:
             fd = open(self.header_file, mode="w", encoding=self.dec)
             fd.write(self.header_def)
             fd.close()
+            self.header = self.header_def
 
     def gen_footer(self):
         """get footer or generate file newly if needed"""
@@ -101,6 +102,7 @@ class MDPage:
             fd = open(self.footer_file, mode="w", encoding=self.dec)
             fd.write(self.footer_def)
             fd.close()
+            self.footer = self.footer_def
 
     def gen_menu(self):
         """generate menu ul"""
@@ -203,12 +205,12 @@ class MDPage:
             self.md.convertFile(input=f + ".md", output=tmp, encoding=self.enc)
             # print(tmp.getvalue().decode("utf-8"))
             htmlfd = open(f + ".html", mode="w", encoding=self.dec)
-            htmlfd.write((self.header or self.header_def).replace("{name}", f)) # format() cant be used because str might contain unexpected { or }
+            htmlfd.write(self.header.replace("{name}", f)) # format() cant be used because str might contain unexpected { or }
             htmlfd.write(self.menu)
             htmlfd.write("<div class=\"content\">\n")
             htmlfd.write(tmp.getvalue().decode(self.dec))
             htmlfd.write("\n</div>\n")
-            htmlfd.write((self.footer or self.footer_def).replace("{name}", f))
+            htmlfd.write(self.footer.replace("{name}", f))
             tmp.close()
             htmlfd.close()
             print("Regenerate %s.html." % f)
