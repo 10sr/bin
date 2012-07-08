@@ -5,6 +5,7 @@ from markdown import Markdown
 from io import BytesIO
 from sys import argv
 from string import Template
+from time import strftime
 
 # import locale
 # locale.setlocale(locale.LC_ALL, '')
@@ -12,6 +13,8 @@ from string import Template
 
 class MDPage:
     md = None
+
+    cur_time = None
 
     enc = "utf-8"
     dec = "utf-8"
@@ -54,6 +57,8 @@ class MDPage:
     def __init__(self):
 
         self.md = Markdown()
+
+        self.cur_time = strftime("%a, %d %b %Y %H:%M:%S %z")
 
         l = os.listdir()
         self.file_list = [f for f, e in map(os.path.splitext, l) \
@@ -209,12 +214,12 @@ class MDPage:
             self.md.convertFile(input=f + ".md", output=tmp, encoding=self.enc)
             # print(tmp.getvalue().decode("utf-8"))
             htmlfd = open(f + ".html", mode="w", encoding=self.dec)
-            htmlfd.write(h_template.safe_substitute(name = f))
+            htmlfd.write(h_template.safe_substitute(name = f, time = self.cur_time))
             htmlfd.write(self.menu)
             htmlfd.write("<div class=\"content\">\n")
             htmlfd.write(tmp.getvalue().decode(self.dec))
             htmlfd.write("\n</div>\n")
-            htmlfd.write(f_template.safe_substitute(name = f))
+            htmlfd.write(f_template.safe_substitute(name = f, time = self.cur_time))
             tmp.close()
             htmlfd.close()
             print("Regenerate %s.html." % f)
@@ -224,6 +229,7 @@ def help():
 
 def main(argv):
     mp = MDPage()
+    print("Current time is %s." % mp.cur_time)
     if len(argv) == 1 or argv[1] == "check" :
         mp.check()
         mp.print_updated()
