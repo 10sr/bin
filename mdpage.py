@@ -4,6 +4,7 @@ import os
 from markdown import Markdown
 from io import BytesIO
 from sys import argv
+from string import Template
 
 # import locale
 # locale.setlocale(locale.LC_ALL, '')
@@ -31,10 +32,10 @@ class MDPage:
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta http-equiv="Content-Style-Type" content="text/css" />
 <!-- <link rel="stylesheet" href="style.css" type="text/css" /> -->
-<title>{name} | title</title>
+<title>${name} | title</title>
 </head>
 <body>
-<h1 class="title">{name} | <a href="index.html">title</a></h1>
+<h1 class="title">${name} | <a href="index.html">title</a></h1>
 <h2 class="subtitle">subtitle</h2>
 """
     footer_def = """</body>
@@ -200,17 +201,20 @@ class MDPage:
         self.gen_footer()
         self.gen_menu()
 
+        h_template = Template(self.header)
+        f_template = Template(self.footer)
+
         for f in fl :
             tmp = BytesIO()
             self.md.convertFile(input=f + ".md", output=tmp, encoding=self.enc)
             # print(tmp.getvalue().decode("utf-8"))
             htmlfd = open(f + ".html", mode="w", encoding=self.dec)
-            htmlfd.write(self.header.replace("{name}", f)) # format() cant be used because str might contain unexpected { or }
+            htmlfd.write(h_template.safe_substitute(name = f))
             htmlfd.write(self.menu)
             htmlfd.write("<div class=\"content\">\n")
             htmlfd.write(tmp.getvalue().decode(self.dec))
             htmlfd.write("\n</div>\n")
-            htmlfd.write(self.footer.replace("{name}", f))
+            htmlfd.write(f_template.safe_substitute(name = f))
             tmp.close()
             htmlfd.close()
             print("Regenerate %s.html." % f)
