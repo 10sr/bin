@@ -43,6 +43,7 @@ class MDPage:
 """
     footer_def = """</body>
 </html>
+<!-- Last update : ${time} -->
 """
 
     list_file = ".files.lst"
