@@ -145,7 +145,7 @@ class MDPage:
         else :
             return True
 
-    def clean(self):
+    def autoremove(self):
         for f in os.listdir() :
             if not os.path.isdir(f) and f.endswith(".html") and not f.startswith(".") and \
                     not os.path.splitext(f)[0] in self.file_list :
@@ -237,8 +237,8 @@ def main(argv):
         mp.make()
     elif argv[1] == "force" :
         mp.force()
-    elif argv[1] == "clean" :
-        mp.clean()
+    elif argv[1] == "autoremove" :
+        mp.autoremove()
     else :
         print("Invalid argument: %s." % argv[1])
         help()
