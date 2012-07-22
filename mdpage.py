@@ -150,7 +150,7 @@ class MDPage:
         for f in os.listdir() :
             if not os.path.isdir(f) and f.endswith(".html") and not f.startswith(".") and \
                     not os.path.splitext(f)[0] in self.file_list :
-                print("Remove %s." % f)
+                print("rm : %s." % f)
                 os.remove(f)
 
     def make(self):
@@ -223,7 +223,16 @@ class MDPage:
             htmlfd.write(f_template.safe_substitute(name = f, time = self.cur_time))
             tmp.close()
             htmlfd.close()
-            print("Regenerate %s.html." % f)
+            print("%s -> %s.html." % (f, f))
+
+class HeaderFooter :
+    pass
+
+class FileList :
+    pass
+
+class MDConverter :
+    pass
 
 def help():
     pass
@@ -240,6 +249,8 @@ def main(argv):
         mp.force()
     elif argv[1] == "autoremove" :
         mp.autoremove()
+    elif argv[1] == "help" or argv[1] == "--help" :
+        help()
     else :
         print("Invalid argument: %s." % argv[1])
         help()
