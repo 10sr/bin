@@ -223,7 +223,7 @@ class MDPage:
             htmlfd.write(f_template.safe_substitute(name = f, time = self.cur_time))
             tmp.close()
             htmlfd.close()
-            print("%s -> %s.html." % (f, f))
+            print("%s.md -> %s.html." % (f, f))
 
 class HeaderFooter :
     pass
