@@ -216,18 +216,16 @@ class MDPage:
         h_template = Template(self.header)
         f_template = Template(self.footer)
 
+        mdc = MDConv()
         for f in fl :
-            tmp = BytesIO()
-            self.md.convertFile(input=f + ".md", output=tmp, encoding=self.enc)
-            # print(tmp.getvalue().decode("utf-8"))
+            res = mdc.conv(f + ".md", self.enc)
             htmlfd = open(f + ".html", mode="w", encoding=self.dec)
             htmlfd.write(h_template.safe_substitute(name = f, time = self.cur_time))
             htmlfd.write(self.menu)
             htmlfd.write("<div class=\"content\">\n")
-            htmlfd.write(tmp.getvalue().decode(self.dec))
+            htmlfd.write(res.decode(self.dec))
             htmlfd.write("\n</div>\n")
             htmlfd.write(f_template.safe_substitute(name = f, time = self.cur_time))
-            tmp.close()
             htmlfd.close()
             print("%s.md -> %s.html." % (f, f))
 
@@ -242,7 +240,7 @@ class MDConv :
     md_command = None
 
     def __init__(self) :
-        if False :
+        if Markdown :
             self.md = Markdown()
         else :
             self.md_command = self.check_com("markdown.pl") or self.check_com("markdown")
@@ -257,6 +255,7 @@ class MDConv :
 
     def conv(self, input, encoding) :
         """accept filename and return result as a byte string"""
+        res = None
         if self.md :
             tmp = BytesIO()
             self.md.convertFile(input = input, output = tmp, encoding = encoding)
