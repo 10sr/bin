@@ -2,7 +2,7 @@
 
 import os
 from io import BytesIO
-from sys import argv
+from sys import argv, stderr
 from string import Template
 from time import strftime
 from subprocess import call, CalledProcessError, check_output
@@ -18,7 +18,7 @@ except ImportError :
 # code = locale.getpreferredencoding()
 
 class MDPage:
-    md = None
+    mdc = None
 
     cur_time = None
 
@@ -63,7 +63,7 @@ class MDPage:
 
     def __init__(self):
 
-        self.md = Markdown()
+        self.mdc = MDConv()
 
         self.cur_time = strftime("%a, %d %b %Y %H:%M:%S %z")
 
@@ -196,6 +196,10 @@ class MDPage:
 
     def run(self):
         """do check() before call this"""
+        if not self.mdc.conv :
+            print("No way to convert md file!", file = stderr)
+            return 1
+
         if self.update_all or self.header_updated or self.footer_updated or self.filelist_updated :
             print("all files are to be updated.")
             fl = self.file_list
@@ -216,9 +220,8 @@ class MDPage:
         h_template = Template(self.header)
         f_template = Template(self.footer)
 
-        mdc = MDConv()
         for f in fl :
-            res = mdc.conv(f + ".md", self.enc)
+            res = self.mdc.conv(f + ".md", self.enc)
             htmlfd = open(f + ".html", mode="w", encoding=self.dec)
             htmlfd.write(h_template.safe_substitute(name = f, time = self.cur_time))
             htmlfd.write(self.menu)
@@ -238,12 +241,18 @@ class FileList :
 class MDConv :
     md = None
     md_command = None
+    conv = None
 
     def __init__(self) :
         if Markdown :
+            print("Use Markdown python module.")
             self.md = Markdown()
+            self.conv = self.conv_py
         else :
             self.md_command = self.check_com("markdown.pl") or self.check_com("markdown")
+            if self.md_command :
+                print("Use Markdown command.")
+                self.conv = self.conv_pl
 
     def check_com(self, command) :
         try :
@@ -252,19 +261,19 @@ class MDConv :
         except OSError :
             return None
 
-
-    def conv(self, input, encoding) :
+    def conv_py(self, input, encoding) :
         """accept filename and return result as a byte string"""
-        res = None
-        if self.md :
-            tmp = BytesIO()
-            self.md.convertFile(input = input, output = tmp, encoding = encoding)
-            res = tmp.getvalue()
-            tmp.close()
-        elif self.md_command :
-            f = open(file = input, encoding = encoding)
-            res = check_output(self.md_command, stdin = f)
-            f.close()
+        tmp = BytesIO()
+        self.md.convertFile(input = input, output = tmp, encoding = encoding)
+        res = tmp.getvalue()
+        tmp.close()
+        return res
+
+    def conv_pl(self, input, encoding) :
+        """accept filename and return result as a byte string"""
+        f = open(file = input, encoding = encoding)
+        res = check_output(self.md_command, stdin = f)
+        f.close()
         return res
 
 def help():
@@ -290,5 +299,3 @@ def main(argv):
 
 if __name__ == "__main__" :
     main(argv)
-    mdc = MDConv()
-    print(mdc.md_command)
