@@ -1,11 +1,17 @@
 #!/usr/bin/python3
 
 import os
-from markdown import Markdown
 from io import BytesIO
 from sys import argv
 from string import Template
 from time import strftime
+from subprocess import call, CalledProcessError, check_output
+
+try :
+    from markdown import Markdown
+
+except ImportError :
+    Markdown = None
 
 # import locale
 # locale.setlocale(locale.LC_ALL, '')
@@ -231,8 +237,36 @@ class HeaderFooter :
 class FileList :
     pass
 
-class MDConverter :
-    pass
+class MDConv :
+    md = None
+    md_command = None
+
+    def __init__(self) :
+        if False :
+            self.md = Markdown()
+        else :
+            self.md_command = self.check_com("markdown.pl") or self.check_com("markdown")
+
+    def check_com(self, command) :
+        try :
+            check_output([command, "--version"])
+            return command
+        except OSError :
+            return None
+
+
+    def conv(self, input, encoding) :
+        """accept filename and return result as a byte string"""
+        if self.md :
+            tmp = BytesIO()
+            self.md.convertFile(input = input, output = tmp, encoding = encoding)
+            res = tmp.getvalue()
+            tmp.close()
+        elif self.md_command :
+            f = open(file = input, encoding = encoding)
+            res = check_output(self.md_command, stdin = f)
+            f.close()
+        return res
 
 def help():
     pass
@@ -255,4 +289,7 @@ def main(argv):
         print("Invalid argument: %s." % argv[1])
         help()
 
-main(argv)
+if __name__ == "__main__" :
+    main(argv)
+    mdc = MDConv()
+    print(mdc.md_command)
