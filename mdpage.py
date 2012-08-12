@@ -62,6 +62,9 @@ class MDPage:
                 print("rm : %s." % f)
                 os.remove(f)
 
+    def clean(self) :
+        pass
+
     def make(self):
         self.check()
         self.update()
@@ -320,6 +323,8 @@ def main(argv):
         mp.force()
     elif argv[1] == "autoremove" :
         mp.autoremove()
+    elif argv[1] == "clean" :
+        mp.clean()
     elif argv[1] == "help" or argv[1] == "--help" :
         help()
     else :
