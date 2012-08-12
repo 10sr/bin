@@ -5,11 +5,10 @@ from io import BytesIO
 from sys import argv, stderr
 from string import Template
 from time import strftime
-from subprocess import call, CalledProcessError, check_output
+from subprocess import call, check_output
 
 try :
     from markdown import Markdown
-
 except ImportError :
     Markdown = None
 
@@ -249,12 +248,12 @@ class MDConv :
             self.md = Markdown()
             self.conv = self.conv_py
         else :
-            self.md_command = self.check_com("markdown.pl") or self.check_com("markdown")
+            self.md_command = self.check_cmd("markdown.pl") or self.check_cmd("markdown")
             if self.md_command :
-                print("Use Markdown command.")
+                print("Use Markdown external command.")
                 self.conv = self.conv_pl
 
-    def check_com(self, command) :
+    def check_cmd(self, command) :
         try :
             check_output([command, "--version"])
             return command
