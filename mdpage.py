@@ -90,6 +90,7 @@ class MDPage:
             return
 
         if self.update_all or \
+                self.fl.updated or \
                 self.hf.header.exist == False or \
                 self.hf.footer.exist == False or \
                 self.hf.header.updated or self.hf.footer.updated :
