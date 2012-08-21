@@ -76,7 +76,7 @@ class MDPage:
     def force(self):
         self.check()
         self.update_all = True
-        self.run()
+        self.update()
 
     def check(self):
         """only check, do not create any file"""
