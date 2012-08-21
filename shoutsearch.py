@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 shoutcast = "http://www.shoutcast.com/"
 player = "mpg123 -C -v --title"
