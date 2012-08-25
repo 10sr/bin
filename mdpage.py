@@ -285,7 +285,7 @@ class MDConv :
         else :
             self.md_command = self.check_cmd("markdown.pl") or self.check_cmd("markdown")
             if self.md_command :
-                print("Use command %s to onvert." % self.md_command)
+                print("Use command %s to convert." % self.md_command)
                 self.conv = self.conv_pl
 
     def check_cmd(self, command) :
