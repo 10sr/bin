@@ -35,9 +35,11 @@ def edit_file(filename):
     sp.call([program, filename])
 
 def cat_file(filename):
+    print("** %s **********" % filename)
     for l in fileinput.input(os.path.join(notepath, filename)):
         print(l, end = "")
     print("")
+    print("*" * (14 + len(filename)))
 
 def remove_file(filename):
     cat_file(filename)
