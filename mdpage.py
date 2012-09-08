@@ -20,6 +20,7 @@ class MDPage:
     mdc = None
     hf = None
     fl = None
+    menu = None
 
     cur_time = None
 
@@ -37,22 +38,7 @@ class MDPage:
         self.mdc = MDConv()
         self.hf = HeaderFooter()
         self.fl = FileList()
-
-    def gen_menu(self):
-        """generate menu ul"""
-        s = "<ul class=\"menu\">\n"
-
-        if "index" in self.fl.file_list :
-            s = s + "<li><a href=\"%s.html\">%s</a></li>\n" % ("index", "index")
-        for f in self.fl.dir_list :
-            s = s + "<li><a href=\"%sindex.html\">%s</a></li>\n" % (f, f)
-        for f in self.fl.file_list :
-            if f != "index" :
-                s = s + "<li><a href=\"%s.html\">%s</a></li>\n" % (f, f)
-
-        s = s + "</ul>\n"
-
-        self.menu = s
+        self.menu = PageMenu(self.fl.file_list, self.fl.dir_list)
 
     def autoremove(self):
         for f in os.listdir() :
@@ -107,7 +93,6 @@ class MDPage:
             return
 
         self.hf.set()
-        self.gen_menu()
 
         h_template = Template(self.hf.header.s)
         f_template = Template(self.hf.footer.s)
@@ -116,13 +101,43 @@ class MDPage:
             res = self.mdc.conv(f + ".md", self.enc)
             htmlfd = open(f + ".html", mode="w", encoding=self.dec)
             htmlfd.write(h_template.safe_substitute(name = f, time = self.cur_time))
-            htmlfd.write(self.menu)
+            htmlfd.write(self.menu.str)
             htmlfd.write("<div class=\"content\">\n")
             htmlfd.write(res.decode(self.dec))
             htmlfd.write("\n</div>\n")
             htmlfd.write(f_template.safe_substitute(name = f, time = self.cur_time))
             htmlfd.close()
             print("%s.md -> %s.html." % (f, f))
+
+class PageMenu :
+    files = None
+    dirs = None
+
+    class_name = "menu"
+    page_str = "<li><a href=\"%s.html\">%s</a></li>\n"
+    dir_str = "<li><a href=\"%sindex.html\">%s</a></li>\n"
+
+    str = None
+
+    def __init__(self, files, dirs) :
+        self.files = files
+        self.dirs = dirs
+
+        self.gen_menu_str()
+
+    def gen_menu_str(self):
+        s = "<ul class=\"%s\">\n" % self.class_name
+
+        if "index" in self.files :
+            s = s + self.page_str % ("index", "index")
+        for f in self.dirs :
+            s = s + self.dir_str % (f, f)
+        for f in self.files :
+            if f != "index" :
+                s = s + self.page_str % (f, f)
+
+        s = s + "</ul>\n"
+        self.str = s
 
 class FileList :
     file_list = []
