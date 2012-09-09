@@ -1,4 +1,5 @@
 #!/bin/bash
+# 0 * * * * bash r.sh
 
 src="$HOME/.xdg-dirs/Dropbox/"
 dst="$HOME/.my/Dropbox/"
