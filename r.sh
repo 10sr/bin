@@ -54,38 +54,51 @@ notify(){
     fi
 }
 
+log_header(){
+    echo "$header" >>$log
+    echo "$header" >>$errorlog
+}
+
+message_error(){
+    test -z "$1" && return
+    echo "$1" >>$errorlog
+    echo "$1" 1>&2
+    notify "$1"
+}
+
+message_normal(){
+    test -z "$1" && return
+    echo "$1" >> $log
+    echo "$1"
+    notify "$1"
+}
+
+log_header
+
 if [ "$size_fromdir" -lt 1000 ]; then  # size is less than 1MB
     message="Size of $fromdir is less than 1MB, so did not back up in case files are unexpectedly lost."
-    {
-        echo "$header"
-        echo "$message"
-    } >>$errorlog
-    echo "$message" 1>&2
+    message_error "$message"
     returncode=1
 else
     mkdir -p $todir
     {
-        echo "$header"
         rsync -avh --stats --delete --backup --backup-dir=../${ctime} $fromdir $todir
     } >>$log 2>>$errorlog
     returncode=$?
     if [ $returncode -eq 0 ]; then
         message="rsync $fromdir > $todir: Done successfully."
-        echo "$message"
+        message_normal "$message"
     else
         message="!!! rsync $fromdir > $todir: Something wrong happened!"
-        echo "$message" 1>&2
+        message_error "$message"
     fi
 fi
 
 if archive_bak >>$log 2>>$errorlog
 then
-    test -n "$archivemsg" && echo "$archivemsg"
+    message_normal "$archivemsg"
 else
-    test -n "$archivemsg" && echo "$archivemsg" 1>&2
+    message_error "$archivemsg"
 fi
-
-notify "$message"
-test -n "$archivemsg" && notify "$archivemsg"
 
 exit $returncode
