@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 import os
 from io import BytesIO
@@ -18,8 +18,9 @@ except ImportError :
 
 class MDPage:
     mdc = None
-    hf = None
     fl = None
+    menu = None
+    t  = None
 
     cur_time = None
 
@@ -35,24 +36,9 @@ class MDPage:
         self.cur_time = strftime("%a, %d %b %Y %H:%M:%S %z")
 
         self.mdc = MDConv()
-        self.hf = HeaderFooter()
         self.fl = FileList()
-
-    def gen_menu(self):
-        """generate menu ul"""
-        s = "<ul class=\"menu\">\n"
-
-        if "index" in self.fl.file_list :
-            s = s + "<li><a href=\"%s.html\">%s</a></li>\n" % ("index", "index")
-        for f in self.fl.dir_list :
-            s = s + "<li><a href=\"%sindex.html\">%s</a></li>\n" % (f, f)
-        for f in self.fl.file_list :
-            if f != "index" :
-                s = s + "<li><a href=\"%s.html\">%s</a></li>\n" % (f, f)
-
-        s = s + "</ul>\n"
-
-        self.menu = s
+        self.menu = PageMenu(self.fl.file_list, self.fl.dir_list)
+        self.t = PageTemplate()
 
     def autoremove(self):
         for f in os.listdir() :
@@ -76,12 +62,12 @@ class MDPage:
     def force(self):
         self.check()
         self.update_all = True
-        self.run()
+        self.update()
 
     def check(self):
         """only check, do not create any file"""
         self.fl.check_filelist_updated(self.enc)
-        self.hf.check_updated(self.fl.file_list)
+        self.t.check_updated(self.fl.file_list)
 
     def update(self):
         """do check() before call this"""
@@ -91,9 +77,8 @@ class MDPage:
 
         if self.update_all or \
                 self.fl.updated or \
-                self.hf.header.exist == False or \
-                self.hf.footer.exist == False or \
-                self.hf.header.updated or self.hf.footer.updated :
+                self.t.exist == False or \
+                self.t.updated :
             print("all files are to be updated.")
             fl = self.fl.file_list
         else :
@@ -106,23 +91,44 @@ class MDPage:
             print("No file to update.")
             return
 
-        self.hf.set()
-        self.gen_menu()
-
-        h_template = Template(self.hf.header.s)
-        f_template = Template(self.hf.footer.s)
+        self.t.set()
 
         for f in fl :
             res = self.mdc.conv(f + ".md", self.enc)
             htmlfd = open(f + ".html", mode="w", encoding=self.dec)
-            htmlfd.write(h_template.safe_substitute(name = f, time = self.cur_time))
-            htmlfd.write(self.menu)
-            htmlfd.write("<div class=\"content\">\n")
-            htmlfd.write(res.decode(self.dec))
-            htmlfd.write("\n</div>\n")
-            htmlfd.write(f_template.safe_substitute(name = f, time = self.cur_time))
+            htmlfd.write(self.t.gen_str(f, self.menu.s, res, self.cur_time))
             htmlfd.close()
             print("%s.md -> %s.html." % (f, f))
+
+class PageMenu :
+    files = None
+    dirs = None
+
+    class_name = "menu"
+    page_str = "<li><a href=\"%s.html\">%s</a></li>\n"
+    dir_str = "<li><a href=\"%sindex.html\">%s</a></li>\n"
+
+    s = None
+
+    def __init__(self, files, dirs) :
+        self.files = files
+        self.dirs = dirs
+
+        self.gen_menu_str()
+
+    def gen_menu_str(self):
+        s = "<ul class=\"%s\">\n" % self.class_name
+
+        if "index" in self.files :
+            s = s + self.page_str % ("index", "index")
+        for f in self.dirs :
+            s = s + self.dir_str % (f, f)
+        for f in self.files :
+            if f != "index" :
+                s = s + self.page_str % (f, f)
+
+        s = s + "</ul>\n"
+        self.s = s
 
 class FileList :
     file_list = []
@@ -181,67 +187,13 @@ class FileList :
             print("File list was updated.")
 
 class PageTemplate :
-    """class for header and footer"""
-    fname = None
-    defalut = None
+    """class for page template"""
+    filename = ".template.html"
     exist = None
     s = None
+    t = None
     updated = None
-
-    def __init__(self, filename, default) :
-        self.fname = filename
-        self.default = default
-        self.check_exist()
-
-    def set(self, encoding="utf-8") :
-        """set self.s and create file if none"""
-        if self.exist :
-            self.read_file(encoding)
-        else :
-            self.write_file(encoding)
-            self.s = self.default
-
-    def check_exist(self) :
-        if os.access(self.fname, os.R_OK) :
-            self.exist = True
-        else :
-            self.exist = False
-            print("%s not exist." % self.fname)
-
-    def check_updated(self, flist) :
-        """judge if file is newer than any of html file in flist"""
-        if not self.exist :
-            return
-        for f in flist :
-            if os.path.isfile(f + ".html") and \
-                    self.is_file_newer(self.fname, f + ".html") :
-                print("%s is updated." % self.fname)
-                self.updated = True
-                return
-        self.updated = False
-
-    def is_file_newer(self, f1, f2):
-        """Return True if f1 is newer than f2"""
-        return os.path.getmtime(f1) > os.path.getmtime(f2)
-
-    def read_file(self, encoding="utf-8") :
-        fd = open(self.fname, mode="r", encoding=encoding)
-        self.s = fd.read()
-        fd.close()
-
-    def write_file(self, decoding="utf-8") :
-        fd = open(self.fname, mode="w", encoding=decoding)
-        fd.write(self.default)
-        fd.close()
-        print("%s generated." % self.fname)
-
-class HeaderFooter :
-    header = None
-    footer = None
-
-    header_file = ".header.html"
-    footer_file = ".footer.html"
-    HEADER_DEF = """<?xml version="1.0" encoding="UTF-8"?>
+    TEMPLATE_DEF = """<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -254,28 +206,69 @@ class HeaderFooter :
 <body>
 <h1 class="title">${name} | <a href="index.html">title</a></h1>
 <h2 class="subtitle">subtitle</h2>
-"""
-    FOOTER_DEF = """</body>
+${menu}
+${content}
+</body>
 </html>
 <!-- Last update : ${time} -->
 """
 
     def __init__(self) :
-        self.header = PageTemplate(self.header_file, self.HEADER_DEF)
-        self.footer = PageTemplate(self.footer_file, self.FOOTER_DEF)
+        self.check_exist()
+
+    def check_exist(self) :
+        if os.access(self.filename, os.R_OK) :
+            self.exist = True
+        else :
+            self.exist = False
+            print("%s not exist." % self.filename)
 
     def check_updated(self, flist) :
-        self.header.check_updated(flist)
-        self.footer.check_updated(flist)
+        """judge if file is newer than any of html file in flist"""
+        if not self.exist :
+            return
+        for f in flist :
+            if os.path.isfile(f + ".html") and \
+                    self.is_file_newer(self.filename, f + ".html") :
+                print("%s is updated." % self.filename)
+                self.updated = True
+                return
+        self.updated = False
 
-    def set(self) :
-        self.header.set()
-        self.footer.set()
+    def is_file_newer(self, f1, f2):
+        """Return True if f1 is newer than f2"""
+        return os.path.getmtime(f1) > os.path.getmtime(f2)
+
+    def set(self, encoding="utf-8") :
+        """set self.s and create file if none"""
+        if self.exist :
+            self.read_file(encoding)
+        else :
+            self.write_file(encoding)
+            self.s = self.TEMPLATE_DEF
+        self.t = Template(self.s)
+
+    def read_file(self, encoding="utf-8") :
+        fd = open(self.filename, mode="r", encoding=encoding)
+        self.s = fd.read()
+        fd.close()
+
+    def write_file(self, decoding="utf-8") :
+        fd = open(self.filename, mode="w", encoding=decoding)
+        fd.write(self.TEMPLATE_DEF)
+        fd.close()
+        print("%s generated." % self.filename)
+
+    def gen_str(self, n, m, c, t) :
+        return self.t.safe_substitute(name = n, menu = m, content = c, time = t)
 
 class MDConv :
     md = None
     md_command = None
     conv = None
+    block = """<div class="content">
+%s
+</div>"""
 
     def __init__(self) :
         if Markdown :
@@ -285,7 +278,7 @@ class MDConv :
         else :
             self.md_command = self.check_cmd("markdown.pl") or self.check_cmd("markdown")
             if self.md_command :
-                print("Use command %s to onvert." % self.md_command)
+                print("Use command %s to convert." % self.md_command)
                 self.conv = self.conv_pl
 
     def check_cmd(self, command) :
@@ -296,19 +289,19 @@ class MDConv :
             return None
 
     def conv_py(self, input, encoding) :
-        """accept filename and return result as a byte string"""
+        """accept filename and return result as string"""
         tmp = BytesIO()
         self.md.convertFile(input = input, output = tmp, encoding = encoding)
-        res = tmp.getvalue()
+        res = tmp.getvalue().decode(encoding)
         tmp.close()
-        return res
+        return self.block % res
 
     def conv_pl(self, input, encoding) :
-        """accept filename and return result as a byte string"""
+        """accept filename and return result as string"""
         f = open(file = input, encoding = encoding)
-        res = check_output(self.md_command, stdin = f)
+        res = check_output(self.md_command, stdin = f).decode(encoding)
         f.close()
-        return res
+        return self.block % res
 
 def help():
     pass

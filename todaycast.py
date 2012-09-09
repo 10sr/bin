@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 
 feed = "http://www3.nhk.or.jp/rj/podcast/rss/english.xml"
 player = "mpg123 -C -v --title"
