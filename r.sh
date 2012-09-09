@@ -44,6 +44,16 @@ archive_bak(){                      # $ archive dir
     fi
 }
 
+notify(){
+    if type notify-send >/dev/null 2>&1
+    then
+        notify-send "r.sh" "$1"
+    elif type growlnotify >/dev/null 2>&1
+    then
+        growlnotify -m "$1" -t "r.sh"
+    fi
+}
+
 if [ "$size_fromdir" -lt 1000 ]; then  # size is less than 1MB
     message="Size of $fromdir is less than 1MB, so did not back up in case files are unexpectedly lost."
     {
@@ -75,10 +85,7 @@ else
     test -n "$archivemsg" && echo "$archivemsg" 1>&2
 fi
 
-if type notify-send >/dev/null 2>&1
-then
-    notify-send "r.sh" "$message"
-    test -n "$archivemsg" && notify-send "r.sh" "$archivemsg"
-fi
+notify "$message"
+test -n "$archivemsg" && notify "$archivemsg"
 
 exit $returncode
