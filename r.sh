@@ -9,15 +9,12 @@ pack_cmd="7z a"
 pack_out="%s.7z"
 
 test -z "$src" && src="$HOME/.xdg-dirs/Dropbox/"
-export DISPLAY=:0.0
 export LANG=ja_JP.UTF-8
 export LC_TIME=C
 
 fromdir="$src/"        # must end with "/"
 todir="$dst/newest/"
 
-size_fromdir=$(du -s "$fromdir" | awk '{print $1}')
-header=$(printf "\nCRON rsync $fromdir > $todir: run at "; date;)
 ctime=`date +%Y%m%d-%H%M%S`
 returncode=0
 message=""
@@ -34,11 +31,9 @@ archive_bak(){                      # $ archive dir
             rm -rf ${files}
         then
             archivemsg="Archiving backup files successfully."
-            echo $archivemsg
             return 0
         else
             archivemsg="!!! Tried to archive backup files but failed!"
-            echo $archivemsg 1>&2
             return 1
         fi
     fi
@@ -47,6 +42,7 @@ archive_bak(){                      # $ archive dir
 notify(){
     if type notify-send >/dev/null 2>&1
     then
+        export DISPLAY=:0.0
         notify-send "r.sh" "$1"
     elif type growlnotify >/dev/null 2>&1
     then
@@ -55,6 +51,7 @@ notify(){
 }
 
 log_header(){
+    local header=$(printf "\nCRON rsync $fromdir > $todir: run at "; date;)
     echo "$header" >>$log
     echo "$header" >>$errorlog
 }
@@ -74,6 +71,14 @@ message_normal(){
 }
 
 log_header
+
+if ! test -d "$fromdir"
+then
+    message_error "r.sh: $fromdir: Directory not found."
+    exit 1
+fi
+
+size_fromdir=$(du -s "$fromdir" | cut -f 1)
 
 if [ "$size_fromdir" -lt 1000 ]; then  # size is less than 1MB
     message="Size of $fromdir is less than 1MB, so did not back up in case files are unexpectedly lost."
