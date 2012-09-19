@@ -74,6 +74,9 @@ def parse_pls(file):
     return None
 
 def search(word):
+    if word == "" :
+        print("No search word given.", file=sys.stderr)
+        exit(1)
     return shoutcast + "Internet-Radio/" + word
 
 def get_stations(url):
@@ -108,8 +111,6 @@ def choose(stations):
 
 def main():
     if len(sys.argv) <= 1 :
-        # print("No search word given.", file=sys.stderr)
-        # return
         w = input("Enter query: ")
     else :
         w = sys.argv[1]
