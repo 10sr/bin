@@ -2,6 +2,7 @@
 
 program = "leafpad"
 notepath = "~/dbx/note/note2"
+#program = "open"
 
 import os
 import subprocess as sp

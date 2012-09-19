@@ -15,7 +15,7 @@ class ScParser(HTMLParser):
     current = ""
 
     def handle_starttag(self, tag, attrs):
-        if tag == "a" : 
+        if tag == "a" :
 
             pstr = "http://yp.shoutcast.com/sbin/tunein-station.pls"
 
@@ -37,7 +37,7 @@ class ScParser(HTMLParser):
             for a in attrs :
                 if a[0] != "class" : continue
 
-                if a[1] == "playingtext" : 
+                if a[1] == "playingtext" :
                     self.current = "recent"
                 elif a[1] == "dirgenre" :
                     self.current = "genre"
@@ -108,9 +108,12 @@ def choose(stations):
 
 def main():
     if len(sys.argv) <= 1 :
-        print("No search word given.", file=sys.stderr)
-        return
-    url = search(sys.argv[1])
+        # print("No search word given.", file=sys.stderr)
+        # return
+        w = input("Enter query: ")
+    else :
+        w = sys.argv[1]
+    url = search(w)
     s = get_stations(url)
     # print(s[0])
     u = choose(s)
