@@ -65,17 +65,21 @@ class ScParser(HTMLParser):
         self.current = ""
 
 def play(url):
-    """play pls file"""
-    data = urlopen(url)
-    track = parse_pls(data)
-    data.close()
-    if track:
+    """play url file"""
+    if url:
         if MPG123 :
             p = MPG123()
-            p.set_args([track])
+            p.set_args([url])
             p.call()
         else :
             call(player + " " + track, shell=True)
+
+def get_media_url(url) :
+    """get media url from pls"""
+    data = urlopen(url)
+    track = parse_pls(data)
+    data.close()
+    return track
 
 def parse_pls(file):
     lines = file.read().decode("utf-8").splitlines()
@@ -84,13 +88,16 @@ def parse_pls(file):
             return line.replace("File1=", "")
     return None
 
-def search(word):
-    if word == "" :
+def gen_search(words):
+    """generate search url from words"""
+    if words == "" :
         print("No search word given.", file=sys.stderr)
         exit(1)
-    return shoutcast + "Internet-Radio/" + urlquote(word)
+    return shoutcast + "Internet-Radio/" + urlquote(words)
 
-def get_stations(url):
+def get_stations(words):
+    url = gen_search(words)
+    print(url)
     data = urlopen(url)
     parser = ScParser()
     parser.feed(data.read().decode("utf-8"))
@@ -120,17 +127,20 @@ def choose(stations):
     else :
         return stations[int(s) - 1]["url"]
 
+def get_media_from_words(words) :
+    s = get_stations(words)
+    u = choose(s)
+    t = get_media_url(u)
+    return t
+
 def main(argv):
     if len(argv) <= 1 :
         w = input("Enter query: ")
     else :
-        w = argv[1]
-    url = search(w)
-    s = get_stations(url)
-    # print(s[0])
-    u = choose(s)
-    if u :
-        play(u)
+        w = " ".join(argv[1:])
+    t = get_media_from_words(w)
+    if t :
+        play(t)
 
 if __name__ == '__main__' :
     main(sys.argv)
