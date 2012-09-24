@@ -109,11 +109,11 @@ def choose(stations):
     else :
         return stations[int(s) - 1]["url"]
 
-def main():
-    if len(sys.argv) <= 1 :
+def main(argv):
+    if len(argv) <= 1 :
         w = input("Enter query: ")
     else :
-        w = sys.argv[1]
+        w = argv[1]
     url = search(w)
     s = get_stations(url)
     # print(s[0])
@@ -121,4 +121,5 @@ def main():
     if u :
         play(u)
 
-main()
+if __name__ == '__main__' :
+    main(sys.argv)
