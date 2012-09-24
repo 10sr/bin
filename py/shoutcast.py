@@ -5,7 +5,7 @@ player = "mpg123 -C -v --title"
 #player = "mocp -l"
 
 from urllib.request import urlopen
-from urllib.parse import urlencode
+from urllib.parse import quote as urlquote
 from html.parser import HTMLParser
 from subprocess import call
 import sys
@@ -88,7 +88,7 @@ def search(word):
     if word == "" :
         print("No search word given.", file=sys.stderr)
         exit(1)
-    return shoutcast + "Internet-Radio/" + word
+    return shoutcast + "Internet-Radio/" + urlquote(word)
 
 def get_stations(url):
     data = urlopen(url)
