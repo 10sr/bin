@@ -10,6 +10,12 @@ from html.parser import HTMLParser
 from subprocess import call
 import sys
 
+try :
+    import mpg123
+    print("use module")
+except ImportError :
+    mpg123 = None
+
 class ScParser(HTMLParser):
     stations = []
     current = ""
@@ -64,7 +70,12 @@ def play(url):
     track = parse_pls(data)
     data.close()
     if track:
-        call(player + " " + track, shell=True)
+        if mpg123 :
+            p = mpg123.MPG123()
+            p.set_args([track])
+            p.call()
+        else :
+            call(player + " " + track, shell=True)
 
 def parse_pls(file):
     lines = file.read().decode("utf-8").splitlines()
