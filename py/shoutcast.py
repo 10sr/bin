@@ -11,10 +11,10 @@ from subprocess import call
 import sys
 
 try :
-    import mpg123
+    from mpg123 import MPG123
     print("use module")
 except ImportError :
-    mpg123 = None
+    MPG123 = None
 
 class ScParser(HTMLParser):
     stations = []
@@ -70,8 +70,8 @@ def play(url):
     track = parse_pls(data)
     data.close()
     if track:
-        if mpg123 :
-            p = mpg123.MPG123()
+        if MPG123 :
+            p = MPG123()
             p.set_args([track])
             p.call()
         else :
