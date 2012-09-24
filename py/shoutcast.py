@@ -12,7 +12,6 @@ import sys
 
 try :
     from mpg123 import MPG123
-    print("use module")
 except ImportError :
     MPG123 = None
 
@@ -97,7 +96,6 @@ def gen_search(words):
 
 def get_stations(words):
     url = gen_search(words)
-    print(url)
     data = urlopen(url)
     parser = ScParser()
     parser.feed(data.read().decode("utf-8"))
