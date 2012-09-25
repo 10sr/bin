@@ -76,6 +76,8 @@ def play(url):
 
 def get_media_url(url) :
     """get media url from pls"""
+    if not url :
+        return None
     data = urlopen(url)
     track = parse_pls(data)
     data.close()
@@ -92,12 +94,14 @@ def gen_search(words):
     """generate search url from words"""
     if words == "" :
         print("No search word given.", file=sys.stderr)
-        exit(1)
-    return shoutcast + "Internet-Radio/" + urlquote(words)
+        return None
+    else :
+        return shoutcast + "Internet-Radio/" + urlquote(words)
 
 def get_stations(words):
     url = gen_search(words)
-    print(url)
+    if not url :
+        return None
     data = urlopen(url)
     parser = ScParser()
     parser.feed(data.read().decode("utf-8"))
@@ -129,6 +133,8 @@ def choose(stations):
 
 def get_media_from_words(words) :
     s = get_stations(words)
+    if not s :
+        return None
     u = choose(s)
     t = get_media_url(u)
     return t
