@@ -17,11 +17,14 @@ def bye(arg) :
 def ls(arg) :
     lst = os.listdir()
     for f in lst :
-        print(f, end=" ")
+        if not f.startswith(".") :
+            print(f, end=" ")
     print("")
 
 def cd(arg) :
     try :
+        if arg == "" :
+            arg = os.path.expanduser("~/")
         os.chdir(arg)
     except OSError :
         print("OSERROR")
@@ -34,7 +37,8 @@ def play(arg) :
 
 def shoutcast(arg) :
     m = sc.get_media_from_words(arg)
-    play(m)
+    if m :
+        play(m)
 
 def print_help(arg) :
     print("Available commands are :")
