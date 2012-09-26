@@ -42,7 +42,8 @@ class MPG123A(MPG123) :
     def stop(self) :
         if self.p :
             print("stopping player.")
-            self.p.communicate("q".encode())
+            self.p.stdin.write(b"q")
+            # self.p.communicate("q".encode())
             # self.p.terminate()
             print("stooped player.")
             self.status = "Stopped player."
@@ -58,6 +59,7 @@ class MPG123A(MPG123) :
 
     def kill(self, args) :
         os.kill(self.p.pid, sig.SIGTERM)
+        self.status = "Player killed."
 
     def playlist(self) :
         self.status = "\n".join(self.args)
