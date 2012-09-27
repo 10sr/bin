@@ -10,48 +10,40 @@ try :
 except ImportError :
     MPG123 = None
 
-def bye(arg) :
-    print("Bye!")
-    exit(0)
-
 def ls(arg) :
     lst = os.listdir()
     for f in lst :
         if not f.startswith(".") :
-            print(f, end=" ")
-    print("")
+            print(f)
 
 def cd(arg) :
     try :
         if arg == "" :
             arg = os.path.expanduser("~/")
-        os.chdir(arg)
+        os.chdir(arg[1])
     except OSError :
         print("OSERROR")
 
 def play(arg) :
     if MPG123 :
         p = MPG123()
-        p.set_args([arg])
+        p.set_args(arg[1:])
         p.call()
 
 def shoutcast(arg) :
-    m = sc.get_media_from_words(arg)
+    m = sc.get_media_from_words(" ".join(arg))
     if m :
         play(m)
 
 def print_help(arg) :
     print("Available commands are :")
     for c in commands :
-        print(c, end=" ")
-    print("")
+        print(c)
 
 commands = {
     "ls" : ls,
     "cd" : cd,
     "play" : play,
-    "bye" : bye,
-    "exit" : bye,
     "help" : print_help,
     "h" : print_help
     }

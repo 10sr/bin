@@ -38,10 +38,10 @@ def main(argv) :
         if r[0] == "bye" :
             print("Bye!")
             break
-        elif None :
+        elif r :
             try :
                 f = play_command.commands[r[0]]
-                f(r[1])
+                f(r)
             except KeyError :
                 print("%s: command not found." % r[0])
 
