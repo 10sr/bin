@@ -9,12 +9,17 @@ class MPG123() :
     opts = ["-C", "-v", "--title"]
     plist = []
 
+    args = []
+
     repeat = False
     shuffle = False
     random = False
 
+    status = ""
+
     def add(self, plist) :
         self.plist.extend(plist)
+        self.status = "Added :\n%s" % "\n".join(args)
 
     def new(self, plist) :
         self.plist = list(plist)
@@ -32,40 +37,43 @@ class MPG123() :
         #         p = p[2:]
         #     else :
         #         val = True
-        #     m = 
+        #     m =
+
+    def gen_args(self, args=[], plist=[]) :
+        self.args = [self.program]
+        self.args.extend(self.opts)
+
+        if self.repeat :
+            self.args.extend(["--loop", "-1"])
+        if self.shuffle :
+            self.args.append("--shuffle")
+        if self.random :
+            self.args.append("--random")
+        self.args.extend(args)
+
+        if plist == None or len(plist) == 0 :
+            self.args.extend(self.plist)
+        else :
+            self.args.extend(plist)
 
     def play(self, plist=None) :
-        args = [self.program]
-        args.extend(self.opts)
-        if self.repeat :
-            args.extend(["--loop", "-1"])
-        if self.shuffle :
-            args.append("--shuffle")
-        if self.random :
-            args.append("--random")
-        if plist == None or len(plist) == 0 :
-            args.extend(self.plist)
-        else :
-            args.extend(plist)
+        self.gen_args(plist=plist)
         for i in args :
             print(i)
-        call(args)
+        call(self.args)
 
 class MPG123A(MPG123) :
     p = None
     status = "Not running."     # must not be empty string
     fifo = "/tmp/mpg123a"
 
-    def play(self) :
-        if self.p :
-            self.stop()
-        if len(self.args) == 0 :
+    def play(self, plist=None) :
+        if len(self.plist) == 0 and len(plist) == 0 :
             self.status = "Playlist is empty!"
             return
-        opts = self.opts + ["-C" , "--fifo", self.fifo]
-        args = [self.program] + opts + [self.args[0]]
-        self.p = Popen(args, stdin = PIPE, stdout = PIPE, stderr = PIPE)
-        self.status = "Start playing %s." % self.args[0]
+        self.gen_args(args=["-C" , "--fifo", self.fifo], plist=plist)
+        self.p = Popen(args)
+        self.status = "Start playing."
 
     def send_command(s) :
         pass
@@ -87,16 +95,9 @@ class MPG123A(MPG123) :
     def volume(self, arg) :
         pass
 
-    def add(self, args) :
-        self.args.extend(args)
-        self.status = "Added :\n%s" % "\n".join(args)
-
     def kill(self, args) :
         os.kill(self.p.pid, sig.SIGTERM)
         self.status = "Player killed."
-
-    def playlist(self) :
-        self.status = "\n".join(self.args)
 
     def clear(self) :
         self.args = []
