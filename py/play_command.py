@@ -7,11 +7,12 @@ try :
 except ImportError :
     sc = None
 try :
-    from mpg123 import MPG123
+    from mpg123 import MPG123, MPG123A
 except ImportError :
     MPG123 = None
+    MPG123A = None
 
-class Command() :
+class Controller() :
     player = None
 
     status = ""
@@ -77,3 +78,8 @@ class Command() :
 
     def help(self, args) :
         self.status = "Available commands are :\n"
+
+class ControllerA(Controller) :
+    def __init__(self) :
+        if MPG123A :
+            self.player = MPG123A()

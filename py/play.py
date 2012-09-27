@@ -2,7 +2,7 @@
 
 import sys
 import os
-from play_command import Command
+from play_command import Controller
 from glob import glob
 from shlex import split as shsplit
 
@@ -31,7 +31,7 @@ def prompt() :
     return s
 
 def main(argv) :
-    c = Command()
+    c = Controller()
     while True :
         s = prompt()
         r = parse_input(s)

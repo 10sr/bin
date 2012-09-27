@@ -19,13 +19,20 @@ class MPG123() :
     def new(self, plist) :
         self.plist = list(plist)
 
-    def set(self, repeat=None, shuffle=None, random=None) :
-        if repeat != None :
-            self.repeat = repeat
-        if shuffle != None :
-            self.shuffle = shuffle
-        if random != None :
-            self.random = random
+    def set(self, args) :
+        if "repeat" in args :
+            self.repeat = True
+        if "shuffle" in args :
+            self.shuffle = True
+        if "random" in args :
+            self.random = True
+        # for p in args :
+        #     if p.startswith("no") :
+        #         val = False
+        #         p = p[2:]
+        #     else :
+        #         val = True
+        #     m = 
 
     def play(self, plist=None) :
         args = [self.program]
@@ -47,9 +54,7 @@ class MPG123() :
 class MPG123A(MPG123) :
     p = None
     status = "Not running."     # must not be empty string
-
-    def call(self) :
-        pass
+    fifo = "/tmp/mpg123a"
 
     def play(self) :
         if self.p :
@@ -57,10 +62,13 @@ class MPG123A(MPG123) :
         if len(self.args) == 0 :
             self.status = "Playlist is empty!"
             return
-        opts = self.opts + ["-C" , "-q"]
+        opts = self.opts + ["-C" , "--fifo", self.fifo]
         args = [self.program] + opts + [self.args[0]]
         self.p = Popen(args, stdin = PIPE, stdout = PIPE, stderr = PIPE)
         self.status = "Start playing %s." % self.args[0]
+
+    def send_command(s) :
+        pass
 
     def playpause(self) :
         pass
