@@ -43,21 +43,37 @@ class Command() :
             os.chdir(args[1])
             self.status = args[1]
         except OSError :
-            print("OSERROR")
+            self.status = "OSERROR"
 
     def add(self, args) :
         self.player.add(args[1:])
+        self.status = "Added :\n" + "\n".join(args[1:])
 
     def new(self, args) :
         self.player.new(args[1:])
+        self.status = "New playlist :\n" * "\n".join(args[1:])
 
     def play(self, args) :
         self.player.play(args[1:])
+        self.status = "Player terminated."
+
+    def set(self, args) :
+        d = {}
+        for p in args[1:] :
+            d[p] = True
+        self.player.set(**d)
+        self.status = "Property " + " ".join(args[1:]) + " is set."
+
+    def list(self, args) :
+        self.status = "Playlist :\n" + "\n".join(self.player.plist)
 
     def shoutcast(self, args) :
         m = sc.get_media_from_words(" ".join(args))
         if m :
             play(m)
+            self.status = "Player terminated."
+        else :
+            self.status = "Url not found."
 
     def help(self, args) :
-        self.status = "Available commands are :\n" 
+        self.status = "Available commands are :\n"
