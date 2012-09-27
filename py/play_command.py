@@ -71,7 +71,7 @@ class Controller() :
     def shoutcast(self, args) :
         m = sc.get_media_from_words(" ".join(args))
         if m :
-            play(m)
+            self.play(m)
             self.status = "Player terminated."
         else :
             self.status = "Url not found."
@@ -83,3 +83,22 @@ class ControllerA(Controller) :
     def __init__(self) :
         if MPG123A :
             self.player = MPG123A()
+
+    def cmd(self, args) :
+        Controller.cmd(self)
+        return self.status or "No status."
+
+    def volumeup(self, args) :
+        self.player.volume(1)
+
+    def volumedown(self, args) :
+        self.player.volume(-1)
+
+    def stop(self, args) :
+        self.player.stop()
+
+    def kill(self, args) :
+        self.player.kill()
+
+    def pp(self, args) :
+        self.player.playpause()

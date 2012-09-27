@@ -2,9 +2,11 @@
 
 import sys
 import os
-from play_command import Controller
 from glob import glob
 from shlex import split as shsplit
+
+from play_command import Controller
+import play_daemon as playd
 
 def parse_input(s) :
     args = shsplit(s)
@@ -47,4 +49,29 @@ def main(argv) :
             # except KeyError :
             #     print("%s: command not found." % r[0])
 
-main(sys.argv)
+def put(str) :
+    print("[PLAY] %s" % str)
+
+def main2(argv) :
+
+    if len(argv) >= 2 :
+        if argv[1] == "kill" :
+            if playd.get_daemon_pid() :
+                playd.send_command(argv[1:])
+            playd.kill_daemon()
+        else :
+            if not playd.get_daemon_pid() :
+                put("Run play daemon.")
+                playd.run_daemon()
+            else :
+                put("Daemon already running.")
+            s = playd.send_command(argv[1:])
+            put(s)
+    else :
+        if playd.get_daemon_pid() :
+            put("Daemon is running.")
+        else :
+            put("Daemon is not running.")
+
+if __name__ == "__main__" :
+    main(sys.argv)

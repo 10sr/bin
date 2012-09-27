@@ -5,7 +5,9 @@ import sys, os, errno
 import signal as sig
 import socket
 from pickle import dumps, loads
+
 from mpg123 import MPG123A
+from play_command import ControllerA
 
 CONFIG_DIR = os.path.expanduser("~/.playd")
 PIPE = CONFIG_DIR + "/socket"
@@ -30,28 +32,6 @@ def send_command(args) :
     print('Closing.')
     s.close()
     return data
-
-def handle_command(p, args) :
-    print("Server:")
-    if args[0] == "exit" :
-        p.exit()
-        return None
-    elif args[0] == "play" :
-        p.play()
-    elif args[0] == "pp" :
-        p.playpause()
-    elif args[0] == "stop" :
-        p.stop()
-    elif args[0] == "add" :
-        p.add(args[1:])
-    elif args[0] == "up" :
-        p.up()
-    elif args[0] == "down" :
-        p.down()
-    elif args[0] == "kill" :
-        p.p.kill()
-    print("Server:" + p.status)
-    return p.status
 
 def get_daemon_pid() :
     """return pid of daemon if it is running, otherwise 0"""
@@ -95,34 +75,6 @@ def clean_file() :
         else :
             raise
 
-def daemon_main() :
-    m = MPG123A()
-    daemon_loop(m)
-    exit(0)
-
-def daemon_loop(player) :
-    s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-    s.bind(PIPE)
-    s.listen(1)
-    conn, addr = s.accept()
-    while True:
-        data = conn.recv(BUFSIZE)
-        if len(data) != 0 : # remote is not closed
-            ans = handle_command(player, loads(data))
-            if ans == None :
-                break
-            if ans == "" :
-                ans = "Something wrong!"
-            # do not send empty byte
-        else :
-            ans = "Client closed?"
-        conn.send(ans.encode())
-        conn.close()
-        conn, addr = s.accept()
-    conn.close()
-    os.unlink(PIPE)
-    return
-
 def run_daemon() :
     os.makedirs(CONFIG_DIR, exist_ok = True)
 
@@ -163,3 +115,35 @@ def run_daemon() :
 
     # start the daemon main loop
     daemon_main()
+
+#################################################
+# For internal
+
+def daemon_main() :
+    c = ControllerA()
+    daemon_loop(c)
+    exit(0)
+
+def daemon_loop(c) :
+    s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
+    s.bind(PIPE)
+    s.listen(1)
+    conn, addr = s.accept()
+    while True:
+        data = conn.recv(BUFSIZE)
+        if len(data) != 0 : # remote is not closed
+            # ans = handle_command(player, loads(data))
+            ans = c.cmd(loads(data))
+            if ans == None :
+                break
+            if ans == "" :
+                ans = "Something wrong!"
+            # do not send empty byte
+            conn.send(ans.encode())
+        else :
+            ans = "Client closed?"
+        conn.close()
+        conn, addr = s.accept()
+    conn.close()
+    os.unlink(PIPE)
+    return
