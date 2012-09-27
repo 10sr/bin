@@ -35,7 +35,6 @@ def main(argv) :
     while True :
         s = prompt()
         r = parse_input(s)
-        print(str(r))
         if r[0] == "bye" :
             print("Bye!")
             break

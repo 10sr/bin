@@ -45,8 +45,14 @@ class Command() :
         except OSError :
             print("OSERROR")
 
+    def add(self, args) :
+        self.player.add(args[1:])
+
+    def new(self, args) :
+        self.player.new(args[1:])
+
     def play(self, args) :
-        self.player.play()
+        self.player.play(args[1:])
 
     def shoutcast(self, args) :
         m = sc.get_media_from_words(" ".join(args))

@@ -14,7 +14,7 @@ class MPG123() :
     random = False
 
     def add(self, plist) :
-        self.plist.expand(plist)
+        self.plist.extend(plist)
 
     def new(self, plist) :
         self.plist = list(plist)
@@ -26,17 +26,17 @@ class MPG123() :
 
     def play(self, plist=None) :
         args = [self.program]
-        args.expand(self.opts)
+        args.extend(self.opts)
         if self.repeat :
-            args.expand(["--loop", "-1"])
+            args.extend(["--loop", "-1"])
         if self.shuffle :
             args.append("--shuffle")
         if self.random :
             args.append("--random")
         if plist :
-            args.expand(plist)
+            args.extend(plist)
         else :
-            args.expand(self.plist)
+            args.extend(self.plist)
         for i in args :
             print(i)
         call(args)
