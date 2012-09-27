@@ -2,31 +2,47 @@
 
 import sys
 import os
-import play_daemon
+import play_command
+from glob import glob
+from shlex import split as shsplit
 
-def put(str) :
-    print("[PLAY] %s" % str)
+def parse_input(s) :
+    args = shsplit(s)
+    eargs = [args[0]]
+    for a in args[1:] :
+        g = glob(a)
+        if len(g) == 0 :
+            eargs.extend([a])
+        else :
+            eargs.extend(g)
+    return eargs
+
+def prompt() :
+    home = os.getenv("HOME")
+    d = os.getcwd()
+    if home != "" :
+        d = d.replace(home, "~")
+
+    try :
+        s = input("PLAY %s $ " % d)
+    except (EOFError, KeyboardInterrupt) :
+        s = "bye"
+        print("")
+    return s
 
 def main(argv) :
+    while True :
+        s = prompt()
+        r = parse_input(s)
+        print(str(r))
+        if r[0] == "bye" :
+            print("Bye!")
+            break
+        elif None :
+            try :
+                f = play_command.commands[r[0]]
+                f(r[1])
+            except KeyError :
+                print("%s: command not found." % r[0])
 
-    if len(argv) >= 2 :
-        if argv[1] == "kill" :
-            if play_daemon.get_daemon_pid() :
-                play_daemon.send_command(argv[1:])
-            play_daemon.kill_daemon()
-        else :
-            if not play_daemon.get_daemon_pid() :
-                put("Run play daemon.")
-                play_daemon.run_daemon()
-            else :
-                put("Daemon already running.")
-            s = play_daemon.send_command(argv[1:])
-            put(s)
-    else :
-        if play_daemon.get_daemon_pid() :
-            put("Daemon is running.")
-        else :
-            put("Daemon is not running.")
-
-if __name__ == "__main__" :
-    main(sys.argv)
+main(sys.argv)
