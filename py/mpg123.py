@@ -7,13 +7,22 @@ import signal as sig
 class MPG123() :
     program = "mpg123"
     opts = ["-C", "-v", "--title"]
-    args = []
+    files = []
 
-    def set_args(self, args) :
-        self.args = list(args)
+    repeat = False
+    shuffle = False
+    random = False
 
     def call(self) :
-        args = [self.program] + self.opts + self.args
+        args = [self.program]
+        args.expand(self.opts)
+        if self.repeat :
+            args.expand(["--loop", "-1"])
+        if self.shuffle :
+            args.append("--shuffle")
+        if self.random :
+            args.append("--random")
+        args.expand(self.files)
         for i in args :
             print(i)
         call(args)
