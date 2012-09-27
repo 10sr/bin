@@ -2,7 +2,7 @@
 
 import sys
 import os
-import play_command
+from play_command import Command
 from glob import glob
 from shlex import split as shsplit
 
@@ -31,6 +31,7 @@ def prompt() :
     return s
 
 def main(argv) :
+    c = Command()
     while True :
         s = prompt()
         r = parse_input(s)
@@ -39,10 +40,12 @@ def main(argv) :
             print("Bye!")
             break
         elif r :
-            try :
-                f = play_command.commands[r[0]]
-                f(r)
-            except KeyError :
-                print("%s: command not found." % r[0])
+            c.cmd(r)
+            print(c.status)
+            # try :
+            #     f = play_command.commands[r[0]]
+            #     f(r)
+            # except KeyError :
+            #     print("%s: command not found." % r[0])
 
 main(sys.argv)

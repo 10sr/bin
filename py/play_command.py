@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os
+from types import MethodType
 try :
     import shoutcast as sc
 except ImportError :
@@ -10,43 +11,47 @@ try :
 except ImportError :
     MPG123 = None
 
-def ls(arg) :
-    lst = os.listdir()
-    for f in lst :
-        if not f.startswith(".") :
-            print(f)
+class Command() :
+    player = None
 
-def cd(arg) :
-    try :
-        if arg == "" :
-            arg = os.path.expanduser("~/")
-        os.chdir(arg[1])
-    except OSError :
-        print("OSERROR")
+    status = ""
 
-def play(arg) :
-    if MPG123 :
-        p = MPG123()
-        p.set_args(arg[1:])
-        p.call()
+    def __init__(self) :
+        if MPG123 :
+            self.player = MPG123()
 
-def shoutcast(arg) :
-    m = sc.get_media_from_words(" ".join(arg))
-    if m :
-        play(m)
+    def cmd(self, args) :
+        f = getattr(self, args[0], None)
+        if isinstance(f, MethodType) \
+                and args[0] != "cmd" \
+                and args[0] != "__init__" :
+            f(args)
+        else :
+            self.status = "%s: Command not found." % args[0]
 
-def print_help(arg) :
-    print("Available commands are :")
-    for c in commands :
-        print(c)
+    def ls(self, args) :
+        def not_hidden(f) :
+            return not f.startswith(".")
 
-commands = {
-    "ls" : ls,
-    "cd" : cd,
-    "play" : play,
-    "help" : print_help,
-    "h" : print_help
-    }
+        lst = os.listdir()
+        self.status = "\n".join(filter(not_hidden, lst))
 
-if sc :
-    commands["sc"] = shoutcast
+    def cd(self, args) :
+        try :
+            if args == "" :
+                args = os.path.expanduser("~/")
+            os.chdir(args[1])
+            self.status = args[1]
+        except OSError :
+            print("OSERROR")
+
+    def play(self, args) :
+        self.player.play()
+
+    def shoutcast(self, args) :
+        m = sc.get_media_from_words(" ".join(args))
+        if m :
+            play(m)
+
+    def help(self, args) :
+        self.status = "Available commands are :\n" 
