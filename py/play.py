@@ -49,6 +49,12 @@ def main(argv) :
             # except KeyError :
             #     print("%s: command not found." % r[0])
 
+def file_realpath(s) :
+    if os.access(s, os.R_OK) :
+        return os.path.realpath(s)
+    else :
+        return s
+
 def put(str) :
     print("[PLAY] %s" % str)
 
@@ -63,7 +69,8 @@ def main2(argv) :
                 playd.run_daemon()
             else :
                 put("Daemon already running.")
-            s = playd.send_command(argv[1:])
+            r = list(map(file_realpath, argv[1:]))
+            s = playd.send_command(r)
             put(s)
     else :
         if playd.get_daemon_pid() :

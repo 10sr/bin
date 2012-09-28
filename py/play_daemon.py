@@ -6,7 +6,6 @@ import signal as sig
 import socket
 from pickle import dumps, loads
 
-from mpg123 import MPG123A
 from play_command import ControllerA
 
 CONFIG_DIR = os.path.expanduser("~/.playd")
