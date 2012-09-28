@@ -22,6 +22,7 @@ class Controller() :
             self.player = MPG123()
 
     def cmd(self, args) :
+        print(args[0])
         f = getattr(self, args[0], None)
         if isinstance(f, MethodType) \
                 and args[0] != "cmd" \
@@ -52,7 +53,7 @@ class Controller() :
 
     def new(self, args) :
         self.player.new(args[1:])
-        self.status = "New playlist :\n" * "\n".join(args[1:])
+        self.status = "New playlist :\n" + "\n".join(args[1:])
 
     def play(self, args) :
         self.player.play(args[1:])
@@ -80,13 +81,13 @@ class Controller() :
         self.status = "Available commands are :\n"
 
 class ControllerA(Controller) :
-    def __init__(self) :
+    def __init__(self, pipepath, pidfile) :
         if MPG123A :
-            self.player = MPG123A()
+            self.player = MPG123A(pipepath, pidfile)
 
-    def cmd(self, args) :
-        Controller.cmd(self)
-        return self.status or "No status."
+    def play(self, args) :
+        self.player.play(args[1:])
+        self.status = self.player.status
 
     def volumeup(self, args) :
         self.player.volume(1)
@@ -96,9 +97,8 @@ class ControllerA(Controller) :
 
     def stop(self, args) :
         self.player.stop()
-
-    def kill(self, args) :
-        self.player.kill()
+        self.status = self.player.status
 
     def pp(self, args) :
         self.player.playpause()
+        self.status = self.player.status

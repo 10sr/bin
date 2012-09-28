@@ -56,8 +56,6 @@ def main2(argv) :
 
     if len(argv) >= 2 :
         if argv[1] == "kill" :
-            if playd.get_daemon_pid() :
-                playd.send_command(argv[1:])
             playd.kill_daemon()
         else :
             if not playd.get_daemon_pid() :
@@ -74,4 +72,4 @@ def main2(argv) :
             put("Daemon is not running.")
 
 if __name__ == "__main__" :
-    main(sys.argv)
+    main2(sys.argv)

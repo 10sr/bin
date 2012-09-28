@@ -10,8 +10,10 @@ from mpg123 import MPG123A
 from play_command import ControllerA
 
 CONFIG_DIR = os.path.expanduser("~/.playd")
-PIPE = CONFIG_DIR + "/socket"
+PIPE = CONFIG_DIR + "/daemon_sok"
+P_PIPE = CONFIG_DIR + "/player_pipe"
 PIDFILE = CONFIG_DIR + "/pid"
+P_PIDFILE = CONFIG_DIR + "/player_pid"
 BUFSIZE = 1024
 
 def send_command(args) :
@@ -33,10 +35,15 @@ def send_command(args) :
     s.close()
     return data
 
+def get_player_pid() :
+    return get_pid(P_PIDFILE)
+
 def get_daemon_pid() :
-    """return pid of daemon if it is running, otherwise 0"""
+    return get_pid(PIDFILE)
+
+def get_pid(file) :
     try :
-        f = open(PIDFILE, "r")
+        f = open(file, "r")
         pid = int(f.read())
         f.close()
         os.getsid(pid)
@@ -50,8 +57,16 @@ def get_daemon_pid() :
             return 0
         else :
             raise
+    except IOError as e :
+        if e.errno == errno.ENOENT :
+            # no pidfile
+            return 0
 
 def kill_daemon() :
+    pid = get_player_pid()
+    if pid :
+        os.kill(pid, sig.SIGTERM)
+        print("Player killed.")
     pid = get_daemon_pid()
     if pid :
         os.kill(pid, sig.SIGTERM)
@@ -79,7 +94,7 @@ def run_daemon() :
     os.makedirs(CONFIG_DIR, exist_ok = True)
 
     if get_daemon_pid() :
-        print("Daemon is already running. Restart daemon.")
+        print("Daemon is already running. Now restart daemon.")
         kill_daemon()
     clean_file()
 
@@ -120,7 +135,7 @@ def run_daemon() :
 # For internal
 
 def daemon_main() :
-    c = ControllerA()
+    c = ControllerA(P_PIPE, P_PIDFILE)
     daemon_loop(c)
     exit(0)
 
@@ -133,7 +148,8 @@ def daemon_loop(c) :
         data = conn.recv(BUFSIZE)
         if len(data) != 0 : # remote is not closed
             # ans = handle_command(player, loads(data))
-            ans = c.cmd(loads(data))
+            c.cmd(loads(data))
+            ans = c.status
             if ans == None :
                 break
             if ans == "" :
