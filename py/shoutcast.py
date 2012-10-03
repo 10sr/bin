@@ -12,7 +12,6 @@ import sys
 
 try :
     from mpg123 import MPG123
-    print("use module")
 except ImportError :
     MPG123 = None
 
