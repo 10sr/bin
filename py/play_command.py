@@ -1,60 +1,104 @@
 #!/usr/bin/env python3
 
 import os
+from types import MethodType
 try :
     import shoutcast as sc
 except ImportError :
     sc = None
 try :
-    from mpg123 import MPG123
+    from mpg123 import MPG123, MPG123A
 except ImportError :
     MPG123 = None
+    MPG123A = None
 
-def bye(arg) :
-    print("Bye!")
-    exit(0)
+class Controller() :
+    player = None
 
-def ls(arg) :
-    lst = os.listdir()
-    for f in lst :
-        if not f.startswith(".") :
-            print(f, end=" ")
-    print("")
+    status = ""
 
-def cd(arg) :
-    try :
-        if arg == "" :
-            arg = os.path.expanduser("~/")
-        os.chdir(arg)
-    except OSError :
-        print("OSERROR")
+    def __init__(self) :
+        if MPG123 :
+            self.player = MPG123()
 
-def play(arg) :
-    if MPG123 :
-        p = MPG123()
-        p.set_args([arg])
-        p.call()
+    def cmd(self, args) :
+        f = getattr(self, args[0], None)
+        if isinstance(f, MethodType) \
+                and args[0] != "cmd" \
+                and args[0] != "__init__" :
+            f(args)
+        else :
+            self.status = "%s: Command not found." % args[0]
 
-def shoutcast(arg) :
-    m = sc.get_media_from_words(arg)
-    if m :
-        play(m)
+    def ls(self, args) :
+        def not_hidden(f) :
+            return not f.startswith(".")
 
-def print_help(arg) :
-    print("Available commands are :")
-    for c in commands :
-        print(c, end=" ")
-    print("")
+        lst = os.listdir()
+        self.status = "\n".join(filter(not_hidden, lst))
 
-commands = {
-    "ls" : ls,
-    "cd" : cd,
-    "play" : play,
-    "bye" : bye,
-    "exit" : bye,
-    "help" : print_help,
-    "h" : print_help
-    }
+    def cd(self, args) :
+        try :
+            if args == "" :
+                args = os.path.expanduser("~/")
+            os.chdir(args[1])
+            self.status = args[1]
+        except OSError :
+            self.status = "OSERROR"
 
-if sc :
-    commands["sc"] = shoutcast
+    def add(self, args) :
+        self.player.add(args[1:])
+        self.status = "Added :\n" + "\n".join(args[1:])
+
+    def new(self, args) :
+        self.player.new(args[1:])
+        self.status = "New playlist :\n" * "\n".join(args[1:])
+
+    def play(self, args) :
+        self.player.play(args[1:])
+        self.status = "Player terminated."
+
+    def set(self, args) :
+        d = {}
+        for p in args[1:] :
+            d[p] = True
+        self.player.set(**d)
+        self.status = "Property " + " ".join(args[1:]) + " is set."
+
+    def list(self, args) :
+        self.status = "Playlist :\n" + "\n".join(self.player.plist)
+
+    def shoutcast(self, args) :
+        m = sc.get_media_from_words(" ".join(args))
+        if m :
+            self.play(m)
+            self.status = "Player terminated."
+        else :
+            self.status = "Url not found."
+
+    def help(self, args) :
+        self.status = "Available commands are :\n"
+
+class ControllerA(Controller) :
+    def __init__(self) :
+        if MPG123A :
+            self.player = MPG123A()
+
+    def cmd(self, args) :
+        Controller.cmd(self)
+        return self.status or "No status."
+
+    def volumeup(self, args) :
+        self.player.volume(1)
+
+    def volumedown(self, args) :
+        self.player.volume(-1)
+
+    def stop(self, args) :
+        self.player.stop()
+
+    def kill(self, args) :
+        self.player.kill()
+
+    def pp(self, args) :
+        self.player.playpause()
