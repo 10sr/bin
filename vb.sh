@@ -16,12 +16,6 @@ list(){
     vbm list "$@"
 }
 
-list_running(){
-    echo "Running :"
-    vbm list runningvms
-    echo
-}
-
 start(){
     if test -z "$1"
     then
@@ -48,7 +42,10 @@ help(){
 
 if test $# -eq 0
 then
+    echo VMS:
     list vms
+    echo RUNNING:
+    list runningvms
 elif test "$1" == start
 then
     start "$2"
