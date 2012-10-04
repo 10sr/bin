@@ -68,8 +68,8 @@ def play(url):
     if url:
         if MPG123 :
             p = MPG123()
-            p.set_args([url])
-            p.call()
+            p.new([url])
+            p.play()
         else :
             call(player + " " + track, shell=True)
 

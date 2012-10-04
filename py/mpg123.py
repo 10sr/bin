@@ -17,12 +17,12 @@ class MPG123() :
     args = []
 
     def add(self, plist) :
-        self.plist.extend(map(os.path.realpath, plist))
-        self.status = "Added :\n%s" % "\n".join(self.plist)
+        self.plist.extend(plist)
+        self.status = "Added :\n%s" % "\n".join(plist)
 
     def new(self, plist) :
-        self.plist = list(map(os.path.realpath, plist))
-        self.status = "Playlist :\n%s" % "\n".join(self.plist)
+        self.plist = list(plist)
+        self.status = "New playlist :\n%s" % "\n".join(plist)
 
     def set(self, args) :
         if "repeat" in args :
@@ -59,7 +59,7 @@ class MPG123() :
 
     def play(self, plist=None) :
         self.gen_args(plist=plist)
-        for i in args :
+        for i in self.args :
             print(i)
         call(self.args)
 
