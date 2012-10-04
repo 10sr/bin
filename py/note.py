@@ -2,6 +2,7 @@
 
 program = "leafpad"
 notepath = "~/dbx/note/note2"
+#program = "open"
 
 import os
 import subprocess as sp
@@ -32,7 +33,10 @@ def ask_open(flist, func):
 def edit_file(filename):
     os.chdir(notepath)
     os.access(filename, os.F_OK) or os.mknod(filename, 0o644)
-    sp.call([program, filename])
+    if sys.platform == "darwin" :
+        sp.call(["open", "-e", filename])
+    else :
+        sp.call([program, filename])
 
 def cat_file(filename):
     print("** %s **********" % filename)
