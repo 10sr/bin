@@ -5,6 +5,7 @@ files="
 /etc/rc.conf
 /var/log/pacman.log
 /etc/pacman.d/gnupg/gpg.conf
+/etc/vconsole.conf
 "
 
 convpass(){
