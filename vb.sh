@@ -65,6 +65,9 @@ elif test "$1" == list
 then
     shift
     list "$@"
+elif test "$1" == help
+then
+    help
 else
     list "$@"
 fi
