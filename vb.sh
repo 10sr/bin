@@ -1,4 +1,5 @@
 #!/bin/sh
+# should i use vboxshell.py?
 
 PATH="/ApplicationsVirtualBox.app/Contents/MacOS:$PATH"
 if type VBoxManage >/dev/null 2>&1
@@ -16,12 +17,6 @@ list(){
     vbm list "$@"
 }
 
-list_running(){
-    echo "Running :"
-    vbm list runningvms
-    echo
-}
-
 start(){
     if test -z "$1"
     then
@@ -29,6 +24,16 @@ start(){
         list vms
     else
         vbm startvm "$1" --type headless
+    fi
+}
+
+gui(){
+    if test -z "$1"
+    then
+        echo "Specify vm name to start!" 2>&1
+        list vms
+    else
+        vbm startvm "$1" --type gui
     fi
 }
 
@@ -43,13 +48,20 @@ suspend(){
 }
 
 help(){
-    true
+    cmd="`basename $1`"
+    echo "vb: $cmd [start|gui|suspend|vms|running|list]"
 }
 
 if test $# -eq 0
 then
+    echo VMS:
     list vms
+    echo RUNNING:
+    list runningvms
 elif test "$1" == start
+then
+    start "$2"
+elif test "$1" == gui
 then
     start "$2"
 elif test "$1" == suspend
@@ -67,7 +79,7 @@ then
     list "$@"
 elif test "$1" == help
 then
-    help
+    help $0
 else
-    list "$@"
+    vbm "$@"
 fi
