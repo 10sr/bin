@@ -7,7 +7,7 @@ import signal as sig
 class MPG123() :
     program = "mpg123"
     opts = ["-C", "-v", "--title"]
-    plist = []
+    playlist = []
 
     repeat = False
     shuffle = False
@@ -16,13 +16,13 @@ class MPG123() :
     status = ""
     args = []
 
-    def add(self, plist) :
-        self.plist.extend(plist)
-        self.status = "Added :\n%s" % "\n".join(plist)
+    def add(self, playlist) :
+        self.playlist.extend(playlist)
+        self.status = "Added :\n%s" % "\n".join(playlist)
 
-    def new(self, plist) :
-        self.plist = list(plist)
-        self.status = "New playlist :\n%s" % "\n".join(plist)
+    def new(self, playlist) :
+        self.playlist = list(playlist)
+        self.status = "New playlist :\n%s" % "\n".join(playlist)
 
     def set(self, args) :
         if "repeat" in args :
@@ -40,7 +40,7 @@ class MPG123() :
         #     m =
         self.status = "Property %s was set." % " ".join(args)
 
-    def gen_args(self, args=[], plist=[]) :
+    def gen_args(self, args=[], playlist=[]) :
         self.args = [self.program]
         self.args.extend(self.opts)
 
@@ -52,13 +52,13 @@ class MPG123() :
             self.args.append("--random")
         self.args.extend(args)
 
-        if plist == None or len(plist) == 0 :
-            self.args.extend(self.plist)
+        if playlist == None or len(playlist) == 0 :
+            self.args.extend(self.playlist)
         else :
-            self.args.extend(plist)
+            self.args.extend(playlist)
 
-    def play(self, plist=None) :
-        self.gen_args(plist=plist)
+    def play(self, playlist=None) :
+        self.gen_args(playlist=playlist)
         call(self.args)
 
 class MPG123A(MPG123) :
@@ -72,15 +72,15 @@ class MPG123A(MPG123) :
         self.pipe = pipepath
         self.pidfile = pidfile
 
-    def play(self, plist=None) :
+    def play(self, playlist=None) :
         if self.p :
             self.status = "Already playing!"
             return
-        if len(self.plist) == 0 and len(plist) == 0 :
+        if len(self.playlist) == 0 and len(playlist) == 0 :
             self.status = "Playlist is empty!"
             return
 
-        self.gen_args(args=["-C" , "--fifo", self.pipe], plist=plist)
+        self.gen_args(args=["-C" , "--fifo", self.pipe], playlist=playlist)
         try :
             os.mkfifo(self.pipe)
         except OSError as e :
