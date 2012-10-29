@@ -59,8 +59,6 @@ class MPG123() :
 
     def play(self, plist=None) :
         self.gen_args(plist=plist)
-        for i in self.args :
-            print(i)
         call(self.args)
 
 class MPG123A(MPG123) :
