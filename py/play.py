@@ -55,28 +55,28 @@ def file_realpath(s) :
     else :
         return s
 
-def put(str) :
+def play_put(str) :
     print("[PLAY] %s" % str)
 
-def main2(argv) :
+def mainA(argv) :               # async
 
     if len(argv) >= 2 :
         if argv[1] == "kill" :
             playd.kill_daemon()
         else :
             if not playd.get_daemon_pid() :
-                put("Run play daemon.")
+                play_put("Run play daemon.")
                 playd.run_daemon()
             else :
-                put("Daemon already running.")
+                play_put("Daemon already running.")
             r = list(map(file_realpath, argv[1:]))
             s = playd.send_command(r)
-            put(s)
+            play_put(s)
     else :
         if playd.get_daemon_pid() :
-            put("Daemon is running.")
+            play_put("Daemon is running.")
         else :
-            put("Daemon is not running.")
+            play_put("Daemon is not running.")
 
 if __name__ == "__main__" :
     main(sys.argv)
