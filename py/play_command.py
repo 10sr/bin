@@ -14,6 +14,7 @@ except ImportError :
 try :
     from mplayc import MPLAYC, MPLAYCA
 except ImportError :
+    MPLAYC = None
     MPLAYCA = None
 
 class Controller() :
@@ -26,7 +27,6 @@ class Controller() :
             self.player = MPLAYC()
 
     def cmd(self, args) :
-        print(args[0])
         f = getattr(self, args[0], None)
         if isinstance(f, MethodType) \
                 and args[0] != "cmd" \
@@ -43,11 +43,13 @@ class Controller() :
         self.status = "\n".join(filter(not_hidden, lst))
 
     def cd(self, args) :
+        arg = " ".join(args[1:])
+        print(arg)
         try :
-            if args == "" :
-                args = os.path.expanduser("~/")
-            os.chdir(args[1])
-            self.status = args[1]
+            if arg == "" :
+                arg = os.path.expanduser("~/")
+            os.chdir(arg)
+            self.status = arg
         except OSError :
             self.status = "OSERROR"
 
@@ -67,13 +69,16 @@ class Controller() :
         d = {}
         for p in args[1:] :
             d[p] = True
-        self.player.set(**d)
+        self.player.set(d)
         self.status = "Property " + " ".join(args[1:]) + " is set."
 
     def list(self, args) :
         self.status = "Playlist :\n" + "\n".join(self.player.plist)
 
     def shoutcast(self, args) :
+        if not sc :
+            self.status = "Shoutcast module not found."
+            return
         m = sc.get_media_from_words(" ".join(args))
         if m :
             self.play(m)

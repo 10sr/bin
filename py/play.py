@@ -79,4 +79,4 @@ def main2(argv) :
             put("Daemon is not running.")
 
 if __name__ == "__main__" :
-    main2(sys.argv)
+    main(sys.argv)
