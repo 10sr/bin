@@ -6,11 +6,11 @@ try :
     import shoutcast as sc
 except ImportError :
     sc = None
-# try :
-#     from mpg123 import MPG123, MPG123A
-# except ImportError :
-#     MPG123 = None
-#     MPG123A = None
+try :
+    from mpg123 import MPG123, MPG123A
+except ImportError :
+    MPG123 = None
+    MPG123A = None
 try :
     from mplayc import MPLAYC, MPLAYCA
 except ImportError :
@@ -23,8 +23,8 @@ class Controller() :
     status = ""
 
     def __init__(self) :
-        if MPLAYC :
-            self.player = MPLAYC()
+        if MPG123 :
+            self.player = MPG123()
 
     def cmd(self, args) :
         f = getattr(self, args[0], None)
