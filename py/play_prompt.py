@@ -20,26 +20,31 @@ class PlayPrompt() :
     r = []
     cmds = []
 
+    _c = []
+
     def __init__(self, Controller) :
         if readline :
             readline.set_completer(self.completer)
         self.cmds = Controller.cmds
 
     def completer(self, text, state) :
-        def filter(array, text) :
+        def com_filter(array, text) :
             return [s for s in array if s.startswith(text)]
 
         b = readline.get_line_buffer()
         for c in self.cmds :
             if b.startswith(c + " ") :
-                if state < 10 :
-                    return text + "aa"
+                if state == 0 :
+                    self._c = com_filter(os.listdir(text or "."), text)
+                if state < len(self._c) :
+                    return self._c[state]
                 else :
                     return None
 
-        candidate = filter(self.cmds, text)
-        if state < len(candidate) :
-            return candidate[state] + " "
+        if state == 0 :
+            self._c = com_filter(self.cmds, text)
+        if state < len(self._c) :
+            return self._c[state] + " "
         else :
             return None
 
