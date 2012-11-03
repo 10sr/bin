@@ -79,7 +79,7 @@ class Controller() :
         self.status = "Property " + " ".join(args[1:]) + " is set."
 
     def list(self, args) :
-        self.status = "Playlist :\n" + "\n".join(self.player.plist)
+        self.status = "Playlist :\n" + "\n".join(self.player.playlist)
 
     def shoutcast(self, args) :
         if not sc :
