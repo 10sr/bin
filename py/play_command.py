@@ -19,18 +19,24 @@ except ImportError :
 
 class Controller() :
     player = None
+    cmds = []
 
     status = ""
 
     def __init__(self) :
         if MPG123 :
             self.player = MPG123()
+        else :
+            raise ImportError
+
+        self.cmds = [c for c in dir(self) if \
+                         isinstance(getattr(self, c, None), MethodType) \
+                         and c != "cmd" \
+                         and not c.startswith("__")]
 
     def cmd(self, args) :
-        f = getattr(self, args[0], None)
-        if isinstance(f, MethodType) \
-                and args[0] != "cmd" \
-                and args[0] != "__init__" :
+        if args[0] in self.cmds :
+            f = getattr(self, args[0], None)
             f(args)
         else :
             self.status = "%s: Command not found." % args[0]

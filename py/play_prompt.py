@@ -8,10 +8,9 @@ try:
     import readline
 except ImportError:
     print("Module readline not available.")
+    readline = None
 else:
-    import rlcompleter
     if "libedit" in readline.__doc__ :
-        print("libedit used.")
         readline.parse_and_bind("bind ^I rl_complete")
     else :
         readline.parse_and_bind("tab: complete")
@@ -19,9 +18,30 @@ else:
 class PlayPrompt() :
     s = ""
     r = []
+    cmds = []
 
     def __init__(self, Controller) :
-        pass
+        if readline :
+            readline.set_completer(self.completer)
+        self.cmds = Controller.cmds
+
+    def completer(self, text, state) :
+        def filter(array, text) :
+            return [s for s in array if s.startswith(text)]
+
+        b = readline.get_line_buffer()
+        for c in self.cmds :
+            if b.startswith(c + " ") :
+                if state < 10 :
+                    return text + "aa"
+                else :
+                    return None
+
+        candidate = filter(self.cmds, text)
+        if state < len(candidate) :
+            return candidate[state] + " "
+        else :
+            return None
 
     def parse_input(self) :
         if self.s == "" :
@@ -50,5 +70,6 @@ class PlayPrompt() :
         except (EOFError, KeyboardInterrupt) :
             self.s = "bye"
             print("")
+
         self.parse_input()
         return self.r
