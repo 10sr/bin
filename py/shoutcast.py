@@ -10,6 +10,17 @@ from html.parser import HTMLParser
 from subprocess import call
 import sys
 
+try:
+    import readline
+except ImportError:
+    print("Module readline not available.")
+    readline = None
+else:
+    if "libedit" in readline.__doc__ :
+        readline.parse_and_bind("bind ^I rl_complete")
+    else :
+        readline.parse_and_bind("tab: complete")
+
 try :
     from mpg123 import MPG123
 except ImportError :
