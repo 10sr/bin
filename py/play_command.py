@@ -6,31 +6,37 @@ try :
     import shoutcast as sc
 except ImportError :
     sc = None
-# try :
-#     from mpg123 import MPG123, MPG123A
-# except ImportError :
-#     MPG123 = None
-#     MPG123A = None
+try :
+    from mpg123 import MPG123, MPG123A
+except ImportError :
+    MPG123 = None
+    MPG123A = None
 try :
     from mplayc import MPLAYC, MPLAYCA
 except ImportError :
+    MPLAYC = None
     MPLAYCA = None
 
 class Controller() :
     player = None
+    cmds = []
 
     status = ""
 
     def __init__(self) :
-        if MPLAYC :
-            self.player = MPLAYC()
+        if MPG123 :
+            self.player = MPG123()
+        else :
+            raise ImportError
+
+        self.cmds = [c for c in dir(self) if \
+                         isinstance(getattr(self, c, None), MethodType) \
+                         and c != "cmd" \
+                         and not c.startswith("__")]
 
     def cmd(self, args) :
-        print(args[0])
-        f = getattr(self, args[0], None)
-        if isinstance(f, MethodType) \
-                and args[0] != "cmd" \
-                and args[0] != "__init__" :
+        if args[0] in self.cmds :
+            f = getattr(self, args[0], None)
             f(args)
         else :
             self.status = "%s: Command not found." % args[0]
@@ -43,11 +49,13 @@ class Controller() :
         self.status = "\n".join(filter(not_hidden, lst))
 
     def cd(self, args) :
+        arg = " ".join(args[1:])
+        print(arg)
         try :
-            if args == "" :
-                args = os.path.expanduser("~/")
-            os.chdir(args[1])
-            self.status = args[1]
+            if arg == "" :
+                arg = os.path.expanduser("~/")
+            os.chdir(arg)
+            self.status = arg
         except OSError :
             self.status = "OSERROR"
 
@@ -67,13 +75,16 @@ class Controller() :
         d = {}
         for p in args[1:] :
             d[p] = True
-        self.player.set(**d)
+        self.player.set(d)
         self.status = "Property " + " ".join(args[1:]) + " is set."
 
     def list(self, args) :
-        self.status = "Playlist :\n" + "\n".join(self.player.plist)
+        self.status = "Playlist :\n" + "\n".join(self.player.playlist)
 
     def shoutcast(self, args) :
+        if not sc :
+            self.status = "Shoutcast module not found."
+            return
         m = sc.get_media_from_words(" ".join(args))
         if m :
             self.play(m)

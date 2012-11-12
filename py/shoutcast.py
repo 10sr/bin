@@ -19,6 +19,11 @@ class ScParser(HTMLParser):
     stations = []
     current = ""
 
+    def __init__(self) :
+        HTMLParser.__init__(self)
+        self.stations = []
+        self.current = ""
+
     def handle_starttag(self, tag, attrs):
         if tag == "a" :
 
@@ -139,13 +144,17 @@ def get_media_from_words(words) :
     return t
 
 def main(argv):
-    if len(argv) <= 1 :
-        w = input("Enter query: ")
-    else :
+    if len(argv) > 1 :
         w = " ".join(argv[1:])
-    t = get_media_from_words(w)
-    if t :
+        t = get_media_from_words(w)
         play(t)
+    else :
+        while True :
+            w = input("Enter query: ")
+            if w == "" :
+                break
+            t = get_media_from_words(w)
+            play(t)
 
 if __name__ == '__main__' :
     main(sys.argv)

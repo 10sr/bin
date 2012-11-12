@@ -8,46 +8,21 @@ from shlex import split as shsplit
 from play_command import Controller
 import play_daemon as playd
 
-def parse_input(s) :
-    args = shsplit(s)
-    eargs = [args[0]]
-    for a in args[1:] :
-        g = glob(a)
-        if len(g) == 0 :
-            eargs.extend([a])
-        else :
-            eargs.extend(g)
-    return eargs
-
-def prompt() :
-    home = os.getenv("HOME")
-    d = os.getcwd()
-    if home != "" :
-        d = d.replace(home, "~")
-
-    try :
-        s = input("PLAY %s $ " % d)
-    except (EOFError, KeyboardInterrupt) :
-        s = "bye"
-        print("")
-    return s
+from play_prompt import PlayPrompt as Prompt
 
 def main(argv) :
     c = Controller()
+    p = Prompt(c)
     while True :
-        s = prompt()
-        r = parse_input(s)
+        r = p.input()
+        if len(r) == 0 :
+            continue
         if r[0] == "bye" :
             print("Bye!")
             break
         elif r :
             c.cmd(r)
             print(c.status)
-            # try :
-            #     f = play_command.commands[r[0]]
-            #     f(r)
-            # except KeyError :
-            #     print("%s: command not found." % r[0])
 
 def file_realpath(s) :
     if os.access(s, os.R_OK) :
@@ -55,28 +30,28 @@ def file_realpath(s) :
     else :
         return s
 
-def put(str) :
+def play_put(str) :
     print("[PLAY] %s" % str)
 
-def main2(argv) :
+def mainA(argv) :               # async
 
     if len(argv) >= 2 :
         if argv[1] == "kill" :
             playd.kill_daemon()
         else :
             if not playd.get_daemon_pid() :
-                put("Run play daemon.")
+                play_put("Run play daemon.")
                 playd.run_daemon()
             else :
-                put("Daemon already running.")
+                play_put("Daemon already running.")
             r = list(map(file_realpath, argv[1:]))
             s = playd.send_command(r)
-            put(s)
+            play_put(s)
     else :
         if playd.get_daemon_pid() :
-            put("Daemon is running.")
+            play_put("Daemon is running.")
         else :
-            put("Daemon is not running.")
+            play_put("Daemon is not running.")
 
 if __name__ == "__main__" :
-    main2(sys.argv)
+    main(sys.argv)
