@@ -8,7 +8,7 @@ errorlog="${dst}/cronrsyncerror.log"
 pack_cmd="7z a"
 pack_out="%s.7z"
 
-test -z "$src" && src="$HOME/.xdg-dirs/Dropbox/"
+test -z "$1" && src="$HOME/.xdg-dirs/Dropbox/"
 export LANG=ja_JP.UTF-8
 export LC_TIME=C
 
