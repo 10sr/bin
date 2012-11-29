@@ -44,6 +44,7 @@ class MDPage:
         for f in os.listdir() :
             if not os.path.isdir(f) and f.endswith(".html") and \
                     not f.startswith(".") and \
+                    not f.startswith("_") and \
                     not os.path.splitext(f)[0] in self.file_list :
                 print("rm : %s." % f)
                 os.remove(f)
@@ -142,11 +143,13 @@ class FileList :
         l = os.listdir()
         self.file_list = [f for f, e in map(os.path.splitext, l) \
                               if not f.startswith(".") and \
+                              not f.startswith("_") and \
                               e == ".md" and os.path.isfile(f + e)]
         self.file_list.sort()
 
         self.dir_list = [d + "/" for d in l \
-                             if os.path.isdir(d) and not d.startswith(".")]
+                             if os.path.isdir(d) and not d.startswith(".") and \
+                             not d.startswith("_") ]
         self.dir_list.sort()
 
         self.updated_list = [f for f in self.file_list if self.is_md_updated(f)]
