@@ -8,4 +8,7 @@
 
 # chit -[a|c] [-d] <note>
 
+use strict;
+use warnings;
+
 print "I am Chit!\n";
