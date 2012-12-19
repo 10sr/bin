@@ -7,7 +7,6 @@ player = "mpg123 -C -v --title"
 from urllib.request import urlopen
 from urllib.parse import quote as urlquote
 from html.parser import HTMLParser
-from subprocess import call
 import sys
 
 try:
@@ -25,10 +24,12 @@ try :
     from mpg123 import MPG123
 except ImportError :
     MPG123 = None
+    from subprocess import call
 
 class ScParser(HTMLParser):
     stations = []
     current = ""
+    pls_url = "http://yp.shoutcast.com/sbin/tunein-station.pls"
 
     def __init__(self) :
         HTMLParser.__init__(self)
@@ -38,12 +39,11 @@ class ScParser(HTMLParser):
     def handle_starttag(self, tag, attrs):
         if tag == "a" :
 
-            pstr = "http://yp.shoutcast.com/sbin/tunein-station.pls"
 
             title = ""
             url = ""
             for a in attrs :
-                if a[0] == "href" and a[1].startswith(pstr) :
+                if a[0] == "href" and a[1].startswith(self.pls_url) :
                     url = a[1]
                 elif a[0] == "title" :
                     title = a[1]
@@ -128,15 +128,14 @@ def choose(stations):
         print("No station found.")
         return None
 
-    i = 0
-    for s in stations :
+    for i, s in enumerate(stations) :
         if i >= 5 : break
         i = i + 1
-        print("%2d : %s | %s" % (i, s["title"], s["recent"]))
+        print("{:>2} : {} | {}".format(i, s["title"], s["recent"]))
         print ("     ", end = "")
         for k, v in s.items() :
             if k != "url" and k != "title" and k != "recent" :
-                print("%s : %s  " % (k, v), end = "")
+                print("{} : {}  ".format(k, v), end = "")
         print("")
         print("")
 
