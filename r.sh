@@ -1,14 +1,14 @@
 #!/bin/bash
 # 0 * * * * bash r.sh Dropbox
 
-src="$1/"
-dst="$HOME/.my/Dropbox/"
+src="$1"
+dst="$HOME/.my/Dropbox"
 log="${dst}/cronrsync.log"
 errorlog="${dst}/cronrsyncerror.log"
 pack_cmd="7z a"
 pack_out="%s.7z"
 
-test -z "$1" && src="$HOME/.xdg-dirs/Dropbox/"
+test -z "$src" && src="$HOME/.xdg-dirs/Dropbox"
 export LANG=ja_JP.UTF-8
 export LC_TIME=C
 
@@ -21,7 +21,7 @@ message=""
 archivemsg=""
 
 archive_bak(){                      # $ archive dir
-    dir="$dst"
+    dir="${dst}/"
     files="$(find $(echo ${dir}/*) -maxdepth 0 '!' -name newest -type d)"
     arc="`printf ${dir}/${pack_out} ${ctime}`"
     if test `echo $files | wc -w` -gt 150
