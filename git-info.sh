@@ -4,7 +4,8 @@ git=`which git`
 
 if test $? -ne 0
 then
-    exit $?
+    echo "git not found." 1>&2
+    exit 1
 fi
 
 name=`$git config user.name`
@@ -14,4 +15,4 @@ echo NAME = $name
 echo
 $git show-branch -a
 echo
-$git status -s
+$git diff --stat
