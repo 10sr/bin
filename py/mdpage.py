@@ -171,8 +171,7 @@ class FileList :
 
         return
 
-    @staticmethod
-    def is_md_updated(f):
+    def is_md_updated(self, f):
         """Return True if html file is not exist or markdown file is newer"""
         return not os.path.isfile(f + ".html") or \
             self.is_file_newer(f + ".md", f + ".html")
