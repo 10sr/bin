@@ -8,11 +8,15 @@ then
     exit 1
 fi
 
+
+
 name=`$git config user.name`
+email=`$git config user.email`
 
 echo PATH = $git
 echo NAME = $name
+echo MAIL = $email
 echo
-$git show-branch -a
-echo
-$git diff --stat
+$git show-branch --all && \
+    echo && \
+    $git diff --stat
