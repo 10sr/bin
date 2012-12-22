@@ -17,7 +17,7 @@ use File::Path 'mkpath';
 print "I am Chit!", "\n";
 
 sub print_help {
-    warn "chit: usage: chit [-ac] [-l] <note>", "\n";
+    warn "chit: usage: chit [ac] <note>", "\n";
 }
 
 ################################
@@ -75,30 +75,37 @@ sub format_path_to_time {
     if ($path =~ m#(\d{4})(\d{2})/(\d{2})(\d{2})(\d{2})(\d{2})#) {
         return "$1/$2/$3 $4:$5:$6";
     } else {
-        return
+        return;
     }
 }
 
 sub cat_one_file {
-    my $file = shift;
+    my ($file, $pattern) = @_;
     open my $fh, '<', $file
         or die qq/Can't open file "$file": $!/;
     my $line = <$fh>;            # only read one line
     close $fh;
-    return $line;
+    if (! $pattern || $line =~ /$pattern/) {
+        return $line;
+    }
+    else {
+        return;
+    }
 }
 
 sub cat_files {
     # return number of files processed
-    my ($path, $num) = @_;
+    my ($path, $num, $pattern) = @_;
     my @files = sort { $b cmp $a } grep { /\d{8}$/ } get_files($path);
     my $i = 0;
     foreach my $file (@files) {
         eval {
             my $timestr = format_path_to_time($file);
-            my $line = cat_one_file($file);
-            print "$timestr $line";
-            $i += 1;
+            my $line = cat_one_file($file, $pattern);
+            if ($line) {
+                print "$timestr $line";
+                $i += 1;
+            }
         };
         if ($@) {
             warn qq/Error while cat file: $@/;
@@ -113,11 +120,11 @@ sub cat_files {
 }
 
 sub cat_chit {
-    my $chitpath = shift @_;
+    my ($chitpath, $pattern) = @_;
     my @dirs = sort { $b cmp $a } grep { /\d{6}$/ } get_files($chitpath);
     my $num = 10;               # number of chit to cat
     foreach my $d (@dirs) {
-        my $i = cat_files($d, $num);
+        my $i = cat_files($d, $num, $pattern);
         $num -= $i;
 
         if ($num <= 0) {
