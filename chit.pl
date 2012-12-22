@@ -4,22 +4,16 @@
 # basically no way to remove note
 # each note can be only one line.
 
-# usage :
-
-# chit [-ac] [-l] <note>
-
 use strict;
 use warnings;
 
 use File::Spec;
 use File::Path 'mkpath';
 
-print "I am Chit!", "\n";
-
 sub print_help {
     warn
-        "chit: usage: chit a <note>\n" .
-        "        or:  chit c[<num>] [<pattern>]\n"
+        "chit: usage: chit a[ad] <note>\n" .
+        "        or:  chit c[at][<num>] [<pattern>]\n"
         ;
 }
 
@@ -42,11 +36,12 @@ sub write_file {
 
     open my $fh, ">", $filepath or
         die qq/Can't open file "$file": $!/;
-    print $fh $str, "\n";
+    print $fh "${str}\n";
     close $fh or die qq/Can't close file "$file": $!/;
 
-    print "Add chit: '$filepath'", "\n";
-    print "    $str", "\n";
+    print
+        "Add chit: '$filepath'\n" .
+        "    $str\n";
     return
 }
 
@@ -129,10 +124,10 @@ sub cat_files {
 sub cat_chit {
     my ($chitpath, $num, $pattern) = @_;
     my @dirs = sort { $b cmp $a } grep { /\d{6}$/ } get_files($chitpath);
-    if ($num) {
-        $num += 0;
+    if ($num =~ /\D*(\d+)/) {   # number of chit to cat
+        $num = $1;
     } else {
-        $num = 10;               # number of chit to cat
+        $num = 10;
     }
     foreach my $d (@dirs) {
         my $i = cat_files($d, $num, $pattern);
@@ -149,7 +144,7 @@ sub cat_chit {
 
 my $homepath = $ENV{'HOME'};
 if (! $homepath) {
-    warn "HOME is not set. Use current directory.", "\n";
+    warn "HOME is not set. Use current directory.\n";
     $homepath = "."
 }
 my $confpath = $ENV{'XDG_CONFIG_HOME'} ||
