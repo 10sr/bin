@@ -19,7 +19,7 @@ print "I am Chit!", "\n";
 sub print_help {
     warn
         "chit: usage: chit a <note>\n" .
-        "        or:  chit c [<pattern>]\n"
+        "        or:  chit c[<num>] [<pattern>]\n"
         ;
 }
 
@@ -127,9 +127,13 @@ sub cat_files {
 }
 
 sub cat_chit {
-    my ($chitpath, $pattern) = @_;
+    my ($chitpath, $num, $pattern) = @_;
     my @dirs = sort { $b cmp $a } grep { /\d{6}$/ } get_files($chitpath);
-    my $num = 10;               # number of chit to cat
+    if ($num) {
+        $num += 0;
+    } else {
+        $num = 10;               # number of chit to cat
+    }
     foreach my $d (@dirs) {
         my $i = cat_files($d, $num, $pattern);
         $num -= $i;
@@ -155,12 +159,13 @@ my $chitpath = File::Spec->catfile($confpath, "chit");
 if (@ARGV == 0) {
     print_help();
 } else {
-    my $beg = substr $ARGV[0], 0, 1;
-    shift @ARGV;
+    my $cmd = shift;
+    my $beg = substr $cmd, 0, 1;
     if ($beg eq "a") {
         add_chit($chitpath, @ARGV);
     } elsif ($beg eq "c") {
-        cat_chit($chitpath, @ARGV);
+        my $num = substr $cmd, 1;
+        cat_chit($chitpath, $num, @ARGV);
     } else {
         print_help();
     }
