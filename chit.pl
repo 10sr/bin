@@ -17,7 +17,10 @@ use File::Path 'mkpath';
 print "I am Chit!", "\n";
 
 sub print_help {
-    warn "chit: usage: chit [ac] <note>", "\n";
+    warn
+        "chit: usage: chit a <note>\n" .
+        "        or:  chit c [<pattern>]\n"
+        ;
 }
 
 ################################
@@ -52,7 +55,11 @@ sub add_chit {
     my $str = join(" ", @_);
     my ($dir, $file) = get_time();
     my $path = File::Spec->catfile($chitpath, $dir);
-    write_file($path, $file, $str)
+    if ($str) {
+        write_file($path, $file, $str)
+    } else {
+        print "Empty chit.\n";
+    }
 }
 
 #################################
@@ -133,6 +140,9 @@ sub cat_chit {
     }
 }
 
+#################################
+# setup directory
+
 my $homepath = $ENV{'HOME'};
 if (! $homepath) {
     warn "HOME is not set. Use current directory.", "\n";
@@ -144,12 +154,14 @@ my $chitpath = File::Spec->catfile($confpath, "chit");
 
 if (@ARGV == 0) {
     print_help();
-} elsif (index($ARGV[0], "a") == 0) {
-    shift @ARGV;
-    add_chit($chitpath, @ARGV);
-} elsif (index($ARGV[0], "c") == 0) {
-    shift @ARGV;
-    cat_chit($chitpath, @ARGV);
 } else {
-    print_help();
+    my $beg = substr $ARGV[0], 0, 1;
+    shift @ARGV;
+    if ($beg eq "a") {
+        add_chit($chitpath, @ARGV);
+    } elsif ($beg eq "c") {
+        cat_chit($chitpath, @ARGV);
+    } else {
+        print_help();
+    }
 }
