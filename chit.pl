@@ -18,8 +18,6 @@ sub print_help {
         ;
 }
 
-my $color_enabled = $ENV{'TERM'} =~ /color/;
-
 ################################
 # subs for add chit
 
@@ -77,7 +75,7 @@ sub get_files {
 sub format_path_to_time {
     # .config/chit/201212/22182340 => 2012/12/22 18:23:40
     my $path = shift;
-    if ($path =~ m#(\d{4})(\d{2})/(\d{2})(\d{2})(\d{2})(\d{2})#) {
+    if ($path =~ m#(\d{4})(\d{2})/(\d{2})(\d{2})(\d{2})(\d{2})$#) {
         return "$1/$2/$3 $4:$5:$6";
     } else {
         return;
@@ -92,14 +90,14 @@ sub cat_one_file {
     close $fh;
     if (! $pattern || $line =~ /$pattern/) {
         return $line;
-    }
-    else {
+    } else {
         return;
     }
 }
 
 sub cat_files {
-    # return number of files processed
+    # cat files under given directory
+    # return number of files used
     my ($path, $num, $pattern) = @_;
     my @files = sort { $b cmp $a } grep { /\d{8}$/ } get_files($path);
     my $i = 0;
@@ -145,18 +143,22 @@ sub cat_chit {
 #################################
 # setup directory
 
-my $homepath = $ENV{'HOME'};
-if (! $homepath) {
-    warn "HOME is not set. Use current directory.\n";
-    $homepath = "."
+sub get_chitpath {
+    my $homepath = $ENV{'HOME'};
+    if (! $homepath) {
+        warn "HOME is not set. Use current directory.\n";
+        $homepath = "."
+    }
+    my $confpath = $ENV{'XDG_CONFIG_HOME'} ||
+        File::Spec->catfile($homepath, ".config");
+    my $chitpath = File::Spec->catfile($confpath, "chit");
+    return $chitpath;
 }
-my $confpath = $ENV{'XDG_CONFIG_HOME'} ||
-    File::Spec->catfile($homepath, ".config");
-my $chitpath = File::Spec->catfile($confpath, "chit");
 
 if (@ARGV == 0) {
     print_help();
 } else {
+    my $chitpath = get_chitpath();
     my $cmd = shift;
     my $beg = substr $cmd, 0, 1;
     if ($beg eq "a") {
