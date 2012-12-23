@@ -9,6 +9,7 @@ use warnings;
 
 use File::Spec;
 use File::Path 'mkpath';
+use Term::ANSIColor;
 
 sub print_help {
     warn
@@ -16,6 +17,8 @@ sub print_help {
         "        or:  chit c[at][<num>] [<pattern>]\n"
         ;
 }
+
+my $color_enabled = $ENV{'TERM'} =~ /color/;
 
 ################################
 # subs for add chit
@@ -39,9 +42,6 @@ sub write_file {
     print $fh "${str}\n";
     close $fh or die qq/Can't close file "$file": $!/;
 
-    print
-        "Add chit: '$filepath'\n" .
-        "    $str\n";
     return
 }
 
@@ -51,7 +51,10 @@ sub add_chit {
     my ($dir, $file) = get_time();
     my $path = File::Spec->catfile($chitpath, $dir);
     if ($str) {
-        write_file($path, $file, $str)
+        write_file($path, $file, $str);
+        print
+            "Add chit: '$dir/$file'\n" .
+            "    " . colored("$str", 'bold') . "\n";
     } else {
         print "Empty chit.\n";
     }
@@ -105,7 +108,7 @@ sub cat_files {
             my $timestr = format_path_to_time($file);
             my $line = cat_one_file($file, $pattern);
             if ($line) {
-                print "$timestr $line";
+                print "$timestr ", colored("$line", 'bold');
                 $i += 1;
             }
         };
