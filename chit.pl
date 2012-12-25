@@ -59,7 +59,9 @@ sub format_time_to_path {
 # subs for add chit
 
 sub write_file {
-    my ($path, $file, $str) = @_;
+    my ($chitpath, $time, $str) = @_;
+    my ($dir, $file) = format_time_to_path($time);
+    my $path = File::Spec->catfile($chitpath, $dir);
     mkpath($path);
     my $filepath = File::Spec->catfile($path, $file);
 
@@ -81,13 +83,11 @@ sub add_chit {
         $str = join(" ", @_);
     }
     my $time = get_time();
-    my ($dir, $file) = format_time_to_path($time);
-    my $path = File::Spec->catfile($chitpath, $dir);
     if ($str) {
-        write_file($path, $file, $str);
+        write_file($chitpath, $time, $str);
         $str = colored($str, 'bold');
         print
-            "Add chit: '$dir/$file'\n" .
+            "Add chit: '$time'\n" .
             "    $str\n";
     } else {
         print "Empty chit.\n";
@@ -222,9 +222,7 @@ sub load_line {
     if ($line =~ m#^(\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}) (.*)$#) {
         my $time = $1;
         my $content = $2;
-        my ($dir, $file) = format_time_to_path($time);
-        my $path = File::Spec->catfile($chitpath, $dir);
-        write_file($path, $file, $content);
+        write_file($chitpath, $time, $content);
     }
     return;
 }
