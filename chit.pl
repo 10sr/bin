@@ -9,12 +9,15 @@ use warnings;
 
 use File::Spec;
 use File::Path 'mkpath';
+use File::Path 'rmtree';
 use Term::ANSIColor;
 
 sub print_help {
     warn
         "chit: usage: chit {a|add} <note>\n" .
-        "        or:  chit {c|cat}[<num>] [<pattern>]\n"
+        "        or:  chit {c|cat}[<num>] [<pattern>]\n" .
+        "        or:  chit {l|load} <files>\n" .
+        "        or:  chit {d|dump}[<num>] [<pattern>]\n"
         ;
 }
 
@@ -184,6 +187,7 @@ sub archive_dir {
             die qq/Can't open file "$file": $!/;
         cat_files($dir, 0, undef, 1, $fh);
         # remove dir
+        rmtree($dir);
     }
 }
 
