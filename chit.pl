@@ -18,16 +18,42 @@ sub print_help {
         ;
 }
 
+##################################
+# format time and path
+
+sub format_path_to_time {
+    # .config/chit/201212/22182340 => 2012/12/22 18:23:40
+    my $path = shift;
+    # \D is separator
+    if ($path =~ m#(\d{4})(\d{2})\D*?(\d{2})(\d{2})(\d{2})(\d{2})$#) {
+        return "$1/$2/$3 $4:$5:$6";
+    } else {
+        return;
+    }
+}
+
+sub format_time_to_path {
+    # 2012/12/22 18:23:40 => 201212/22182340
+    my $time = shift;
+    if ($time =~ m#(\d{4})/(\d{2})/(\d{2}) (\d{2}):(\d{2}):(\d{2})$#) {
+        my $dir = "$1$2";
+        my $file = "$3$4$5$6";
+        return File::Spec->catfile($dir, $file);
+    } else {
+        return;
+    }
+}
+
 ################################
 # subs for add chit
 
 sub get_time {
+    # return time string in format like 2012/12/22 18:23:40
     my ($sec, $min, $hour, $mday, $mon, $year) = localtime();
     $year += 1900;
     $mon += 1;
-    my $str1 = sprintf('%04d%02d', $year, $mon);
-    my $str2 = sprintf('%02d%02d%02d%02d', $mday, $hour, $min, $sec);
-    return $str1, $str2;
+    return sprintf('%04d/%02d/%02d %02d:%02d:%02d',
+                   $year, $mon, $mday, $hour, $min, $sec);
 }
 
 sub write_file {
@@ -46,13 +72,15 @@ sub write_file {
 sub add_chit {
     my $chitpath = shift @_;
     my $str = join(" ", @_);
-    my ($dir, $file) = get_time();
+    my $time = get_time();
+    my ($dir, $file) = format_time_to_path($time);
     my $path = File::Spec->catfile($chitpath, $dir);
     if ($str) {
         write_file($path, $file, $str);
+        $str = colored($str, 'bold');
         print
             "Add chit: '$dir/$file'\n" .
-            "    " . colored("$str", 'bold') . "\n";
+            "    $str\n";
     } else {
         print "Empty chit.\n";
     }
@@ -70,16 +98,6 @@ sub get_files {
     my @dirs = map { "$dir/$_" } grep { $_ ne '.' && $_ ne '..' } readdir $dh;
 
     return @dirs;
-}
-
-sub format_path_to_time {
-    # .config/chit/201212/22182340 => 2012/12/22 18:23:40
-    my $path = shift;
-    if ($path =~ m#(\d{4})(\d{2})/(\d{2})(\d{2})(\d{2})(\d{2})$#) {
-        return "$1/$2/$3 $4:$5:$6";
-    } else {
-        return;
-    }
 }
 
 sub cat_one_file {
@@ -106,7 +124,8 @@ sub cat_files {
             my $timestr = format_path_to_time($file);
             my $line = cat_one_file($file, $pattern);
             if ($line) {
-                print "$timestr ", colored("$line", 'bold');
+                $line = colored($line, 'bold');
+                print "$timestr $line";
                 $i += 1;
             }
         };
@@ -166,6 +185,10 @@ if (@ARGV == 0) {
     } elsif ($beg eq "c") {
         my $num = substr $cmd, 1;
         cat_chit($chitpath, $num, @ARGV);
+    } elsif ($beg eq "d") {
+        dump_chit($chitpath, @ARGV);
+    } elsif ($beg eq "l") {
+        load_chit($chitpath, @ARGV);
     } else {
         print_help();
     }
