@@ -21,6 +21,15 @@ sub print_help {
 ##################################
 # format time and path
 
+sub get_time {
+    # return time string in format like 2012/12/22 18:23:40
+    my ($sec, $min, $hour, $mday, $mon, $year) = localtime();
+    $year += 1900;
+    $mon += 1;
+    return sprintf('%04d/%02d/%02d %02d:%02d:%02d',
+                   $year, $mon, $mday, $hour, $min, $sec);
+}
+
 sub format_path_to_time {
     # .config/chit/201212/22182340 => 2012/12/22 18:23:40
     my $path = shift;
@@ -46,15 +55,6 @@ sub format_time_to_path {
 
 ################################
 # subs for add chit
-
-sub get_time {
-    # return time string in format like 2012/12/22 18:23:40
-    my ($sec, $min, $hour, $mday, $mon, $year) = localtime();
-    $year += 1900;
-    $mon += 1;
-    return sprintf('%04d/%02d/%02d %02d:%02d:%02d',
-                   $year, $mon, $mday, $hour, $min, $sec);
-}
 
 sub write_file {
     my ($path, $file, $str) = @_;
@@ -150,9 +150,7 @@ sub cat_files {
 sub cat_chit {
     my ($chitpath, $num, $pattern, $nocolor, $fh) = @_;
     my @dirs = sort { $b cmp $a } grep { /\d{6}$/ } get_files($chitpath);
-    if ($num =~ /\D*(\d+)/) {   # number of chit to cat
-        $num = $1;
-    } else {
+    if ($num < 0) {
         $num = 10;
     }
     foreach my $d (@dirs) {
@@ -255,6 +253,16 @@ sub get_chitpath {
     return ($chitpath, $backuppath);
 }
 
+sub extract_num {
+    # extract number from string, return -1 if none
+    my $str = shift;
+    if ($str =~ /\D*(\d+)/) {   # number of chit to cat
+        return $1;
+    } else {
+        return -1;
+    }
+}
+
 if (@ARGV == 0) {
     print_help();
 } else {
@@ -264,7 +272,7 @@ if (@ARGV == 0) {
     if ($beg eq "a") {
         add_chit($chitpath, @ARGV);
     } elsif ($beg eq "c") {
-        my $num = substr $cmd, 1;
+        my $num = extract_num($cmd);
         cat_chit($chitpath, $num, @ARGV);
     } elsif ($beg eq "d") {
         dump_chit($chitpath, @ARGV);
