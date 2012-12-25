@@ -101,6 +101,7 @@ sub get_files {
 }
 
 sub cat_one_file {
+    # open file and return content
     my ($file, $pattern) = @_;
     open my $fh, '<', $file
         or die qq/Can't open file "$file": $!/;
@@ -116,7 +117,7 @@ sub cat_one_file {
 sub cat_files {
     # cat files under given directory
     # return number of files used
-    my ($path, $num, $pattern) = @_;
+    my ($path, $num, $pattern, $nocolor, $fh) = @_;
     my @files = sort { $b cmp $a } grep { /\d{8}$/ } get_files($path);
     my $i = 0;
     foreach my $file (@files) {
@@ -124,8 +125,12 @@ sub cat_files {
             my $timestr = format_path_to_time($file);
             my $line = cat_one_file($file, $pattern);
             if ($line) {
-                $line = colored($line, 'bold');
-                print "$timestr $line";
+                if (! $nocolor) { $line = colored($line, 'bold'); }
+                if ($fh) {
+                    print $fh "$timestr $line";
+                } else {
+                    print "$timestr $line";
+                }
                 $i += 1;
             }
         };
@@ -142,7 +147,7 @@ sub cat_files {
 }
 
 sub cat_chit {
-    my ($chitpath, $num, $pattern) = @_;
+    my ($chitpath, $num, $pattern, $nocolor, $fh) = @_;
     my @dirs = sort { $b cmp $a } grep { /\d{6}$/ } get_files($chitpath);
     if ($num =~ /\D*(\d+)/) {   # number of chit to cat
         $num = $1;
@@ -150,7 +155,7 @@ sub cat_chit {
         $num = 10;
     }
     foreach my $d (@dirs) {
-        my $i = cat_files($d, $num, $pattern);
+        my $i = cat_files($d, $num, $pattern, $nocolor, $fh);
         $num -= $i;
 
         if ($num <= 0) {
