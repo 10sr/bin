@@ -13,8 +13,8 @@ use Term::ANSIColor;
 
 sub print_help {
     warn
-        "chit: usage: chit a[ad] <note>\n" .
-        "        or:  chit c[at][<num>] [<pattern>]\n"
+        "chit: usage: chit {a|add} <note>\n" .
+        "        or:  chit {c|cat}[<num>] [<pattern>]\n"
         ;
 }
 
@@ -90,6 +90,7 @@ sub add_chit {
 # subs for cat chits
 
 sub get_files {
+    # get files undir $1 with path
     my $dir = shift;
 
     opendir my $dh, $dir
@@ -138,7 +139,7 @@ sub cat_files {
             warn qq/Error while cat file: $@/;
         }
 
-        if ($i == $num) {
+        if ($i >= $num && $num != 0) { # if $num is 0 cat all files
             return $i;
         }
     }
@@ -164,6 +165,34 @@ sub cat_chit {
     }
 }
 
+##############################
+# subs for archiving
+
+sub archive_dir {
+    my ($dir, $backuppath) = @_;
+    if ($dir =~ /\D(\d*)$/) {
+        my $basename = $1;
+        my $file = File::Spec->catfile($backuppath, $basename . ".txt");
+        open my $fh, ">", $file or
+            die qq/Can't open file "$file": $!/;
+        cat_files($dir, 0, undef, 1, $fh);
+    }
+}
+
+sub archive_old_dirs {
+    my ($chitpath, $backuppath) = @_;
+    mkpath($backuppath);
+    my @dirs = sort { $b cmp $a} grep { /\d{6}$/ } get_files($chitpath);
+    my $num = 0;                # number of dirs
+    foreach my $d (@dirs) {
+        $num += 1;
+        if ($num > 12) {
+            archive_dir($d, $backuppath);
+        }
+    }
+    return
+}
+
 #################################
 # setup directory
 
@@ -176,13 +205,14 @@ sub get_chitpath {
     my $confpath = $ENV{'XDG_CONFIG_HOME'} ||
         File::Spec->catfile($homepath, ".config");
     my $chitpath = File::Spec->catfile($confpath, "chit");
-    return $chitpath;
+    my $backuppath = File::Spec->catfile($chitpath, "backup");
+    return ($chitpath, $backuppath);
 }
 
 if (@ARGV == 0) {
     print_help();
 } else {
-    my $chitpath = get_chitpath();
+    my ($chitpath, $backuppath) = get_chitpath();
     my $cmd = shift;
     my $beg = substr $cmd, 0, 1;
     if ($beg eq "a") {
@@ -197,4 +227,5 @@ if (@ARGV == 0) {
     } else {
         print_help();
     }
+    archive_old_dirs($chitpath, $backuppath);
 }
