@@ -2,7 +2,6 @@
 
 # very simple note taking app
 # basically no way to remove note
-# each note can be only one line.
 
 use strict;
 use warnings;
@@ -262,6 +261,9 @@ sub get_chitpath {
         File::Spec->catfile($homepath, ".config");
     my $chitpath = File::Spec->catfile($confpath, "chit");
     my $backuppath = File::Spec->catfile($chitpath, "backup");
+
+    my $env_chitpath = $ENV{"CHIT_PATH"};
+    if ($env_chitpath) { $chitpath = $env_chitpath; }
     return ($chitpath, $backuppath);
 }
 
