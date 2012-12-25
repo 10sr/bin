@@ -33,12 +33,12 @@ sub format_path_to_time {
 }
 
 sub format_time_to_path {
-    # 2012/12/22 18:23:40 => 201212/22182340
+    # 2012/12/22 18:23:40 => 201212, 22182340
     my $time = shift;
     if ($time =~ m#(\d{4})/(\d{2})/(\d{2}) (\d{2}):(\d{2}):(\d{2})$#) {
         my $dir = "$1$2";
         my $file = "$3$4$5$6";
-        return File::Spec->catfile($dir, $file);
+        return ($dir, $file);
     } else {
         return;
     }
@@ -173,9 +173,11 @@ sub archive_dir {
     if ($dir =~ /\D(\d*)$/) {
         my $basename = $1;
         my $file = File::Spec->catfile($backuppath, $basename . ".txt");
+        # what if file already exists?
         open my $fh, ">", $file or
             die qq/Can't open file "$file": $!/;
         cat_files($dir, 0, undef, 1, $fh);
+        # remove dir
     }
 }
 
@@ -189,6 +191,50 @@ sub archive_old_dirs {
         if ($num > 12) {
             archive_dir($d, $backuppath);
         }
+    }
+    return
+}
+
+################################
+# subs for load chits
+
+sub load_line {
+    my ($chitpath, $line) = @_;
+    if ($line =~ m#^(\d{4}/\d{2}/\d{2} \d{2}:\d{2}:\d{2}) (.*)$#) {
+        my $time = $1;
+        my $content = $2;
+        my ($dir, $file) = format_time_to_path($time);
+        my $path = File::Spec->catfile($chitpath, $dir);
+        write_file($path, $file, $content);
+    }
+    return
+}
+
+sub load_file {
+    my ($chitpath, $file) = @_;
+    if ($file) {
+        open my $fh, "<", $file or
+            die qq/Can't open file "$file" : $!/;
+        while (my $line = <$fh>) {
+            load_line($chitpath, $line);
+        }
+    } else {
+        while (my $line = <STDIN>) {
+            load_line($chitpath, $line);
+        }
+    }
+    return
+}
+
+sub load_chit {
+    my $chitpath = shift;
+    my @files = @_;
+    if (@files != 0) {
+        foreach my $file (@files) {
+            load_file($chitpath, $file);
+        }
+    } else {
+        load_file($chitpath);
     }
     return
 }
