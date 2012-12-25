@@ -68,12 +68,18 @@ sub write_file {
     print $fh "${str}\n";
     close $fh or die qq/Can't close file "$file": $!/;
 
-    return
+    return;
 }
 
 sub add_chit {
     my $chitpath = shift @_;
-    my $str = join(" ", @_);
+    my $str;
+    if (@_ == 0) {
+        print ">> ";
+        $str = <STDIN>;
+    } else {
+        $str = join(" ", @_);
+    }
     my $time = get_time();
     my ($dir, $file) = format_time_to_path($time);
     my $path = File::Spec->catfile($chitpath, $dir);
@@ -86,6 +92,7 @@ sub add_chit {
     } else {
         print "Empty chit.\n";
     }
+    return;
 }
 
 #################################
@@ -163,6 +170,7 @@ sub cat_chit {
             return;
         }
     }
+    return;
 }
 
 ##############################
@@ -171,6 +179,7 @@ sub cat_chit {
 sub dump_chit {
     my ($path, $num, $pattern) = @_;
     cat_chit($path, $num, $pattern, 1);
+    return;
 }
 
 ##############################
@@ -188,6 +197,7 @@ sub archive_dir {
         # remove dir
         rmtree($dir);
     }
+    return;
 }
 
 sub archive_old_dirs {
@@ -201,7 +211,7 @@ sub archive_old_dirs {
             archive_dir($d, $backuppath);
         }
     }
-    return
+    return;
 }
 
 ################################
@@ -216,7 +226,7 @@ sub load_line {
         my $path = File::Spec->catfile($chitpath, $dir);
         write_file($path, $file, $content);
     }
-    return
+    return;
 }
 
 sub load_file {
@@ -232,7 +242,7 @@ sub load_file {
             load_line($chitpath, $line);
         }
     }
-    return
+    return;
 }
 
 sub load_chit {
@@ -245,7 +255,7 @@ sub load_chit {
     } else {
         load_file($chitpath);
     }
-    return
+    return;
 }
 
 #################################
@@ -270,7 +280,7 @@ sub get_chitpath {
 sub extract_num {
     # extract number from string, return -1 if none
     my $str = shift;
-    if ($str =~ /\D*(\d+)/) {   # number of chit to cat
+    if ($str =~ /^\D*(\d+)/) {   # number of chit to cat
         return $1;
     } else {
         return -1;
