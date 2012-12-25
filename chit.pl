@@ -164,6 +164,14 @@ sub cat_chit {
 }
 
 ##############################
+# subs for dump
+
+sub dump_chit {
+    my ($path, $num, $pattern) = @_;
+    cat_chit($path, $num, $pattern, 1);
+}
+
+##############################
 # subs for archiving
 
 sub archive_dir {
@@ -273,9 +281,10 @@ if (@ARGV == 0) {
         add_chit($chitpath, @ARGV);
     } elsif ($beg eq "c") {
         my $num = extract_num($cmd);
-        cat_chit($chitpath, $num, @ARGV);
+        cat_chit($chitpath, $num, $ARGV[0]);
     } elsif ($beg eq "d") {
-        dump_chit($chitpath, @ARGV);
+        my $num = extract_num($cmd);
+        dump_chit($chitpath, $num, $ARGV[0]);
     } elsif ($beg eq "l") {
         load_chit($chitpath, @ARGV);
     } else {
