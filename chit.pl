@@ -10,6 +10,7 @@ use File::Spec;
 use File::Path 'mkpath';
 use File::Path 'rmtree';
 use Term::ANSIColor;
+use Digest::MD5 qw/md5_hex/;
 
 sub print_help {
     warn
@@ -63,6 +64,8 @@ sub write_file {
     my ($dir, $file) = format_time_to_path($time);
     my $path = File::Spec->catfile($chitpath, $dir);
     mkpath($path);
+    my $md5ed = md5_hex($str);
+    $file = "${file}-${md5ed}";
     my $filepath = File::Spec->catfile($path, $file);
 
     open my $fh, ">", $filepath or
@@ -110,7 +113,7 @@ sub get_files {
     return @dirs;
 }
 
-sub cat_one_file {
+sub get_file_content {
     # open file and return content
     my ($file, $pattern) = @_;
     open my $fh, '<', $file
@@ -128,12 +131,14 @@ sub cat_files {
     # cat files under given directory
     # return number of files used
     my ($path, $num, $pattern, $nocolor, $fh) = @_;
-    my @files = sort { $b cmp $a } grep { /\d{8}$/ } get_files($path);
-    my $i = 0;
+    my @files = sort { $b cmp $a } grep { /\d{8}-[^-]*$/ } get_files($path);
+    my $i = 0;                  # number of chit cat-ted.
     foreach my $file (@files) {
         eval {
-            my $timestr = format_path_to_time($file);
-            my $line = cat_one_file($file, $pattern);
+            my $timestr = $file;
+            $timestr =~ s/-[^-]*$//g;
+            $timestr = format_path_to_time($timestr);
+            my $line = get_file_content($file, $pattern);
             if ($line) {
                 if (! $nocolor) { $line = colored($line, 'bold'); }
                 if ($fh) {
@@ -148,7 +153,7 @@ sub cat_files {
             warn qq/Error while cat file: $@/;
         }
 
-        if ($i >= $num && $num != 0) { # if $num is 0 cat all files
+        if ($i == $num) {
             return $i;
         }
     }
@@ -161,12 +166,16 @@ sub cat_chit {
     my @dirs = sort { $b cmp $a } grep { /\d{6}$/ } get_files($chitpath);
     if ($num < 0) {
         $num = 10;
+    } elsif ($num == 0) {
+        $num = -1
     }
+    # from this line, the meaning of $num change
+    # rest number of chit to show, < 0 means no limit
     foreach my $d (@dirs) {
         my $i = cat_files($d, $num, $pattern, $nocolor, $fh);
         $num -= $i;
 
-        if ($num <= 0) {
+        if ($num == 0) {
             return;
         }
     }
@@ -279,7 +288,7 @@ sub extract_num {
     # extract number from string, return -1 if none
     my $str = shift;
     if ($str =~ /^\D*(\d+)/) {   # number of chit to cat
-        return $1;
+        return 0 + $1;
     } else {
         return -1;
     }
