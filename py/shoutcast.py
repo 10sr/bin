@@ -15,14 +15,14 @@ except ImportError:
     print("Module readline not available.")
     readline = None
 else:
-    if "libedit" in readline.__doc__ :
+    if "libedit" in readline.__doc__:
         readline.parse_and_bind("bind ^I rl_complete")
-    else :
+    else:
         readline.parse_and_bind("tab: complete")
 
-try :
+try:
     from mpg123 import MPG123
-except ImportError :
+except ImportError:
     MPG123 = None
     from subprocess import call
 
@@ -31,42 +31,42 @@ class ScParser(HTMLParser):
     current = ""
     pls_url = "http://yp.shoutcast.com/sbin/tunein-station.pls"
 
-    def __init__(self) :
+    def __init__(self):
         HTMLParser.__init__(self)
         self.stations = []
         self.current = ""
 
     def handle_starttag(self, tag, attrs):
-        if tag == "a" :
+        if tag == "a":
 
 
             title = ""
             url = ""
-            for a in attrs :
-                if a[0] == "href" and a[1].startswith(self.pls_url) :
+            for a in attrs:
+                if a[0] == "href" and a[1].startswith(self.pls_url):
                     url = a[1]
-                elif a[0] == "title" :
+                elif a[0] == "title":
                     title = a[1]
-                elif a[0] == "class" and "playimage" in a[1] :
+                elif a[0] == "class" and "playimage" in a[1]:
                     # if tag has playimage class ignore the url
                     return
 
-            if url != "" :
+            if url != "":
                 self.stations.append({"title" : title, "url" : url})
 
-        elif tag == "div" :
-            for a in attrs :
+        elif tag == "div":
+            for a in attrs:
                 if a[0] != "class" : continue
 
-                if a[1] == "playingtext" :
+                if a[1] == "playingtext":
                     self.current = "recent"
-                elif a[1] == "dirgenre" :
+                elif a[1] == "dirgenre":
                     self.current = "genre"
                 elif a[1] == "dirlistners" : # wrong spelling!
                     self.current = "listeners"
-                elif a[1] == "dirbitrate" :
+                elif a[1] == "dirbitrate":
                     self.current = "bitrate"
-                elif a[1] == "dirtype" :
+                elif a[1] == "dirtype":
                     self.current = "type"
 
     def handle_data(self, data):
@@ -82,16 +82,16 @@ class ScParser(HTMLParser):
 def play(url):
     """play url file"""
     if url:
-        if MPG123 :
+        if MPG123:
             p = MPG123()
             p.new([url])
             p.play()
-        else :
+        else:
             call(player + " " + track, shell=True)
 
-def get_media_url(url) :
+def get_media_url(url):
     """get media url from pls"""
-    if not url :
+    if not url:
         return None
     data = urlopen(url)
     track = parse_pls(data)
@@ -107,15 +107,15 @@ def parse_pls(file):
 
 def gen_search(words):
     """generate search url from words"""
-    if words == "" :
+    if words == "":
         print("No search word given.", file=sys.stderr)
         return None
-    else :
+    else:
         return shoutcast + "Internet-Radio/" + urlquote(words)
 
 def get_stations(words):
     url = gen_search(words)
-    if not url :
+    if not url:
         return None
     data = urlopen(url)
     parser = ScParser()
@@ -124,47 +124,47 @@ def get_stations(words):
     return parser.stations
 
 def choose(stations):
-    if len(stations) == 0 :
+    if len(stations) == 0:
         print("No station found.")
         return None
 
-    for i, s in enumerate(stations) :
+    for i, s in enumerate(stations):
         if i >= 5 : break
         i = i + 1
         print("{:>2} : {} | {}".format(i, s["title"], s["recent"]))
         print ("     ", end = "")
-        for k, v in s.items() :
-            if k != "url" and k != "title" and k != "recent" :
+        for k, v in s.items():
+            if k != "url" and k != "title" and k != "recent":
                 print("{} : {}  ".format(k, v), end = "")
         print("")
         print("")
 
     s = input("Input num: ")
-    if s == "" or not s.isdigit() :
+    if s == "" or not s.isdigit():
         return None
-    else :
+    else:
         return stations[int(s) - 1]["url"]
 
-def get_media_from_words(words) :
+def get_media_from_words(words):
     s = get_stations(words)
-    if not s :
+    if not s:
         return None
     u = choose(s)
     t = get_media_url(u)
     return t
 
 def main(argv):
-    if len(argv) > 1 :
+    if len(argv) > 1:
         w = " ".join(argv[1:])
         t = get_media_from_words(w)
         play(t)
-    else :
-        while True :
+    else:
+        while True:
             w = input("Enter query: ")
-            if w == "" :
+            if w == "":
                 break
             t = get_media_from_words(w)
             play(t)
 
-if __name__ == '__main__' :
+if __name__ == '__main__':
     main(sys.argv)

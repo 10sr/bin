@@ -10,9 +10,9 @@ from string import Template
 from time import strftime
 from subprocess import call, check_output
 
-try :
+try:
     from markdown import Markdown
-except ImportError :
+except ImportError:
     Markdown = None
 
 # import locale
@@ -45,16 +45,16 @@ class MDPage:
         return
 
     def autoremove(self):
-        for f in os.listdir() :
+        for f in os.listdir():
             if not os.path.isdir(f) and f.endswith(".html") and \
                     not f.startswith(".") and \
                     not f.startswith("_") and \
-                    not os.path.splitext(f)[0] in self.file_list :
+                    not os.path.splitext(f)[0] in self.file_list:
                 print("rm : {}.".format(f))
                 os.remove(f)
         return
 
-    def clean(self) :
+    def clean(self):
         return
 
     def make(self):
@@ -81,29 +81,29 @@ class MDPage:
 
     def update(self):
         """do check() before call this"""
-        if self.mdc.conv == None :
+        if self.mdc.conv == None:
             print("No way to convert md file!", file=stderr)
             return
 
         if self.update_all or \
                 self.fl.updated or \
                 self.t.exist == False or \
-                self.t.updated :
+                self.t.updated:
             print("all files are to be updated.")
             fl = self.fl.file_list
-        else :
+        else:
             fl = self.fl.updated_list
 
-        if self.update_all or self.fl.updated :
+        if self.update_all or self.fl.updated:
             self.fl.update_file(self.dec)
 
-        if not fl :
+        if not fl:
             print("No file to update.")
             return
 
         self.t.set()
 
-        for f in fl :
+        for f in fl:
             res = self.mdc.conv(f + ".md", self.enc)
             htmlfd = open(f + ".html", mode="w", encoding=self.dec)
             htmlfd.write(self.t.gen_str(f, self.menu.s, res, self.cur_time))
@@ -112,7 +112,7 @@ class MDPage:
 
         return
 
-class PageMenu :
+class PageMenu:
     files = None
     dirs = None
 
@@ -122,7 +122,7 @@ class PageMenu :
 
     s = None
 
-    def __init__(self, files, dirs) :
+    def __init__(self, files, dirs):
         self.files = files
         self.dirs = dirs
 
@@ -133,12 +133,12 @@ class PageMenu :
     def gen_menu_str(self):
         s = "<ul class=\"{}\">\n".format(self.class_name)
 
-        if "index" in self.files :
+        if "index" in self.files:
             s = s + self.page_str.format("index", "index")
-        for f in self.dirs :
+        for f in self.dirs:
             s = s + self.dir_str.format(f, f)
-        for f in self.files :
-            if f != "index" :
+        for f in self.files:
+            if f != "index":
                 s = s + self.page_str.format(f, f)
 
         s = s + "</ul>\n"
@@ -146,7 +146,7 @@ class PageMenu :
 
         return
 
-class FileList :
+class FileList:
     file_list = []
     dir_list = []
     updated_list = []
@@ -154,7 +154,7 @@ class FileList :
     fname = ".files.lst"
     updated = None
 
-    def __init__(self) :
+    def __init__(self):
         l = os.listdir()
         self.file_list = [f for f, e in map(os.path.splitext, l) \
                               if not f.startswith(".") and \
@@ -184,9 +184,9 @@ class FileList :
     def update_file(self, encoding="utf-8"):
         """update list_file"""
         fd = open(self.fname, mode="w", encoding=encoding)
-        for d in self.dir_list :
+        for d in self.dir_list:
             fd.write(d + "\n")
-        for f in self.file_list :
+        for f in self.file_list:
             fd.write(f + "\n")
         fd.close
         print("{} generated.".format(self.fname))
@@ -194,7 +194,7 @@ class FileList :
 
     def check_filelist_updated(self, encoding="utf-8"):
         """check if there is any file newly created or removed"""
-        if not os.path.isfile(self.fname) :
+        if not os.path.isfile(self.fname):
             print("{} not exist.".format(self.fname))
             self.updated = True
             return
@@ -202,15 +202,15 @@ class FileList :
         fd = open(self.fname, mode="r", encoding=encoding)
         oldlist = fd.read().split("\n")[:-1]
         fd.close()
-        if set(oldlist) == set(self.file_list + self.dir_list) :
+        if set(oldlist) == set(self.file_list + self.dir_list):
             self.updated = False
-        else :
+        else:
             self.updated = True
             print("File list was updated.")
 
         return
 
-class PageTemplate :
+class PageTemplate:
     """class for page template"""
     filename = ".template.html"
     exist = None
@@ -237,25 +237,25 @@ ${content}
 <!-- Last update : ${time} -->
 """
 
-    def __init__(self) :
+    def __init__(self):
         self.check_exist()
         return
 
-    def check_exist(self) :
-        if os.access(self.filename, os.R_OK) :
+    def check_exist(self):
+        if os.access(self.filename, os.R_OK):
             self.exist = True
-        else :
+        else:
             self.exist = False
             print("{} not exist.".format(self.filename))
         return
 
-    def check_updated(self, flist) :
+    def check_updated(self, flist):
         """judge if file is newer than any of html file in flist"""
-        if not self.exist :
+        if not self.exist:
             return
-        for f in flist :
+        for f in flist:
             if os.path.isfile(f + ".html") and \
-                    self.is_file_newer(self.filename, f + ".html") :
+                    self.is_file_newer(self.filename, f + ".html"):
                 print("{} is updated.".format(self.filename))
                 self.updated = True
                 return
@@ -267,33 +267,33 @@ ${content}
         """Return True if f1 is newer than f2"""
         return os.path.getmtime(f1) > os.path.getmtime(f2)
 
-    def set(self, encoding="utf-8") :
+    def set(self, encoding="utf-8"):
         """set self.s and create file if none"""
-        if self.exist :
+        if self.exist:
             self.read_file(encoding)
-        else :
+        else:
             self.write_file(encoding)
             self.s = self.TEMPLATE_DEF
         self.t = Template(self.s)
         return
 
-    def read_file(self, encoding="utf-8") :
+    def read_file(self, encoding="utf-8"):
         fd = open(self.filename, mode="r", encoding=encoding)
         self.s = fd.read()
         fd.close()
         return
 
-    def write_file(self, decoding="utf-8") :
+    def write_file(self, decoding="utf-8"):
         fd = open(self.filename, mode="w", encoding=decoding)
         fd.write(self.TEMPLATE_DEF)
         fd.close()
         print("{} generated.".format(self.filename))
         return
 
-    def gen_str(self, n, m, c, t) :
+    def gen_str(self, n, m, c, t):
         return self.t.safe_substitute(name = n, menu = m, content = c, time = t)
 
-class MDConv :
+class MDConv:
     md = None
     md_command = None
     conv = None
@@ -301,27 +301,27 @@ class MDConv :
 {}
 </div>"""
 
-    def __init__(self) :
-        if Markdown :
+    def __init__(self):
+        if Markdown:
             print("Use Markdown python module to convert.")
             self.md = Markdown()
             self.conv = self.conv_py
-        else :
+        else:
             self.md_command = self.check_cmd("markdown.pl") or \
                 self.check_cmd("markdown")
-            if self.md_command :
+            if self.md_command:
                 print("Use command {} to convert.".format(self.md_command))
                 self.conv = self.conv_pl
         return
 
-    def check_cmd(self, command) :
-        try :
+    def check_cmd(self, command):
+        try:
             check_output([command, "--version"])
             return command
-        except OSError :
+        except OSError:
             return None
 
-    def conv_py(self, input, encoding) :
+    def conv_py(self, input, encoding):
         """accept filename and return result as string"""
         tmp = BytesIO()
         self.md.convertFile(input = input, output = tmp, encoding = encoding)
@@ -329,7 +329,7 @@ class MDConv :
         tmp.close()
         return self.block.format(res)
 
-    def conv_pl(self, input, encoding) :
+    def conv_pl(self, input, encoding):
         """accept filename and return result as string"""
         f = open(file = input, encoding = encoding)
         res = check_output(self.md_command, stdin = f).decode(encoding)
@@ -341,23 +341,23 @@ def help():
 
 def main(argv):
     mp = MDPage()
-    if len(argv) == 1 or argv[1] == "check" :
+    if len(argv) == 1 or argv[1] == "check":
         mp.check()
         mp.print_updated()
-    elif argv[1] == "update" :
+    elif argv[1] == "update":
         mp.make()
-    elif argv[1] == "force" :
+    elif argv[1] == "force":
         mp.force()
-    elif argv[1] == "autoremove" :
+    elif argv[1] == "autoremove":
         mp.autoremove()
-    elif argv[1] == "clean" :
+    elif argv[1] == "clean":
         mp.clean()
-    elif argv[1] == "help" or argv[1] == "--help" :
+    elif argv[1] == "help" or argv[1] == "--help":
         help()
-    else :
+    else:
         print("Invalid argument: {}.".format(argv[1]))
         help()
     return
 
-if __name__ == "__main__" :
+if __name__ == "__main__":
     main(argv)

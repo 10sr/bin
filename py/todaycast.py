@@ -21,7 +21,7 @@ def play(media):
 
 def conf_file():
     env = "XDG_CONFIG_HOME"
-    if env in os.environ :
+    if env in os.environ:
         return os.environ[env] + "/todaycast.conf"
     else:
         return os.path.expanduser("~/.todaycast.conf")
@@ -49,7 +49,7 @@ def save_conf(media):
 
 def main():
     media = get_latest_media(feed)
-    if check_new(media) :
+    if check_new(media):
         play(media)
         save_conf(media)
 

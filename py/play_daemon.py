@@ -15,17 +15,17 @@ PIDFILE = CONFIG_DIR + "/pid"
 P_PIDFILE = CONFIG_DIR + "/player_pid"
 BUFSIZE = 1024
 
-def send_command(args) :
+def send_command(args):
     """func for client program"""
     s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     print('Connecting %s.' % repr(PIPE))
     s.connect(PIPE)
     t = dumps(args)
-    if len(t) > BUFSIZE :
+    if len(t) > BUFSIZE:
         print("Too large data!")
-    elif len(t) == 0 :
+    elif len(t) == 0:
         print("No data!")
-    else :
+    else:
         print("Sending:" + str(t))
         s.send(t)
         data = s.recv(1024).decode()
@@ -34,79 +34,79 @@ def send_command(args) :
     s.close()
     return data
 
-def get_player_pid() :
+def get_player_pid():
     return get_pid(P_PIDFILE)
 
-def get_daemon_pid() :
+def get_daemon_pid():
     return get_pid(PIDFILE)
 
-def get_pid(file) :
-    try :
+def get_pid(file):
+    try:
         f = open(file, "r")
         pid = int(f.read())
         f.close()
         os.getsid(pid)
         return pid
-    except OSError as e :
-        if e.errno == errno.ENOENT :
+    except OSError as e:
+        if e.errno == errno.ENOENT:
             # no PIDFILE
             return 0
-        elif e.errno == errno.ESRCH :
+        elif e.errno == errno.ESRCH:
             # no process
             return 0
-        else :
+        else:
             raise
-    except IOError as e :
-        if e.errno == errno.ENOENT :
+    except IOError as e:
+        if e.errno == errno.ENOENT:
             # no pidfile
             return 0
 
-def kill_daemon() :
+def kill_daemon():
     pid = get_player_pid()
-    if pid :
+    if pid:
         os.kill(pid, sig.SIGTERM)
         print("Player killed.")
     pid = get_daemon_pid()
-    if pid :
+    if pid:
         os.kill(pid, sig.SIGTERM)
         print("Daemon killed.")
     clean_file()
 
-def clean_file() :
-    if not get_daemon_pid :
-        try :
+def clean_file():
+    if not get_daemon_pid:
+        try:
             os.remove(PIDFILE)
-        except OSError as e :
-            if e.errno == errno.ENOENT :
+        except OSError as e:
+            if e.errno == errno.ENOENT:
                 pass
-            else :
+            else:
                 raise
-    try :
+    try:
         os.remove(PIPE)
-    except OSError as e :
-        if e.errno == errno.ENOENT :
+    except OSError as e:
+        if e.errno == errno.ENOENT:
             pass
-        else :
+        else:
             raise
 
-def run_daemon() :
+def run_daemon():
     os.makedirs(CONFIG_DIR, exist_ok = True)
 
-    if get_daemon_pid() :
+    if get_daemon_pid():
         print("Daemon is already running. Now restart daemon.")
         kill_daemon()
     clean_file()
 
     # do the UNIX double-fork magic, see Stevens' "Advanced
     # Programming in the UNIX Environment" for details (ISBN 0201563177)
-    try :
+    try:
         pid = os.fork()
         if pid > 0:
             # exit first parent
             # sys.exit(0)
             os.waitpid(pid, 0)
             return
-    except OSError as e :
+    except OSError as e:
         print("fork #1 failed: %d (%s)" % (e.errno, e.strerror), file=sys.stderr)
         sys.exit(1)
 
@@ -116,14 +116,14 @@ def run_daemon() :
     os.umask(0)
 
     # do second fork
-    try :
+    try:
         pid = os.fork()
         if pid > 0:
             # exit from second parent, print eventual PID before
             #print "Daemon PID %d" % pid
             open(PIDFILE, 'w').write("%d" % pid)
             sys.exit(0)
-    except OSError as e :
+    except OSError as e:
         print("fork #2 failed: %d (%s)" % (e.errno, e.strerror), file=sys.stderr)
         sys.exit(1)
 
@@ -133,12 +133,12 @@ def run_daemon() :
 #################################################
 # For internal
 
-def daemon_main() :
+def daemon_main():
     c = ControllerA(P_PIPE, P_PIDFILE)
     daemon_loop(c)
     exit(0)
 
-def daemon_loop(c) :
+def daemon_loop(c):
     s = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     s.bind(PIPE)
     s.listen(1)
@@ -149,13 +149,13 @@ def daemon_loop(c) :
             # ans = handle_command(player, loads(data))
             c.cmd(loads(data))
             ans = c.status
-            if ans == None :
+            if ans == None:
                 break
-            if ans == "" :
+            if ans == "":
                 ans = "Something wrong!"
             # do not send empty byte
             conn.send(ans.encode())
-        else :
+        else:
             ans = "Client closed?"
         conn.close()
         conn, addr = s.accept()
