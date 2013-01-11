@@ -62,7 +62,8 @@ class MDPage:
         self.update()
         return
 
-    def print_updated(self):
+    def check_print_updated(self):
+        self.check()
         for f in self.fl.updated_list:
             print("{}.md is to be updated.".format(f))
         return
@@ -336,27 +337,35 @@ class MDConv:
         f.close()
         return self.block.format(res)
 
-def help():
-    return
-
 def main(argv):
+    import argparse as ap
+
     mp = MDPage()
-    if len(argv) == 1 or argv[1] == "check":
-        mp.check()
-        mp.print_updated()
-    elif argv[1] == "update":
-        mp.make()
-    elif argv[1] == "force":
-        mp.force()
-    elif argv[1] == "autoremove":
-        mp.autoremove()
-    elif argv[1] == "clean":
-        mp.clean()
-    elif argv[1] == "help" or argv[1] == "--help":
-        help()
-    else:
-        print("Invalid argument: {}.".format(argv[1]))
-        help()
+
+    parser = ap.ArgumentParser("mdpage")
+    subparsers = parser.add_subparsers()
+
+    parser_update = subparsers.add_parser("update")
+    parser_update.set_defaults(func=mp.make)
+
+    parser_force = subparsers.add_parser("force")
+    parser_force.set_defaults(func=mp.force)
+
+    parser_check = subparsers.add_parser("check")
+    parser_check.set_defaults(func=mp.check_print_updated)
+
+    parser_autoremove = subparsers.add_parser("autoremove")
+    parser_autoremove.set_defaults(func=mp.autoremove)
+
+    parser_clean = subparsers.add_parser("clean")
+    parser_clean.set_defaults(func=mp.clean)
+
+    # parser_help = subparsers.add_parser("help")
+    # parser_help.set_defaults(fun
+
+    args = parser.parse_args(argv[1:])
+    args.func()
+
     return
 
 if __name__ == "__main__":

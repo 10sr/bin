@@ -20,6 +20,7 @@ def main(argv):
 
     p_git_ls = sp.Popen(git_ls_command, stdout=sp.PIPE)
     p_wc = sp.Popen(wc_command, stdin=p_git_ls.stdout)
+    p_git_ls.wait()
     return p_wc.wait()
 
 
