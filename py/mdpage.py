@@ -325,6 +325,7 @@ class MDConv:
     def conv_py(self, input, encoding):
         """accept filename and return result as string"""
         tmp = BytesIO()
+        # why encoding is needed while it outputs byte string?
         self.md.convertFile(input = input, output = tmp, encoding = encoding)
         res = tmp.getvalue().decode(encoding)
         tmp.close()
