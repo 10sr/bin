@@ -46,10 +46,11 @@ class MDPage:
 
     def autoremove(self):
         for f in os.listdir():
-            if not os.path.isdir(f) and f.endswith(".html") and \
-                    not f.startswith(".") and \
-                    not f.startswith("_") and \
-                    not os.path.splitext(f)[0] in self.file_list:
+            if (not os.path.isdir(f) and
+                f.endswith(".html") and
+                not f.startswith(".") and
+                not f.startswith("_") and
+                not os.path.splitext(f)[0] in self.fl.file_list):
                 print("rm : {}.".format(f))
                 os.remove(f)
         return
