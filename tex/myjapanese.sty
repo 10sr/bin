@@ -1,9 +1,38 @@
+% myjapanese.sty
 % to handle japanese letters in xetex file insert below
 % \usepackage{myjapanese}
 % for details see http://zrbabbler.sp.land.to/xelatex.html
+
+% used for lyx
+
+\RequirePackage{xltxtra}
+% フォント設定
+%% \setmainfont[Scale=0.92,BoldFont=IPAゴシック]{IPA明朝}
+%% \setsansfont[Scale=0.92]{IPAゴシック}
+%% \setmonofont{IPAゴシック}
+%% \newfontfamily\engrm[Ligatures=TeX]{Times New Roman}
+%% \newfontfamily\engsf[Ligatures=TeX,Scale=0.92]{Arial}
+\def\en#1{{\engrm#1}} % 欧文フォントで出力
+% 日本語を含む段落を行分割するための設定
 \XeTeXlinebreaklocale "ja"
-\XeTeXlinebreakskip=0pt plus 1pt
+\XeTeXlinebreakskip=0pt plus 1pt minus 0.1pt
 \XeTeXlinebreakpenalty=0
+% 半角分戻る
 \def\<{\@ifstar{\zx@hwback\nobreak}{\zx@hwback\relax}}
 \def\zx@hwback#1{\leavevmode#1\hskip-.5em\relax}
+% 簡易レイアウト設定
+%\RequirePackage[scale=0.8]{geometry}
+\RequirePackage{indentfirst}
+\RequirePackage{setspace}
+\setstretch{1.3}
+\parindent=1em
+% 後は名前定義を適当に
+\def\contentsname{目次}
+\def\listfigurename{図目次}
+\def\listtablename{表目次}
+\def\refname{参考文献}
+\def\bibname{参考文献}
+\def\indexname{索引}
+\def\appendixname{付録}
 \renewcommand{\figurename}{図}
+% EOF
