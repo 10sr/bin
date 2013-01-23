@@ -1,8 +1,13 @@
 #!/bin/sh
 
-# Very simple backup tool
-# copy files into $dst/$timestr
-# Usage: backup <args> ...
+help(){
+    cat <<'__EOC__' 2>&1
+backup: Usage: backup <files> ...
+
+Very simple backup tool
+Copy files into $dst/$timestr
+__EOC__
+}
 
 test -z "$dst" && dst="$HOME/.my/backup"
 timestr=`date +%Y%m%d-%H%M%S`
@@ -21,7 +26,12 @@ do_rsync(){
 }
 
 main(){
-    do_rsync "$@"
+    if test -z "$1"
+    then
+        help
+    else
+        do_rsync "$@"
+    fi
 }
 
 main "$@"
