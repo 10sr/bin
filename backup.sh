@@ -2,10 +2,10 @@
 
 help(){
     cat <<'__EOC__' 2>&1
-backup: Usage: backup <files> ...
+backup: backup [file ...]
 
-Very simple backup tool
-Copy files into $dst/$timestr
+Very simple backup tool by create directory named$dst/$timestr and copy files
+into it.
 __EOC__
 }
 
@@ -15,13 +15,18 @@ dstdir="$dst/$timestr"
 
 do_rsync(){
     mkdir -p $dstdir
-    # mkdir -p $dstbase
     # src=foo/ : copy the contents of this directory
     # src=foo : copy the directory by name
     # these two are same:
     #     rsync -av /src/foo  /dest
     #     rsync -av /src/foo/ /dest/foo
-    # rsync never changed the name of copied file?
+
+    # if $dstdir already exists and it is a directory
+    #     copy files into $dstdir
+    # elif $@ is one file ($1)
+    #     copy create file named $dstdir with contents of $1
+    # else
+    #     fail
     rsync -a --stats --progress --human-readable "$@" "$dstdir"
 }
 
