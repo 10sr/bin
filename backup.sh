@@ -18,7 +18,7 @@ then
 elif expr "$dst" : '.*:$' >/dev/null
 then
     # only hostname is specified
-    dstdir="$dst./$defdst"
+    dstdir="$dst$defdst"        # host:.my/backup
 else
     dstdir="$dst"
 fi
@@ -26,16 +26,16 @@ timestr=`date +%Y%m%d-%H%M%S`
 dstdir="$dstdir/$timestr/"
 
 do_rsync(){
-    # if expr "$dstdir" : '.*:' >/dev/null
-    # then
-    #     host="$(expr "$dstdir" : '\(.*\):')"
-    #     dir="$(expr "$dstdir" : '.*:\(.*\)$')"
-    #     printf "Creating $dir in $host..."
-    #     $debug ssh "$host" mkdir -p "$dir"
-    #     echo "done"
-    # else
-    #     $debug mkdir -p "$dstdir"
-    # fi
+    if expr "$dstdir" : '.*:' >/dev/null
+    then
+        host="$(expr "$dstdir" : '\(.*\):')"
+        dir="$(expr "$dstdir" : '.*:\(.*\)$')"
+        printf "Creating $dir in $host..."
+        $debug ssh "$host" mkdir -p "$dir"
+        echo "done"
+    else
+        $debug mkdir -p "$dstdir"
+    fi
 
     # src=foo/ : copy the contents of this directory
     # src=foo : copy the directory by name
