@@ -11,10 +11,24 @@ __EOC__
 
 test -z "$dst" && dst="$HOME/.my/backup"
 timestr=`date +%Y%m%d-%H%M%S`
-dstdir="$dst/$timestr"
+if expr "$dst" : '.*:$' >/dev/null
+then
+    dstdir="$dst./$timestr"
+else
+    dstdir="$dst/$timestr"
+fi
 
 do_rsync(){
-    mkdir -p $dstdir
+    if expr "$dstdir" : '.*:' >/dev/null
+    then
+        host="$(expr "$dstdir" : '\(.*\):')"
+        dir="$(expr "$dstdir" : '.*:\(.*\)$')"
+        echo -n "Creating $dir in $host..."
+        ssh "$host" mkdir -p "$dir"
+        echo "done"
+    else
+        mkdir -p "$dstdir"
+    fi
     # src=foo/ : copy the contents of this directory
     # src=foo : copy the directory by name
     # these two are same:
