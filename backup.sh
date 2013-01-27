@@ -2,30 +2,18 @@
 
 help(){
     cat <<'__EOC__' 2>&1
-backup: backup [file ...]
-
-Very simple backup tool by create directory named $dst/$timestr and copy files
-into it.
+backup: backup [-h] [-d dst] file ...
+    Very simple backup tool using rsync.
 __EOC__
 }
 
 debug=
 
-defdst=".my/backup"
-if test -z "$dst"
-then
-    dstdir="$HOME/$defdst"
-elif expr "$dst" : '.*:$' >/dev/null
-then
-    # only hostname is specified
-    dstdir="$dst$defdst"        # host:.my/backup
-else
-    dstdir="$dst"
-fi
-timestr=`date +%Y%m%d-%H%M%S`
-dstdir="$dstdir/$timestr/"
-
 do_rsync(){
+    # do_rsync dstdir files ...
+    dstdir="$1"
+    shift
+
     if expr "$dstdir" : '.*:' >/dev/null
     then
         host="$(expr "$dstdir" : '\(.*\):')"
@@ -55,13 +43,36 @@ do_rsync(){
     $debug rsync -a --stats --progress --human-readable "$@" "$dstdir"
 }
 
-main(){
-    if test -z "$1"
-    then
-        help
-    else
-        do_rsync "$@"
-    fi
-}
+dst=
+while getopts hd: opt
+do
+    case "$opt" in
+        d) dst="$OPTARG";;
+        h) help; exit 1;;
+        *) help; exit 1;;
+    esac
+done
 
-main "$@"
+shift `expr $OPTIND - 1`
+
+defdst=".my/backup"
+if test -z "$dst"
+then
+    dstdir="$HOME/$defdst"
+elif expr "$dst" : '.*:$' >/dev/null
+then
+    # only hostname is specified
+    dstdir="$dst$defdst"        # host:.my/backup
+else
+    dstdir="$dst"
+fi
+timestr=`date +%Y%m%d-%H%M%S`
+dstdir="$dstdir/$timestr/"
+
+if test -z "$1"
+then
+    help
+    exit 1
+fi
+
+do_rsync "$dstdir" "$@"
