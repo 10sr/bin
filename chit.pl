@@ -131,12 +131,12 @@ sub cat_files {
     # cat files under given directory
     # return number of files used
     my ($path, $num, $pattern, $nocolor, $fh) = @_;
-    my @files = sort { $b cmp $a } grep { /\d{8}-[^-]*$/ } get_files($path);
+    my @files = sort { $b cmp $a } grep { /\d{8}[^\/]*$/ } get_files($path);
     my $i = 0;                  # number of chit cat-ted.
     foreach my $file (@files) {
         eval {
             my $timestr = $file;
-            $timestr =~ s/-[^-]*$//g;
+            $timestr =~ s/(\d{8})[^\/]*$/$1/g;
             $timestr = format_path_to_time($timestr);
             my $line = get_file_content($file, $pattern);
             if ($line) {
