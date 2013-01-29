@@ -1,8 +1,8 @@
 #!/bin/sh
 
 help(){
-    cat <<'__EOC__' 2>&1
-backup: backup [-h] [-d dst] file ...
+    cat <<__EOC__ 2>&1
+backup: $1 [-h] [-d dst] file ...
     Very simple backup tool using rsync.
 __EOC__
 }
@@ -71,7 +71,7 @@ dstdir="$dstdir/$timestr/"
 
 if test -z "$1"
 then
-    help
+    help "`basename "$0"`"
     exit 1
 fi
 

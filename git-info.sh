@@ -1,5 +1,4 @@
 #!/bin/sh
-
 git=`which git`
 
 if test $? -ne 0

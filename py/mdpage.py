@@ -366,7 +366,10 @@ def main(argv):
     # parser_help.set_defaults(fun
 
     args = parser.parse_args(argv[1:])
-    args.func()
+    try:
+        args.func()
+    except AttributeError:
+        print("Invaid arg.")
 
     return
 
