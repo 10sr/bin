@@ -2,7 +2,7 @@
 
 help(){
     cat <<__EOC__ 2>&1
-backup: $1 [-h] [-d dst] file ...
+save: $1 [-h] [-d dst] file ...
     Very simple backup tool using rsync.
 __EOC__
 }
@@ -55,14 +55,14 @@ done
 
 shift `expr $OPTIND - 1`
 
-defdst=".my/backup"
+defdst=".my/saved"
 if test -z "$dst"
 then
     dstdir="$HOME/$defdst"
 elif expr "$dst" : '.*:$' >/dev/null
 then
     # only hostname is specified
-    dstdir="$dst$defdst"        # host:.my/backup
+    dstdir="$dst$defdst"        # host:.my/saved
 else
     dstdir="$dst"
 fi
