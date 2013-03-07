@@ -1,8 +1,8 @@
 #!/bin/sh
 
 help(){
-    cat <<__EOC__ 2>&1
-save: $1 [-h] [-d dst] file ...
+    cat <<__EOC__ 1>&2
+save: `basename "$0"` [-h] [-d dst] file ...
     Very simple backup tool using rsync.
 __EOC__
 }
@@ -55,6 +55,13 @@ done
 
 shift `expr $OPTIND - 1`
 
+if test -z "$1"
+then
+    echo No file specified. 1>&2
+    help
+    exit 1
+fi
+
 defdst=".my/saved"
 if test -z "$dst"
 then
@@ -68,11 +75,5 @@ else
 fi
 timestr=`date +%Y%m%d-%H%M%S`
 dstdir="$dstdir/$timestr/"
-
-if test -z "$1"
-then
-    help "`basename "$0"`"
-    exit 1
-fi
 
 do_rsync "$dstdir" "$@"
