@@ -3,6 +3,10 @@ save.sh
 
 Very simple backup utility using rsync.
 
+Usage
+-----
+
+    save: save [-h] [d dst] file ...
 
 
 chit.pl
