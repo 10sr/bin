@@ -20,6 +20,7 @@ git-dumphead.sh
 ===============
 
 Create archive of HEAD of current git repository.
+Uses `txz` format if available, otherwise uses tgz.
 
 
 

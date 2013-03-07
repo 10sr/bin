@@ -7,7 +7,7 @@ rows=2
 
 if ! type wmctrl >/dev/null 2>&1
 then
-    echo "$0 require wmctrl. Install first."
+    echo "$0 requires wmctrl. Install it first."
     exit 1
 fi
 
