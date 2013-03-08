@@ -66,7 +66,8 @@ ommitted, git-diary launch the editor you configured for the git repository.
 
 ### `show [<options>]`
 
-Show diaries. \<options\> are passed to `git log`.
+Show diaries. Options are passed to `git log` so you can use options like
+`--grep=todo`.
 
 ### `help`
 
