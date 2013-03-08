@@ -38,6 +38,14 @@ Add diary to your git repository. Diaries are stored as commits in a orphan
 branch.
 
 
+Install
+-------
+
+Copy git-diary.sh and rename it to `git-diary`, then run
+
+    $ git diary help
+
+
 Configs
 -------
 
@@ -65,10 +73,10 @@ Available commands
 ### `add [<strings>]`
 
 Add a new diary commit. When passing strings, you do not need to quote it using
-`"` because they are automatically joined using whitespaces. If strings are
+`"` because they are automatically joined with whitespaces. If strings are
 ommitted, git-diary launch the editor you configured for the git repository.
 
-### `show` [<options>]
+### `show [<options>]`
 
 Show diaries. <options> are passed to `git log`.
 
