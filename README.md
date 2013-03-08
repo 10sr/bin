@@ -78,7 +78,7 @@ ommitted, git-diary launch the editor you configured for the git repository.
 
 ### `show [<options>]`
 
-Show diaries. <options> are passed to `git log`.
+Show diaries. \<options\> are passed to `git log`.
 
 
 TODOs
