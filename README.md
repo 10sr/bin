@@ -9,12 +9,17 @@ Usage
     save: save [-h] [d dst] file ...
 
 
+
+***
+
 chit.pl
 =======
 
 Take one line notes.
 
 
+
+***
 
 git-dumphead.sh
 ===============
@@ -24,12 +29,16 @@ Uses `txz` format if available, otherwise uses tgz.
 
 
 
+***
+
 git-wc.py
 =========
 
 See you have done great work (or done nothing).
 
 
+
+***
 
 git-diary.sh
 ============
