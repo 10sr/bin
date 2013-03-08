@@ -67,7 +67,7 @@ init_branch(){
     echo git diary init
     echo branch name: $_branch
     git checkout --orphan "$_branch" && \
-        git rm -rf . && \
+        git rm -rf . >/dev/null && \
         set_config branch "$_branch" # always config branch name locally
 }
 

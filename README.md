@@ -77,5 +77,3 @@ TODOs
 -----
 
 * supress useless outputs
-* I think this works poorly when big files are tracked by repositories. Examine
-and fix if that is a problem.
