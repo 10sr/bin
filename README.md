@@ -58,15 +58,16 @@ Copy git-diary.sh and rename it to `git-diary`, then run
 Available commands
 ------------------
 
-### `add [<string> ...]`
+### `add [<text> ...]`
 
-Add a new diary commit. When passing strings, you do not need to quote them
+Add a new diary commit. When passing texts, you do not need to quote them
 using `"` because they are automatically joined with whitespaces. If strings are
 ommitted, git-diary launch the editor you configured for the git repository.
 
-### `show [<pattern>]`
+### `show [<option> ...]`
 
-Show diaries. If a pattern is given, it is passed to `--grep` option.
+Show diaries. Options are passed to `git log` so you can use options like
+`--grep=todo`.
 
 ### `help`
 
@@ -76,28 +77,24 @@ Show help message.
 Configs
 -------
 
-All configs are stored under diary section. For example, if you want to change
-branch name for diary, run:
-
-    $ git config --add diary.branch notes
-
-### `branch` (default: diary)
+### `diary.branch` (default: diary)
 
 Branch name used for storing diary commits.
 
-### `defcommand` (default: help)
+### `diary.defcommand` (default: help)
 
 Default command to run when no command is specified.
 
-### `show.options`
+### `alias.diary-show`
 
-Options of `git log` used for `show` command. Default value is:
+Command used for `git diary show`. If not set yet, following alias is set
+automatically.
 
-    "--reverse --pretty=tformat:\"%C(yellow)%ai%C(reset) %C(white bold)%s%C(reset)\""
+    "log --reverse --pretty=tformat:\"%C(yellow)%ai%C(reset) [%C(red)%an%C(reset)] %C(white bold)%s%C(reset)\""
 
 
 
 TODOs
 -----
 
-* supress useless outputs
+* emit usable outputs

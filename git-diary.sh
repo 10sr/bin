@@ -1,8 +1,7 @@
-#!/bin/sh -x
+#!/bin/sh
 
 def_branch=diary
 def_defcommand=help
-def_show_options="--reverse --pretty=tformat:\"%C(yellow)%ai%C(reset) %C(white bold)%s%C(reset)\""
 
 is_sane(){
     # fail when git is not installed or current dir is not a git repository
@@ -11,16 +10,12 @@ is_sane(){
 
 get_config(){
     # get_config name
-    git config --get "diary.$1"
+    git config "diary.$1"
 }
 
 set_config(){
     # set_config name val
-    # maybe should use --unset-all
-    if test "$2" != "`git config --local --get "diary.$1"`"
-    then
-        git config --local --add "diary.$1" "$2"
-    fi
+    git config --local "diary.$1" "$2"
 }
 
 mk_empty_tree(){
@@ -42,9 +37,9 @@ mk_commit(){
 
     if test -n "$1"
     then
-        git commit-tree $_tree -p $1
+        git commit-tree $_tree -p $1 -F -
     else
-        git commit-tree $_tree
+        git commit-tree $_tree -F -
     fi
 }
 
@@ -55,7 +50,7 @@ do_add(){
     if test -z "$_msg"
     then
         # todo: launch editor
-        echo message not specified.
+        echo "No message specified."
         return 1
     fi
 
@@ -72,9 +67,16 @@ do_add(){
         set_config branch "$_branch"
     fi
 
+    echo "Add new diary:"
+    echo "    $_msg"
     _new=`echo "$_msg" | mk_commit $_parent`
 
     git update-ref "refs/heads/$_branch" $_new
+}
+
+set_alias_diary_show(){
+    git config --local alias.diary-show \
+        "log --reverse --pretty=tformat:\"%C(yellow)%ai%C(reset) [%C(red)%an%C(reset)] %C(white bold)%s%C(reset)\""
 }
 
 do_show(){
@@ -87,24 +89,18 @@ do_show(){
         return 1
     fi
 
-    _options="`get_config show.options`"
-    if test -z "$_options"
+    if true test -z "`git config alias.diary-show`"
     then
-        _options="$def_show_options"
+        set_alias_diary_show
     fi
 
-    if test -n "$1"
-    then
-        eval "git log \"`get_config branch`\" $_options \"--grep=$1\""
-    else
-        eval "git log \"`get_config branch`\" $_options"
-    fi
+    git diary-show "`get_config branch`" "$@"
 }
 
 do_help(){
     _cmd="git diary"
     cat <<__EOC__ 1>&2
-usage: $_cmd add [<string> ...]
+usage: $_cmd add [<text> ...]
    or: $_cmd show [<pattern>]
    or: $_cmd help
 __EOC__
