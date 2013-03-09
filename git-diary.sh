@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -x
 
 def_branch=diary
 def_defcommand=help
@@ -43,13 +43,32 @@ mk_commit(){
     fi
 }
 
+edit_msg(){
+    # edit_msg file
+    # edit message using editor
+    _editor="`get_config editor`"
+    if test -z "$_editor"
+    then
+        _editor="`git var GIT_EDITOR`"
+    fi
+
+    echo "" >"$_file"
+    eval "$_editor \"$1\""
+}
+
 do_add(){
     is_sane || return $?
 
     _msg="$*"
     if test -z "$_msg"
     then
-        # todo: launch editor
+        _file="`git rev-parse --git-dir`"/DIARY
+        edit_msg "$_file"
+        _msg="`cat "$_file"`"
+    fi
+
+    if test -z "$_msg"
+    then
         echo "No message specified."
         return 1
     fi
@@ -68,7 +87,8 @@ do_add(){
     fi
 
     echo "Add new diary:"
-    echo "    $_msg"
+    echo ""
+    echo "$_msg"
     _new=`echo "$_msg" | mk_commit $_parent`
 
     git update-ref "refs/heads/$_branch" $_new
@@ -89,7 +109,7 @@ do_show(){
         return 1
     fi
 
-    if true test -z "`git config alias.diary-show`"
+    if test -z "`git config alias.diary-show`"
     then
         set_alias_diary_show
     fi

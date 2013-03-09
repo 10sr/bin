@@ -52,7 +52,7 @@ Install
 
 Copy git-diary.sh and rename it to `git-diary`, then run
 
-    $ git diary help
+    $ git diary
 
 
 Available commands
@@ -66,8 +66,8 @@ ommitted, git-diary launch the editor you configured for the git repository.
 
 ### `show [<option> ...]`
 
-Show diaries. Options are passed to `git log` so you can use options like
-`--grep=todo`.
+Show diaries. Options are passed to `git diary-show` so you can use options for
+`git log` like `--grep=todo`.
 
 ### `help`
 
@@ -85,6 +85,11 @@ Branch name used for storing diary commits.
 
 Default command to run when no command is specified.
 
+### `diary.editor`
+
+Editor used for edit message. Used when issue `git diary add` with no text. If
+`diary.editor` is not set, default editor of git is used.
+
 ### `alias.diary-show`
 
 Command used for `git diary show`. If not set yet, following alias is set
@@ -92,9 +97,3 @@ automatically.
 
     "log --reverse --pretty=tformat:\"%C(yellow)%ai%C(reset) [%C(red)%an%C(reset)] %C(white bold)%s%C(reset)\""
 
-
-
-TODOs
------
-
-* emit usable outputs
