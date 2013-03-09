@@ -58,16 +58,15 @@ Copy git-diary.sh and rename it to `git-diary`, then run
 Available commands
 ------------------
 
-### `add [<strings>]`
+### `add [<string> ...]`
 
 Add a new diary commit. When passing strings, you do not need to quote them
 using `"` because they are automatically joined with whitespaces. If strings are
 ommitted, git-diary launch the editor you configured for the git repository.
 
-### `show [<options>]`
+### `show [<pattern>]`
 
-Show diaries. Options are passed to `git log` so you can use options like
-`--grep=todo`.
+Show diaries. If a pattern is given, it is passed to `--grep` option.
 
 ### `help`
 
@@ -90,9 +89,12 @@ Branch name used for storing diary commits.
 
 Default command to run when no command is specified.
 
-### `show.options` (default: "--oneline --reverse")
+### `show.options`
 
-Options of `git log` used for `show` command.
+Options of `git log` used for `show` command. Default value is:
+
+    "--reverse --pretty=tformat:\"%C(yellow)%ai%C(reset) %C(white bold)%s%C(reset)\""
+
 
 
 TODOs

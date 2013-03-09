@@ -2,7 +2,7 @@
 
 def_branch=diary
 def_defcommand=help
-def_show_options="--oneline --reverse"
+def_show_options="--reverse --pretty=tformat:\"%C(yellow)%ai%C(reset) %C(white bold)%s%C(reset)\""
 
 is_sane(){
     # fail when git is not installed or current dir is not a git repository
@@ -80,19 +80,32 @@ do_add(){
 do_show(){
     is_sane || return $?
 
+    _branch="`get_config branch`"
+    if test -z "$_branch"
+    then
+        echo "No diary in this repository." 1>&2
+        return 1
+    fi
+
     _options="`get_config show.options`"
     if test -z "$_options"
     then
         _options="$def_show_options"
     fi
-    git log "`get_config branch`" $_options "$@"
+
+    if test -n "$1"
+    then
+        eval "git log \"`get_config branch`\" $_options \"--grep=$1\""
+    else
+        eval "git log \"`get_config branch`\" $_options"
+    fi
 }
 
 do_help(){
     _cmd="git diary"
     cat <<__EOC__ 1>&2
-usage: $_cmd add [<strings>]
-   or: $_cmd show [<options>]
+usage: $_cmd add [<string> ...]
+   or: $_cmd show [<pattern>]
    or: $_cmd help
 __EOC__
 }
@@ -100,15 +113,16 @@ __EOC__
 main(){
     if test -z "$1"
     then
-        _cmd="`get_config defcommand`"
+        _c="`get_config defcommand`"
         if test -z "$_cmd"
         then
-            _cmd=$def_defcommand
+            _c=$def_defcommand
         fi
-    else
-        _cmd="$1"
-        shift
+        exec git diary $_c
     fi
+
+    _cmd="$1"
+    shift
 
     if type "do_$_cmd" >/dev/null 2>&1
     then
