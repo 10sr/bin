@@ -61,10 +61,9 @@ Available commands
 ### `add [<text> ...]`
 
 Add a new diary commit. When passing texts, you do not need to quote them
-using `"` because they are automatically joined with whitespaces. If strings are
-ommitted, git-diary launch the editor you configured for the git repository.
+using `"` because they are automatically joined with whitespaces.
 
-When texts are not specified, git-diary launch editor.
+When texts are not specified, git-diary launches editor.
 
 ### `show [<option> ...]`
 
