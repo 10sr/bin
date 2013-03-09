@@ -8,7 +8,9 @@ cd_path(){
     path="`get_path`"
     if test -z "$path"
     then
-        echo "Path is not set. Use \"$0 init\" first." 1>&2
+        echo \
+            "Path is not set." \
+            "Use \"$0 init <path>\" or set gdiary.path first." 1>&2
         return 1
     fi
 
