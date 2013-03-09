@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 
 def_branch=diary
 def_defcommand=help
