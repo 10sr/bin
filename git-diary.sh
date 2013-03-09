@@ -121,7 +121,7 @@ do_help(){
     _cmd="git diary"
     cat <<__EOC__ 1>&2
 usage: $_cmd add [<text> ...]
-   or: $_cmd show [<pattern>]
+   or: $_cmd show [<options> ...]
    or: $_cmd help
 __EOC__
 }
