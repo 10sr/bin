@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/sh -x
 
 def_branch=diary
 def_defcommand=help
@@ -9,26 +9,6 @@ is_sane(){
     git rev-parse --git-dir 1>/dev/null
 }
 
-with_state_saved(){
-    # with_state_saved command ...
-    # save current status, run command and restore saved status
-    echo "Save current state."
-    _bak_HEAD="`git symbolic-ref --short HEAD 2>/dev/null`"
-    if test -z "$_bak_HEAD"
-    then
-        _bak_HEAD=`git rev-parse HEAD`
-    fi
-    # if stash failed exit immediately
-    _stash=`git stash create --no-keep-index || exit $?`
-    git reset --hard >/dev/null
-
-    "$@"
-
-    echo "Restore saved state."
-    git checkout $_bak_HEAD
-    test -n "$_stash" && git stash apply --index --quiet $_stash
-}
-
 get_config(){
     # get_config name
     git config --get "diary.$1"
@@ -37,25 +17,45 @@ get_config(){
 set_config(){
     # set_config name val
     # maybe should use --unset-all
-    git config --local --add "diary.$1" "$2"
-}
-
-is_branch_initted(){
-    _branch="`get_config branch`"
-    if test -n "$_branch"
+    if test "$2" != "`git config --local --get "diary.$1"`"
     then
-        # what is the best way to test if branch exists?
-        git rev-parse "$_branch" >/dev/null 2>&1
-    else
-        return 1
+        git config --local --add "diary.$1" "$2"
     fi
 }
 
-init_branch(){
-    # initialize diary branch and checkout it
-    if is_branch_initted
+mk_empty_tree(){
+    # create empty tree object and echo sha1
+    echo "" | git mktree --batch
+}
+
+mk_commit(){
+    # mk_commit [<parent>]
+    # create new commit object with empty tree.
+    # commit message is read from stdin.
+    # echo created commit object.
+    _tree=`get_config treeobj`
+    if test -z "$_tree"
     then
-        echo diary already initialized
+        _tree=`mk_empty_tree`
+        set_config treeobj $_tree
+    fi
+
+    if test -n "$1"
+    then
+        git commit-tree $_tree -p $1
+    else
+        git commit-tree $_tree
+    fi
+}
+
+do_add(){
+    is_sane || return $?
+
+    _msg="$*"
+    if test -z "$_msg"
+    then
+        # todo: launch editor
+        echo message not specified.
         return 1
     fi
 
@@ -64,42 +64,22 @@ init_branch(){
     then
         _branch=$def_branch
     fi
-    echo git diary init
-    echo branch name: $_branch
-    git checkout --orphan "$_branch" && \
-        git rm -rf . >/dev/null && \
-        set_config branch "$_branch" # always config branch name locally
-}
 
-co_diary_branch(){
-    if is_branch_initted
+    # is this correct for get sha1 from branch name?
+    _parent=`git rev-parse --verify "refs/heads/$_branch" 2>/dev/null`
+    if test -z "$_parent"
     then
-        git checkout "`get_config branch`"
-    else
-        init_branch
+        set_config branch "$_branch"
     fi
-}
 
-add_diary(){
-    if co_diary_branch
-    then
-        if test -n "$1"
-        then
-            git commit --allow-empty --message "$*"
-        else
-            git commit --allow-empty
-        fi
-    else
-        echo "Checkout failed."
-        return 1
-    fi
-}
+    _new=`echo "$_msg" | mk_commit $_parent`
 
-do_add(){
-    with_state_saved add_diary "$@"
+    git update-ref "refs/heads/$_branch" $_new
 }
 
 do_show(){
+    is_sane || return $?
+
     _options="`get_config show.options`"
     if test -z "$_options"
     then
@@ -118,8 +98,6 @@ __EOC__
 }
 
 main(){
-    is_sane || exit $?
-
     if test -z "$1"
     then
         _cmd="`get_config defcommand`"

@@ -43,8 +43,8 @@ See you have done great work (or done nothing).
 git-diary.sh
 ============
 
-Add diary to your git repository. Diaries are stored as commits in a orphan
-branch.
+Add diary to your git repository. Diaries are stored as messages of commits in a
+orphan branch.
 
 
 Install
@@ -60,8 +60,8 @@ Available commands
 
 ### `add [<strings>]`
 
-Add a new diary commit. When passing strings, you do not need to quote it using
-`"` because they are automatically joined with whitespaces. If strings are
+Add a new diary commit. When passing strings, you do not need to quote them
+using `"` because they are automatically joined with whitespaces. If strings are
 ommitted, git-diary launch the editor you configured for the git repository.
 
 ### `show [<options>]`
