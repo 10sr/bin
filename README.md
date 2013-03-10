@@ -93,8 +93,4 @@ set, default editor of git is used.
 
 ### `alias.diary-show`
 
-Command used for `git diary show`. If not set yet, following alias is set
-automatically.
-
-    "log --reverse --pretty=tformat:\"%C(yellow)%ai%C(reset) [%C(red)%an%C(reset)] %C(white bold)%s%C(reset)\""
-
+Command used for `git diary show`. If not set yet, `"log"` is set automatically.

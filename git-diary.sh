@@ -52,7 +52,7 @@ edit_msg(){
         _editor="`git var GIT_EDITOR`"
     fi
 
-    echo "" >"$_file"
+    echo "" >"$1"
     eval "$_editor \"$1\""
 }
 
@@ -95,8 +95,8 @@ do_add(){
 }
 
 set_alias_diary_show(){
-    git config --local alias.diary-show \
-        "log --reverse --pretty=tformat:\"%C(yellow)%ai%C(reset) [%C(red)%an%C(reset)] %C(white bold)%s%C(reset)\""
+    git config --local alias.diary-show log
+    # "log --reverse --pretty=tformat:\"%C(green)%h%C(reset) %ai %C(red)%an%C(reset) %C(white bold)%s%C(reset)\""
 }
 
 do_show(){
