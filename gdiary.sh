@@ -57,6 +57,12 @@ main(){
     then
         shift
         help "$@"
+    elif test "$1" = push
+        shift
+        cd_path && git push "$@"
+    elif test "$1" = pull
+        shift
+        cd_path && git pull "$@"
     elif test "$1" = git
     then
         shift
