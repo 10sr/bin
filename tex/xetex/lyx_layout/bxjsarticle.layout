@@ -1,0 +1,10 @@
+#% Do not delete the line below; configure depends on this
+#  \DeclareLaTeXClass{article (Japanese New by ZR)}
+# Japanese new article textclass definition file.
+
+# This style provides japanese features
+Format 35
+Provides japanese 1
+
+# Input general definitions
+Input article.layout
