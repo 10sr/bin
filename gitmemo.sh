@@ -42,8 +42,6 @@ init(){
 
     git init
     git config --global --add gdiary.path "`pwd`"
-    git config --local --add diary.branch "master"
-    echo init
 }
 
 main(){
