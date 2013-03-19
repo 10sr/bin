@@ -127,6 +127,12 @@ __EOC__
 }
 
 main(){
+    if test "$1" = debug
+    then
+        set -x
+        shift
+    fi
+
     if test -z "$1"
     then
         _c="`get_config defcommand`"

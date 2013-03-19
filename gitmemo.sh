@@ -49,6 +49,12 @@ init(){
 main(){
     git diary help >/dev/null 2>&1 || exit $?
 
+    if test "$1" = debug
+    then
+        set -x
+        shift
+    fi
+
     if test "$1" = init
     then
         shift
