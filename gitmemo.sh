@@ -1,7 +1,9 @@
 #!/bin/sh
 
+_conf=memo
+
 get_path(){
-    git config --get gdiary.path
+    git config --get $_conf.path
 }
 
 cd_path(){
@@ -10,7 +12,7 @@ cd_path(){
     then
         echo \
             "Path is not set." \
-            "Use \"$0 init <path>\" or set gdiary.path first." 1>&2
+            " Use \"$0 init <path>\" or set $_conf.path first." 1>&2
         return 1
     fi
 
@@ -41,7 +43,7 @@ init(){
     fi
 
     git init
-    git config --global --add gdiary.path "`pwd`"
+    git config --global --add $_conf.path "`pwd`"
 }
 
 main(){
