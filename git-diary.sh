@@ -105,8 +105,9 @@ do_show(){
     _branch="`get_config branch`"
     if test -z "$_branch"
     then
-        echo "No diary in this repository." 1>&2
-        return 1
+        # echo "No diary in this repository." 1>&2
+        # return 1
+        _branch=$def_branch
     fi
 
     if test -z "`git config alias.diary-show`"
@@ -114,7 +115,7 @@ do_show(){
         set_alias_diary_show
     fi
 
-    git diary-show "`get_config branch`" "$@"
+    git diary-show "$_branch" "$@"
 }
 
 do_help(){
