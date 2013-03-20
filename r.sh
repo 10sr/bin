@@ -1,6 +1,12 @@
 #!/bin/bash
 # 0 * * * * bash r.sh Dropbox
 
+if test -z "$1"
+then
+    echo "usage: $0 srcdir" 1>&2
+    exit 1
+fi
+
 src="$1"
 dst="$HOME/.my/Dropbox"
 log="${dst}/cronrsync.log"
@@ -8,7 +14,6 @@ errorlog="${dst}/cronrsyncerror.log"
 pack_cmd="7z a"
 pack_out="%s.7z"
 
-test -z "$src" && src="$HOME/.xdg-dirs/Dropbox"
 export LANG=ja_JP.UTF-8
 export LC_TIME=C
 
