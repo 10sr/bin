@@ -55,7 +55,10 @@ main(){
         shift
     fi
 
-    if test "$1" = init
+    if test -z "$1"
+    then
+        help
+    elif test "$1" = init
     then
         shift
         init "$@"
