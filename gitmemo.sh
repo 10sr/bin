@@ -19,8 +19,37 @@ cd_path(){
     cd "$path"
 }
 
+help_diary(){
+    git diary help
+}
+
+help_init(){
+    cat <<__EOC__ 1>&2
+usage: $0 init <path>
+__EOC__
+}
+
+help_help(){
+    cat <<__EOC__ 1>&2
+usage: $0 help [<command>]
+Show help for specified command.
+__EOC__
+}
+
 help(){
-    echo $0 help
+    _c="`basename $0`"
+    if test -z "$1"
+    then
+        cat <<__EOC__ 1>&2
+usage: $_c init <path>
+   or: $_c <commands_for_git_diary> [arg ...]
+   or: $_c pull [arg ...]
+   or: $_c push [arg ...]
+   or: $_c help [<command>]
+__EOC__
+    else
+        help_$1 || return 1
+    fi
 }
 
 init(){
@@ -55,7 +84,10 @@ main(){
         shift
     fi
 
-    if test "$1" = init
+    if test -z "$1"
+    then
+        help
+    elif test "$1" = init
     then
         shift
         init "$@"
