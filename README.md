@@ -6,9 +6,12 @@ Very simple backup utility using rsync.
 Usage
 -----
 
-    save: save [-h] [d dst] file ...
+    save: save [-h] [-d <dst>] file ...
 
-
+You can specify directory to save file by using `-d` option. `<dst>` can be like
+`/path/of/dir/`, `user@host:` and `user@host:/path/`. Destination directory
+defaults to `$HOME/.var/saved` (used when `-d` option is omitted or only
+hostname specified).
 
 ***
 

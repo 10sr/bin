@@ -62,7 +62,7 @@ then
     exit 1
 fi
 
-defdst=".my/saved"
+defdst=".var/saved"
 if test -z "$dst"
 then
     dstdir="$HOME/$defdst"
