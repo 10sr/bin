@@ -14,6 +14,8 @@ option. `<dst>` can be like `/path/of/dir/`, `user@host:` and
 `user@host:/path/`. Destination directory defaults to `$HOME/.var/saved` (used
 when `-d` option is omitted or only hostname specified).
 
+
+
 ***
 
 chit.pl
@@ -98,3 +100,32 @@ set, default editor of git is used.
 ### `alias.diary-show`
 
 Command used for `git diary show`. If not set yet, `"log"` is set automatically.
+
+
+
+***
+
+gitmemo.sh
+==========
+
+Take notes using git-diary.
+
+Usage
+-----
+
+    usage: gitmemo init <path>
+       or: gitmemo <command_for_git_diary> [arg ...]
+       or: gitmemo git [<options_for_git> ...]
+       or: gitmemo pull [arg ...]
+       or: gitmemo push [arg ...]
+       or: gitmemo config [arg ...]
+       or: gitmemo help [<command>]
+
+Configs
+-------
+
+Configs for git-diary are available, in addition to these configs.
+
+### `memo.path`
+
+Directory path used to store memo repository.
