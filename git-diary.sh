@@ -53,7 +53,8 @@ edit_msg(){
     fi
 
     echo "" >"$1"
-    eval "$_editor \"$1\""
+    # eval "$_editor \"$1\""
+    $_editor "$1"
 }
 
 do_add(){
