@@ -2,7 +2,7 @@
 
 help(){
     cat <<__EOC__ 1>&2
-save: `basename "$0"` [-h] [-d dst] file ...
+save: `basename "$0"` [-h] [-d <dst>] file ...
     Very simple backup tool using rsync.
 __EOC__
 }
