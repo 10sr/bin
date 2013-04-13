@@ -43,6 +43,32 @@ do_rsync(){
     $debug rsync -a --stats --progress --human-readable "$@" "$dstdir"
 }
 
+find_dst(){
+    # find_dst dst
+    dst="$1"
+    if test -z "$dst"
+    then
+        dst="$SAVE_PATH"
+    fi
+
+    defdst=".var/saved"
+    if test -z "$dst"
+    then
+        dstdir="$HOME/$defdst"
+    elif expr "$dst" : '.*:$' >/dev/null
+    then
+        # only hostname is specified
+        dstdir="$dst$defdst"        # host:.var/saved
+    else
+        dstdir="$dst"
+    fi
+    timestr=`date +%Y%m%d-%H%M%S`
+    dstdir="$dstdir/$timestr/"
+
+    echo "$dstdir"
+}
+
+
 dst=
 while getopts hd: opt
 do
@@ -62,18 +88,6 @@ then
     exit 1
 fi
 
-defdst=".var/saved"
-if test -z "$dst"
-then
-    dstdir="$HOME/$defdst"
-elif expr "$dst" : '.*:$' >/dev/null
-then
-    # only hostname is specified
-    dstdir="$dst$defdst"        # host:.my/saved
-else
-    dstdir="$dst"
-fi
-timestr=`date +%Y%m%d-%H%M%S`
-dstdir="$dstdir/$timestr/"
+dstdir="`find_dst "$dst"`"
 
 do_rsync "$dstdir" "$@"

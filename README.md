@@ -8,11 +8,13 @@ Usage
 
     save: save [-h] [-d <dst>] file ...
 
-`save.sh` creates directory like `20130409-225834` in destination directory and
-copy files into that. You can specify destination directory by using `-d`
-option. `<dst>` can be like `/path/of/dir/`, `user@host:` and
-`user@host:/path/`. Destination directory defaults to `$HOME/.var/saved` (used
-when `-d` option is omitted or only hostname specified).
+`save.sh` creates directory like `20130409-225834` in the destination directory
+and copy files into that.
+
+The destination directory is decided by `$SAVE_PATH` and it can be overwitten by
+`-d` option. This value can be like `/path/of/dir/`, `user@host:` or
+`user@host:/path/`. If neither `$SAVE_PATH` nor `-d <dst>` is privided,
+or only `user@host:` is provided, `$HOME/.var/saved` is used for the directory.
 
 
 
