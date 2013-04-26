@@ -73,9 +73,9 @@ using `"` because they are automatically joined with whitespaces.
 
 When texts are not specified, git-diary launches editor.
 
-### `show [<option> ...]`
+### `list [<option> ...]`
 
-Show diaries. Options are passed to `git diary-show` so you can use options for
+Show diaries. Options are passed to `git diary-list` so you can use options for
 `git log` like `--grep=todo`.
 
 ### `help`
@@ -90,18 +90,14 @@ Configs
 
 Branch name used for storing diary commits.
 
-### `diary.defcommand` (default: help)
-
-Default command to run when no command is specified.
-
 ### `diary.editor`
 
 Editor used when running `git diary add` without texts. If `diary.editor` is not
 set, default editor of git is used.
 
-### `alias.diary-show`
+### `alias.diary-list`
 
-Command used for `git diary show`. If not set yet, `"log"` is set automatically.
+Command used for `git diary list`. If not set yet, `"log"` is set automatically.
 
 
 

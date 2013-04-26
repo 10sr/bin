@@ -1,7 +1,6 @@
 #!/bin/sh
 
 def_branch=diary
-def_defcommand=help
 
 is_sane(){
     # fail when git is not installed or current dir is not a git repository
@@ -96,11 +95,11 @@ do_add(){
 }
 
 set_alias_diary_show(){
-    git config --local alias.diary-show log
-    # "log --reverse --pretty=tformat:\"%C(green)%h%C(reset) %ai %C(red)%an%C(reset) %C(white bold)%s%C(reset)\""
+    git config --local alias.diary-list log
+    # log --reverse --pretty=tformat:"%C(green)%h%C(reset) %C(yellow)%ai%C(reset) [%C(red)%an%C(reset)] %C(white bold)%s%C(reset)"
 }
 
-do_show(){
+do_list(){
     is_sane || return $?
 
     _branch="`get_config branch`"
@@ -111,19 +110,25 @@ do_show(){
         _branch=$def_branch
     fi
 
-    if test -z "`git config alias.diary-show`"
+    if test -z "`git config alias.diary-list`"
     then
         set_alias_diary_show
     fi
 
-    git diary-show "$_branch" "$@"
+    git diary-list "$_branch" "$@"
+}
+
+do_show(){
+    is_sane || return $?
+    git show "$@"
 }
 
 do_help(){
     _cmd="git diary"
     cat <<__EOC__ 1>&2
 usage: $_cmd add [<text> ...]
-   or: $_cmd show [<options> ...]
+   or: $_cmd list [<option> ...]
+   or: $_cmd show [<option> ...]
    or: $_cmd help
 __EOC__
 }
@@ -137,16 +142,11 @@ main(){
 
     if test -z "$1"
     then
-        _c="`get_config defcommand`"
-        if test -z "$_cmd"
-        then
-            _c=$def_defcommand
-        fi
-        exec git diary $_c
+        _cmd=help
+    else
+        _cmd="$1"
+        shift
     fi
-
-    _cmd="$1"
-    shift
 
     if type "do_$_cmd" >/dev/null 2>&1
     then
