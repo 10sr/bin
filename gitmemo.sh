@@ -42,10 +42,15 @@ help(){
     then
         cat <<__EOC__ 1>&2
 usage: $_c init <path>
-   or: $_c <commands_for_git_diary> [arg ...]
+   or: $_c <command_for_git_diary> [arg ...]
+   or: $_c git [<options_for_git> ...]
    or: $_c pull [arg ...]
    or: $_c push [arg ...]
-   or: $_c help [<command>]
+   or: $_c config [arg ...]
+   or: $_c help [<command>|diary]
+
+Take notes using git-diary. Directory of repository for memo is defined at
+  $_conf.path
 __EOC__
     else
         help_$1 || return 1
@@ -107,6 +112,10 @@ main(){
     then
         shift
         cd_path && git pull "$@"
+    elif test "$1" = config
+    then
+        shift
+        cd_path && git config "$@"
     elif test "$1" = git
     then
         shift
