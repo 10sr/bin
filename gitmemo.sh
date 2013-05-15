@@ -76,7 +76,11 @@ init(){
 }
 
 main(){
-    git diary help >/dev/null 2>&1 || exit $?
+    if ! git diary help >/dev/null 2>&1
+    then
+        echo "gitmemo: git-diary not installed." 1>&2
+        exit 1
+    fi
 
     if test "$1" = debug
     then
