@@ -37,6 +37,22 @@ Uses `txz` format if available, otherwise uses tgz.
 
 
 
+git-dup.sh
+==========
+
+duplicate work tree with git-new-workdir.
+
+
+Usage
+-----
+
+    $ git dup [<branch>]
+
+`git-dup`  creates new working directory for current repository named
+`_<repname>_<branch>` in current directory.
+If <branch> is omitted current branch name is used.
+If branch does not exist, create the branch newly.
+
 ***
 
 git-wc.py
