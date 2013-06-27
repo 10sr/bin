@@ -37,10 +37,12 @@ Uses `txz` format if available, otherwise uses tgz.
 
 
 
+***
+
 git-dup.sh
 ==========
 
-duplicate work tree with git-new-workdir.
+Duplicate work tree with git-new-workdir.
 
 
 Usage
