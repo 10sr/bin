@@ -9,8 +9,8 @@
 # If branch does not exist, creates it newly.
 
 __error(){
-    echo "fatal: $1" 1>&2
-    echo "Abort."
+    echo "$1" 1>&2
+    echo "Abort." 1>&2
     exit 1
 }
 
@@ -20,7 +20,7 @@ nw="`which git-new-workdir 2>/dev/null`"
 
 if test -z "$nw"
 then
-    __error "$0 requires \`git-new-workdir'"
+    __error "fatal: $0 requires \`git-new-workdir'"
 fi
 
 branch="$1"
@@ -44,8 +44,8 @@ fi
 
 if ! git rev-parse --verify "$branch" >/dev/null 2>&1
 then
-    echo "Branch named \'$branch' does not exist."
-    echo "Create newly."
+    echo "Branch named \`$branch' does not exist."
+    echo "Create branch \`$branch'."
     git branch "$branch"
 fi
 
