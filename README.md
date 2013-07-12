@@ -6,7 +6,7 @@ Very simple backup utility using rsync.
 Usage
 -----
 
-    save: save [-h] [-d <dst>] file ...
+    save: save [-h] [-d <dst>] <file> ...
 
 `save.sh` creates directory like `20130409-225834` in the destination directory
 and copy files into that.
