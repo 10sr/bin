@@ -4,8 +4,9 @@
 
 help(){
     cat <<__EOC__ 1>&2
-save: `basename "$0"` [-h] [-d <dst>] file ...
+save: usage: `basename "$0"` [-h] [-d <dst>] <file> ...
     Very simple backup tool using rsync.
+    <dst> can be like `/path/to/dir', `user@host:' or `user@host:/path/to/dir'.
 __EOC__
 }
 
@@ -42,7 +43,7 @@ do_rsync(){
     # else
     #     fail
     echo "Start copying files into \"$dstdir\"."
-    $debug rsync -a --stats --progress --human-readable "$@" "$dstdir"
+    $debug rsync -a --compress --stats --progress --human-readable "$@" "$dstdir"
 }
 
 find_dst(){
