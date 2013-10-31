@@ -1,6 +1,8 @@
 #!/bin/bash
 # 0 * * * * bash r.sh Dropbox
 
+# use fd by exec
+
 if test -z "$1"
 then
     echo "usage: $0 srcdir" 1>&2
