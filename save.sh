@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# @(#) Very simple backup tool using rsync
+
 help(){
     cat <<__EOC__ 1>&2
 save: usage: `basename "$0"` [-h] [-d <dst>] <file> ...
