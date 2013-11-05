@@ -43,7 +43,8 @@ do_rsync(){
     # else
     #     fail
     echo "Start copying files into \"$dstdir\"."
-    $debug rsync -a --compress --stats --progress --human-readable "$@" "$dstdir"
+    $debug rsync --archive --compress --stats --progress --human-readable \
+        "$@" "$dstdir"
 }
 
 find_dst(){
