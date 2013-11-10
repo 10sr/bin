@@ -14,10 +14,12 @@ Usage
 
 First you need to create a file named `.synk.conf`, which is a shellscript.
 This file may contain some variable definitions:
-    remote=[[user]@host:]dir (required):
-        Remote directory to synk files with.
-    rsync_opts:
-        Additional arguments for rsync command.
+
+* remote=[[user]@host:]dir (required):
+    Remote directory to synk files with.
+* rsync_opts:
+    Additional arguments for rsync command.
+
 The directory containing `.synk.conf` is considered to be the "root" of
 the directory to synk. Even if you issue `synk` in "subdirectories", synk is
 done from the "root" directory.
