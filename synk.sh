@@ -1,12 +1,15 @@
 #!/bin/sh
 set -e
 
-# synk --- Simple synchronize utility
+# synk --- Simple File Synchronization Utility
 
 # usage: synk [-h] {push|pull|info}
 
-# First you need to write a file named `.synk.conf`, which is a shellscript.
-# In this file you can set values:
+# Syncronize files in current directory to the pre-defined remote directory
+# with the simple commands `synk {pull|push}`.
+
+# First you need to create a file named `.synk.conf`, which is a shellscript.
+# This file may contain some variable definitions:
 #     remote=[[user]@host:]dir (required):
 #         Remote directory to synk files with.
 #     rsync_opts:
