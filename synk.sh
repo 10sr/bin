@@ -43,7 +43,7 @@ print_info(){
 
 print_help(){
     cat <<__EOC__
-usage: synk [-h] {push|pull}
+usage: synk [-h] {push|pull|info}
 __EOC__
     true
 }
@@ -52,12 +52,15 @@ find_conf_cd(){
     # Find `.synk.conf`. If not found, go upper and try recursively,
     # then cd to the directory where `.synk.conf` is found.
     # If .synk.conf not found, abort immediately.
+    _lastdir="$PWD"
     while ! test -r "$PWD/$conf"
     do
-        if ! cd ..
+        cd ..
+        if test "$_lastdir" = "$PWD"
         then
             error "$conf not found."
         fi
+        _lastdir="$PWD"
     done
     echo "Synk directory: $PWD/"
     return
