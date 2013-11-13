@@ -3,14 +3,14 @@ set -e
 
 # synk --- Simple File Synchronization Utility
 
-# usage: synk [-h] {push|pull|info}
+# usage: synk [-h] {push|pull|info} [<option> ...]
 
 # Syncronize files in current directory to the pre-defined remote directory
-# with the simple commands `synk {pull|push}`.
+# with simple commands `synk {pull|push}`.
 
 # First you need to create a file named `.synk.conf`, which is a shellscript.
 # This file may contain some variable definitions:
-#     remote=[[user]@host:]dir (required):
+#     remote=[[user]@host:]dir: (required)
 #         Remote directory to synk files with.
 #     rsync_opts:
 #         Additional arguments for rsync command.
@@ -18,32 +18,51 @@ set -e
 # the directory to synk. Even if you issue `synk` in "subdirectories", synk is
 # done from the "root" directory.
 
+# `synk pull` fetch files from the remote directory defined in `.synk.conf`
+# and `synk push` do the otherwise.
+# Remaining options are directly passed to rsync.
+
 conf=.synk.conf
-rsync_default_opts="--archive --compress --stats --progress --human-readable"
+# rsync_default_opts="--archive --compress --stats --progress --human-readable"
+rsync_default_opts="--archive --progress --compress --human-readable"
 #rsync_default_opts="$rsync_default_opts --list-only"
 
+msg(){
+    echo ":: $*"
+}
+
 error(){
-    echo "$@" 1>&2
-    echo "Abort." 1>&2
+    msg "$@" 1>&2
+    msg "Abort." 1>&2
     exit 1
 }
 
+do_rsync(){
+    msg Running \"rsync "$@"\"
+    "$rsync" "$@"
+}
+
+# NOTE: when calling do_rsync DST should be the last argument, otherwise
+# unexpected path might be used as DST given by user (from $@).
 do_pull(){
-    $rsync --exclude "$conf" "$@" "$remote/" "$PWD/"
+    msg Pull: "$remote/ => $PWD/"
+    do_rsync --exclude "$conf" "$@" "$remote/" "$PWD/"
 }
 
 do_push(){
-    $rsync --exclude "$conf" "$@" "$PWD/" "$remote/"
+    msg Push: "$PWD/ => $remote/"
+    do_rsync --exclude "$conf" "$@" "$PWD/" "$remote/"
 }
 
 print_info(){
-    true
-    #echo "rsync=$rsync"
+    msg "Synk Root: $PWD/"
+    msg "Remote   : $remote/"
+    msg "rsync    : $rsync"
 }
 
 print_help(){
     cat <<__EOC__
-usage: synk [-h] {push|pull|info}
+usage: synk [-h] {push|pull|info} [<option> ...]
 __EOC__
     true
 }
@@ -62,7 +81,6 @@ find_conf_cd(){
         fi
         _lastdir="$PWD"
     done
-    echo "Synk directory: $PWD/"
     return
 }
 
@@ -77,6 +95,8 @@ main(){
 
     find_conf_cd
     . "$conf"
+    # msg "Synk Root: $PWD/"
+
     if test -z "$remote"
     then
         error "remote not set."
@@ -84,9 +104,12 @@ main(){
 
     if expr "$remote" : '^.*:$' >/dev/null
     then
-        error "Only host name spedified for remote."
+        error "Only host name spedified as remote."
     fi
-    echo "Remote directory: $remote/"
+
+    # here remove last slash. this is added explicitly later
+    remote="`echo "$remote" | sed -e 's|/$||'`"
+    # msg "Remote directory: $remote/"
 
     rsync="`command -v rsync`"
     if test -z "$rsync"
@@ -97,10 +120,10 @@ main(){
 
     if test "$cmd" = pull
     then
-        do_pull $rsync_default_opts $rsync_opts
+        do_pull $rsync_default_opts $rsync_opts "$@"
     elif test "$cmd" = push
     then
-        do_push $rsync_default_opts $rsync_opts
+        do_push $rsync_default_opts $rsync_opts "$@"
     elif test "$cmd" = info
     then
         print_info
