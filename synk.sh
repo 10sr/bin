@@ -5,7 +5,7 @@ set -e
 
 # usage: synk [-h] {push|pull|info} [<option> ...]
 
-# Syncronize files in current directory to the pre-defined remote directory
+# Synchronize files in current directory to the pre-defined remote directory
 # with simple commands `synk {pull|push}`.
 
 # First you need to create a file named `.synk.conf`, which is a shellscript.
