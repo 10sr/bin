@@ -13,7 +13,7 @@ set -e
 #     remote=[[user]@host:]dir: (required)
 #         Remote directory to synk files with.
 #     rsync_opts:
-#         Additional arguments for rsync command.
+#         Additional options for rsync command.
 # The directory containing `.synk.conf` is considered to be the "root" of
 # the directory to synk. Even if you issue `synk` in "subdirectories", synk is
 # done from the "root" directory.
@@ -63,6 +63,13 @@ print_info(){
 print_help(){
     cat <<__EOC__
 usage: synk [-h] {push|pull|info} [<option> ...]
+
+commands:
+    push: send files to remote directory
+    pull: fetch files from remote directory
+    info: print info about local and remote directory
+
+Remaining options are directly passed to rsync.
 __EOC__
     true
 }
