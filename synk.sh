@@ -45,17 +45,17 @@ do_rsync(){
 # NOTE: when calling do_rsync DST should be the last argument, otherwise
 # unexpected path might be used as DST given by user (from $@).
 do_pull(){
-    msg Pull: "$remote/ => $PWD/"
-    do_rsync --exclude "$conf" "$@" "$remote/" "$PWD/"
+    msg Pull: "$remote/ => $local/"
+    do_rsync --exclude "/$conf" "$@" "$remote/" "$local/"
 }
 
 do_push(){
-    msg Push: "$PWD/ => $remote/"
-    do_rsync --exclude "$conf" "$@" "$PWD/" "$remote/"
+    msg Push: "$local/ => $remote/"
+    do_rsync --exclude "/$conf" "$@" "$local/" "$remote/"
 }
 
 print_info(){
-    msg "Synk Root: $PWD/"
+    msg "Synk Root: $local/"
     msg "Remote   : $remote/"
     msg "rsync    : $rsync"
 }
@@ -101,8 +101,9 @@ main(){
     shift
 
     find_conf_cd
-    . "$conf"
-    # msg "Synk Root: $PWD/"
+    local="$PWD"
+    . "$local/$conf"
+    # msg "Synk Root: $local/"
 
     if test -z "$remote"
     then
