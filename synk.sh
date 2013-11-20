@@ -71,11 +71,10 @@ commands:
 
 Remaining options are directly passed to rsync.
 __EOC__
-    true
 }
 
 find_conf_cd(){
-    # Find `.synk.conf`. If not found, go upper and try recursively,
+    # Find `.synk.conf`. If not found, go upper and try again,
     # then cd to the directory where `.synk.conf` is found.
     # If .synk.conf not found, abort immediately.
     _lastdir="$PWD"
@@ -88,7 +87,6 @@ find_conf_cd(){
         fi
         _lastdir="$PWD"
     done
-    return
 }
 
 main(){
@@ -115,7 +113,7 @@ main(){
         error "Only host name spedified as remote."
     fi
 
-    # here remove last slash. this is added explicitly later
+    # here remove last slash, which is added explicitly later
     remote="`echo "$remote" | sed -e 's|/$||'`"
     # msg "Remote directory: $remote/"
 
