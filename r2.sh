@@ -44,7 +44,7 @@ notify(){
 }
 
 err(){
-    test -z "$1" && return
+    test -z "$1" && exit 1
     echo "$@" | $logger_err
     notify "$@"
     exit 1
@@ -65,7 +65,7 @@ do_archive_bak(){                      # $ archive dir
     arc="`printf ${dir}/${pack_out} ${ctime}`"
     if test `echo $files | wc -w` -gt 150
     then
-        msg "Start packing backup files"
+        echo  "Start packing backup files" | $logger_info
         if ${pack_cmd} "${arc}" ${files} &&
             rm -rf ${files}
         then
