@@ -24,7 +24,7 @@ export LC_TIME=C
 ctime=`date +%Y%m%d-%H%M%S`
 fromdir=
 todir=
-size_fromdir
+size_fromdir=
 
 _logger="logger -i -t r2.sh"
 logger_info="$_logger -p 6"
