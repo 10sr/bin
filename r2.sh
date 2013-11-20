@@ -11,7 +11,6 @@ set -e
 src="$1"
 # dst="$HOME/.var/Dropbox_backup"
 dst="$2"
-usage="usage: $0 <srcdir> <dstdir>"
 pack_cmd="7z a"
 pack_out="%s.7z"
 
@@ -23,7 +22,9 @@ export LANG=ja_JP.UTF-8
 export LC_TIME=C
 
 ctime=`date +%Y%m%d-%H%M%S`
-returncode=0
+fromdir=
+todir=
+size_fromdir
 
 _logger="logger -i -t r2.sh"
 logger_info="$_logger -p 6"
@@ -85,21 +86,20 @@ do_rsync(){
         msg "rsync $fromdir > $todir: Done successfully."
     else
         err "!!! rsync $fromdir > $todir: " \
-            "Something wrong happened! Check $stderr"
+            "Something wrong happened!"
     fi
 }
 
 ##############################
 # main
 
-test -z "$usage" && err "usage not specified"
-test -z "$src" && err "$usage"
-test -z "$dst" && err "$usage"
+test -z "$src" && err "src not specified"
+test -z "$dst" && err "dst not specified"
 
 fromdir="$src/"        # must end with "/"
 todir="$dst/newest/"
 
-echo "$fromdir > $todir" | $logger_info
+echo "Now trying rsync $fromdir > $todir" | $logger_info
 
 test -d "$fromdir" || err "$fromdir: Source directory not found"
 
