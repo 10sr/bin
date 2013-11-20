@@ -60,8 +60,8 @@ msg(){
 # subroutines
 
 do_archive_bak(){                      # $ archive dir
-    dir="${dst}/"
-    files="$(find $(echo ${dir}/*) -maxdepth 0 '!' -name newest -type d)"
+    # here i want absolute path
+    files="$(find "${dst}" -maxdepth 1 -name '????????-??????' -type d)"
     arc="`printf ${dir}/${pack_out} ${ctime}`"
     if test `echo $files | wc -w` -gt 150
     then
