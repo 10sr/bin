@@ -1,21 +1,20 @@
 #!/bin/bash
 set -e
-# 0 * * * * bash r2.sh Dropbox
 
-# use fd by exec
+# r2.sh --- Backup tool using rsync
 
-if test -z "$1"
-then
-    echo "usage: $0 <srcdir>" 1>&2
-    exit 1
-fi
+# run every 00 min.
+# 0 * * * * bash r2.sh Dropbox Dropbox_backup
 
 ##########################
 # prefs
 src="$1"
-dst="$HOME/.var/Dropbox_backup"
+# dst="$HOME/.var/Dropbox_backup"
+dst="$2"
+usage="usage: $0 <srcdir> <dstdir>"
 pack_cmd="7z a"
 pack_out="%s.7z"
+
 
 
 ########################
@@ -23,13 +22,10 @@ pack_out="%s.7z"
 export LANG=ja_JP.UTF-8
 export LC_TIME=C
 
-fromdir="$src/"        # must end with "/"
-todir="$dst/newest/"
-
 ctime=`date +%Y%m%d-%H%M%S`
 returncode=0
 
-_logger="logger -i -t r.sh"
+_logger="logger -i -t r2.sh"
 logger_info="$_logger -p 6"
 logger_err="$_logger -p 3 -s"
 
@@ -74,10 +70,8 @@ do_archive_bak(){                      # $ archive dir
             rm -rf ${files}
         then
             msg "Archiving backup files successfully"
-            return 0
         else
             err "!!! Tried to archive backup files but failed!"
-            return 1
         fi
     fi
 }
@@ -90,19 +84,24 @@ do_rsync(){
     if [ $returncode -eq 0 ]; then
         msg "rsync $fromdir > $todir: Done successfully."
     else
-        err "!!! rsync $fromdir > $todir: Something wrong happened! Check $stderr"
+        err "!!! rsync $fromdir > $todir: " \
+            "Something wrong happened! Check $stderr"
     fi
 }
 
 ##############################
 # main
 
+test -z "$usage" && err "usage not specified"
+test -z "$src" && err "$usage"
+test -z "$dst" && err "$usage"
+
+fromdir="$src/"        # must end with "/"
+todir="$dst/newest/"
+
 echo "$fromdir > $todir" | $logger_info
 
-if ! test -d "$fromdir"
-then
-    err "$fromdir: Directory not found"
-fi
+test -d "$fromdir" || err "$fromdir: Source directory not found"
 
 size_fromdir=$(du -s "$fromdir" | cut -f 1)
 
