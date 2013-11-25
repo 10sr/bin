@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 # @(#) Very simple backup tool using rsync
 
@@ -6,7 +7,7 @@ help(){
     cat <<'__EOC__' 1>&2
 save: usage: save [-h] [-d <dst>] <file> ...
     Very simple backup tool using rsync.
-    <dst> can be like `/path/to/dir', `user@host:' or `user@host:/path/to/dir'.
+    <dst> can be like "/path/to/dir", "user@host:" or "user@host:/path/to/dir".
 __EOC__
 }
 
