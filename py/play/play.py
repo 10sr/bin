@@ -11,7 +11,7 @@ import play_daemon as playd
 from play_prompt import PlayPrompt as Prompt
 
 def main(argv):
-    c = ControllerA("play.pip", "play.pid")
+    c = Controller()
     p = Prompt(c)
     while True:
         r = p.input()
