@@ -5,13 +5,13 @@ import os
 from glob import glob
 from shlex import split as shsplit
 
-from play_command import Controller
+from play_command import ControllerA
 import play_daemon as playd
 
 from play_prompt import PlayPrompt as Prompt
 
 def main(argv):
-    c = Controller()
+    c = ControllerA("play.pip", "play.pid")
     p = Prompt(c)
     while True:
         r = p.input()
@@ -54,4 +54,4 @@ def mainA(argv) :               # async
             play_put("Daemon is not running.")
 
 if __name__ == "__main__":
-    main(sys.argv)
+    mainA(sys.argv)

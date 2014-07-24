@@ -97,8 +97,15 @@ class Controller():
 
 class ControllerA(Controller):
     def __init__(self, pipepath, pidfile):
-        if MPLAYCA:
-            self.player = MPLAYCA(pipepath, pidfile)
+        if MPG123A:
+            self.player = MPG123A(pipepath, pidfile)
+        else:
+            raise ImportError
+
+        self.cmds = [c for c in dir(self) if \
+                         isinstance(getattr(self, c, None), MethodType) \
+                         and c != "cmd" \
+                         and not c.startswith("__")]
 
     def play(self, args):
         self.player.play(args[1:])
