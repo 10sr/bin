@@ -143,6 +143,7 @@ main(){
         a*) _cmd=apply;;
     esac
 
+
     if command -v do_"$_cmd" >/dev/null
     then
         do_"$_cmd" "$@"
