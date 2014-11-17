@@ -93,7 +93,7 @@ do_tag(){
         __warn 'Both stash number and tagname are required.'
         do_help
         return 1
-    elif expr "$1" : "^\[0-9][0-9]*\)$" >/dev/null 2>&1
+    elif expr "$1" : "^[[:digit:]]\+$" >/dev/null 2>&1
     then
         # $1 is num
         stash_ref=stash@{$1}
