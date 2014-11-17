@@ -59,9 +59,14 @@ __warn(){
 }
 
 mk_stag(){
-    # mk_stag <tagname> <sha1>
-    git tag "$1" "$2" && \
-        echo "Stag created as tag \`$1' from $2."
+    # mk_stag <tagname> <sha1> [<message>]
+    if test -n "$3"
+    then
+        git tag "$1" "$2" -am "$3"
+    else
+        git tag "$1" "$2"
+    fi
+    echo "Stag created as tag \`$1' from $2."
 }
 
 do_save(){
@@ -73,17 +78,18 @@ do_save(){
     fi
     if test -n "$2"
     then
-        commitobj=`git stash create "$2"` || return 1
+        commitobj=`git stash create "$2"`
     else
-        commitobj=`git stash create` || return 1
+        commitobj=`git stash create`
     fi
-    mk_stag "$1" $commitobj
+    mk_stag "$1" $commitobj "$2"
     git reset --hard
 }
 
 do_tag(){
     if test -z "$1" || test -z "$2"
     then
+        __warn 'Both stash number and tagname are required.'
         do_help
         return 1
     elif expr "$2" : "^\[0-9][0-9]*\)$" >/dev/null 2>&1
