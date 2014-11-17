@@ -4,7 +4,7 @@ set -e
 # git stag --- git stash tagging utility
 
 # usage: git stag s[ave] <tagname> [<message>]
-#    or: git stag t[ag] <stash>|<num> <tagname>
+#    or: git stag t[ag] <stash>|<num> <tagname> [<message>]
 #    or: git stag a[pply] <tagname>
 
 # This script creates stashes with tags attached and easily attach tags to
@@ -87,6 +87,7 @@ do_save(){
 }
 
 do_tag(){
+    # do_tag <stash>|<num> <tagname> [<message>]
     if test -z "$1" || test -z "$2"
     then
         __warn 'Both stash number and tagname are required.'
@@ -105,7 +106,7 @@ do_tag(){
         return 1
     fi
 
-    mk_stag "$2" `git rev-parse "$stash_ref"`
+    mk_stag "$2" `git rev-parse "$stash_ref"` "$3"
 }
 
 do_apply(){
@@ -121,7 +122,7 @@ do_apply(){
 do_help(){
     cat <<__EOC__
 usage: git stag s[ave] <tagname> [<message>]
-   or: git stag t[ag] <stash>|<num> <tagname>
+   or: git stag t[ag] <stash>|<num> <tagname> [<message>]
    or: git stag a[pply] <tagname>
 __EOC__
 }
