@@ -136,6 +136,13 @@ main(){
         shift
     fi
 
+    # Currently only first letter of $1 is used
+    case "$_cmd" in
+        s*) _cmd=save;;
+        t*) _cmd=tag;;
+        a*) _cmd=apply;;
+    esac
+
     if command -v do_"$_cmd" >/dev/null
     then
         do_"$_cmd" "$@"
