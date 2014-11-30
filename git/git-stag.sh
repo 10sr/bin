@@ -115,7 +115,7 @@ do_apply(){
         do_help
         return 1
     else
-        git stash apply "$1"
+        git stash apply "$@"
     fi
 }
 
