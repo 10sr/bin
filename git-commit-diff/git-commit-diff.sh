@@ -83,7 +83,7 @@ main(){
                 shift; break ;;
             *)
                 # Other args are patches
-                _apply_args="$_apply_args `_sq "$@"`";;
+                _apply_args="$_apply_args `_sq "$1"`";;
         esac
         shift
     done
