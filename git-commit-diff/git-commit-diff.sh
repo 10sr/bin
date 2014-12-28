@@ -34,9 +34,6 @@
 #                        [-m|--message <msg>] [--cleanup=<mode>]
 #                        [<patch>...]
 
-
-git rev-parse --show-toplevel
-
 _msg(){
     echo "$@"
 }
@@ -56,11 +53,11 @@ _sq(){
 }
 
 _do_apply(){
-    echo "$1"
+    eval "git apply --cached $1"
 }
 
 _do_commit(){
-    echo "$1"
+    eval "git commit $1"
 }
 
 _commit_args=
@@ -70,7 +67,7 @@ main(){
     while test $# -ne 0
     do
         case "$1" in
-            -m)
+            -m|--messsage)
                 if test -n "$2"
                 then
                     _commit_args="$_commit_args `_sq --message="$2"`"
@@ -82,24 +79,28 @@ main(){
             --message=*)
                 _commit_args="$_commit_args `_sq "$1"`"
                 ;;
-            --message)
-                if test -n "$2"
-                then
-                    _commit_args="$_commit_args `_sq --message="$2"`"
-                    shift
-                else
-                    _die "Message not given"
-                fi
-                ;;
             --)
                 shift; break ;;
             *)
-                break;;
+                # Other args are patches
+                _apply_args="$_apply_args `_sq "$@"`";;
         esac
         shift
     done
 
-    _apply_args="$_apply_args `_sq "$@"`"
+    # Break by occurance of "--"
+    if test $# -ne 0
+    then
+        _apply_args="$_apply_args `_sq "$@"`"
+    fi
+
+    # Specify path to index file to apply patch and copy existing index file
+    _gitdir=`git rev-parse --git-dir`
+    export GIT_INDEX_FILE="$_gitdir"/commit-diff.index
+    cp "$_gitdir"/index "$GIT_INDEX_FILE"
+
+    # Reset only index
+    git reset --mixed
 
     _do_apply "$_apply_args"
     _do_commit "$_commit_args"
