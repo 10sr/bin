@@ -15,7 +15,7 @@ _with_rep_prepared(){
     cd "$cwd"
 }
 
-# Basic work
+echo Basic work
 _with_rep_prepared sh -xes <<__EOC__
 git rev-parse --show-toplevel
 touch a.txt
@@ -26,7 +26,7 @@ sh -x '$top'/git-commit-diff.sh -m 'Commit by git-commit-diff' '$dir'/a.diff
 git log --oneline -n 1 | grep 'Commit by git-commit-diff$'
 __EOC__
 
-# Work when working directory and index are dirty
+echo Work when working directory and index are dirty
 _with_rep_prepared sh -xes <<__EOC__
 git rev-parse --show-toplevel
 touch a.txt

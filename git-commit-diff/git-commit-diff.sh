@@ -1,4 +1,5 @@
 #!/bin/sh
+set -e
 
 # git commit-diff --- Make a commit from a diff
 
@@ -108,10 +109,14 @@ main(){
 
     # Specify path to index file to apply patch and copy existing index file
     _gitdir=`git rev-parse --git-dir`
-    export GIT_INDEX_FILE="$_gitdir"/commit-diff.index
-    cp "$_gitdir"/index "$GIT_INDEX_FILE"
+    _index_file="$_gitdir"/commit-diff.index
+    cp "$_gitdir"/index "$_index_file"
+
+    # First try to apply patch to current index
+    _do_apply "$_apply_args"
 
     # Reset only index
+    export GIT_INDEX_FILE="$_index_file"
     git reset --mixed --quiet
 
     _do_apply "$_apply_args"
