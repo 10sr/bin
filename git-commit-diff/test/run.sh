@@ -6,13 +6,13 @@ top="$dir"/..
 
 _with_rep_prepared(){
     cwd=`pwd`
-    tmp="$top"/tmp
-    mkdir -p "$tmp"
+    tmptop="$top"/tmp
+    mkdir -p "$tmptop"
+    tmp=`mktemp -d -p "$tmptop"`
     cd "$tmp"
     git init
     eval "$@"
     cd "$cwd"
-    rm -rf "$tmp"
 }
 
 # Basic work
