@@ -6,7 +6,7 @@
 
 # Options:
 
-#   -m <msg>
+#   -m|--message <msg>
 #       Use the given <msg> as the commit message.
 #   <patch>...
 #       The files to read the patch from. - can be used to read from the
@@ -60,6 +60,16 @@ _do_commit(){
     eval "git commit $1"
 }
 
+_do_help(){
+    cat <<__EOC__
+usage: git commit-diff [<options>...] [--] [<patch>...]
+
+Options
+    -m|--message <msg> use the given <msg> as the commit message
+    <patch>...         patch files which will be applied
+__EOC__
+}
+
 _commit_args=
 _apply_args=
 
@@ -79,6 +89,8 @@ main(){
             --message=*)
                 _commit_args="$_commit_args `_sq "$1"`"
                 ;;
+            -h|--help)
+                _do_help; return 0;;
             --)
                 shift; break ;;
             *)
@@ -88,7 +100,7 @@ main(){
         shift
     done
 
-    # Break by occurance of "--"
+    # Args left because of break by occurance of "--"
     if test $# -ne 0
     then
         _apply_args="$_apply_args `_sq "$@"`"
@@ -100,7 +112,7 @@ main(){
     cp "$_gitdir"/index "$GIT_INDEX_FILE"
 
     # Reset only index
-    git reset --mixed
+    git reset --mixed --quiet
 
     _do_apply "$_apply_args"
     _do_commit "$_commit_args"
