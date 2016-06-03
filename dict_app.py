@@ -1,6 +1,7 @@
 #!/usr/bin/python2.7
 
 # http://sakito.jp/mac/dictionary.html
+# https://developer.apple.com/library/mac/documentation/UserExperience/Reference/DictionaryServicesRef/index.html
 
 import sys
 import DictionaryServices as ds
