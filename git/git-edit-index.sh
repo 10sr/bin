@@ -21,7 +21,7 @@ main(){
     fi
 
     _gitdir="`git rev-parse --git-dir`"
-    _difffile="$_gitdir"/EDIT_INDEX
+    _difffile="$_gitdir"/EDIT_INDEX.diff
 
     git diff --cached --binary --color=never >"$_difffile"
 
@@ -36,7 +36,7 @@ main(){
 
     # TODO: Restore index state if failed to apply patch
     git reset --mixed HEAD
-    git apply --cached "$_difffile"
+    git apply --cached --whitespace=nowarn "$_difffile"
     rm "$_difffile"
 }
 
