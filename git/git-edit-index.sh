@@ -5,7 +5,7 @@ set -e
 
 # Open editor that shows the diff of HEAD and index and apply the result diff.
 
-# Available at: https://github.com/10sr/script/blob/master/git-commit-diff/git-commit-diff.sh
+# Available at: https://github.com/10sr/script/blob/master/git/git-edit-index.sh
 
 do_help(){
     cat <<__EOC__
