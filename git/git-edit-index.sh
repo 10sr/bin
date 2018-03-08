@@ -1,5 +1,5 @@
 #!/bin/sh
-set -e
+set -eu
 
 # git-edit-index --- Edit staged changes
 
@@ -14,10 +14,16 @@ __EOC__
 }
 
 main(){
-    if test "$1" = -h -o "$1" = --help
+    if test $# -eq 1
     then
-        do_help
-        return 0
+        if test "$1" = -h -o "$1" = --help
+        then
+            do_help
+            return 0
+        else
+            echo Unknown option: $1
+            return 1
+        fi
     fi
 
     _gitdir="`git rev-parse --git-dir`"
