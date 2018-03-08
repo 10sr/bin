@@ -7,6 +7,8 @@ set -eu
 
 # Available at: https://github.com/10sr/script/blob/master/git/git-edit-index.sh
 
+# License: Unlicense
+
 do_help(){
     cat <<__EOC__
 usage: git edit-index [-h|--help]
