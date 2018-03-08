@@ -23,20 +23,31 @@ main(){
     _gitdir="`git rev-parse --git-dir`"
     _difffile="$_gitdir"/EDIT_INDEX.diff
 
+    _defaultindex="$_gitdir"/index
+    _workingindex="$_gitdir"/index.edit-index
+
     git diff --cached --binary --color=never >"$_difffile"
+
+    if test "`du "$_difffile" | cut -f 1`" -eq 0
+    then
+        echo "Nothing staged." 1>&2
+        echo "Aborting" 1>&2
+        return 1
+    fi
 
     `git var GIT_EDITOR` "$_difffile"
 
     if test "`du "$_difffile" | cut -f 1`" -eq 0
     then
-        echo "Empty diff."
-        echo "Abort."
+        echo "Empty diff." 1>&2
+        echo "Aborting" 1>&2
         return 1
     fi
 
-    # TODO: Restore index state if failed to apply patch
-    git reset --mixed HEAD
-    git apply --cached --whitespace=nowarn "$_difffile"
+    cp -pf "$_defaultindex" "$_workingindex"
+    GIT_INDEX_FILE="$_workingindex" git reset --mixed HEAD
+    GIT_INDEX_FILE="$_workingindex" git apply --cached --whitespace=nowarn "$_difffile"
+    cp -pf "$_workingindex" "$_defaultindex"
     rm "$_difffile"
 }
 
