@@ -45,7 +45,7 @@ main(){
 
     `git var GIT_EDITOR` "$_difffile"
 
-    if test "`du "$_difffile" | cut -f 1`" -eq 0
+    if test -s "$_difffile"
     then
         echo "Empty diff." 1>&2
         echo "Aborting" 1>&2
