@@ -3,11 +3,13 @@ set -eu
 
 # git-edit-index --- Edit staged changes
 
-# Open editor that shows the diff of HEAD and index and apply the result diff.
+# Open editor that shows the diff of HEAD and index and apply the
+# result diff.
 
-# Available at: https://github.com/10sr/script/blob/master/git/git-edit-index.sh
+# URL: https://github.com/10sr/bin/blob/master/git/git-edit-index.sh
 
-# License: Unlicense
+# This software is Unlicensed <http://unlicense.org>
+
 
 do_help(){
     cat <<__EOC__
