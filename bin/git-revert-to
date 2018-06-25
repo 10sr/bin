@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eu
+
+git revert --no-commit HEAD...$1
+git commit
