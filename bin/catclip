@@ -1,0 +1,16 @@
+#!/bin/sh
+set -eu
+
+if which pbpaste >/dev/null
+then
+    # MacOS pasteboard
+    pbpaste
+
+elif test -r /dev/clipboard
+then
+    # Windows clipboard device
+    cat /dev/clipboard | tr -d \\r
+
+else
+    xclip -o -selection clipboard
+fi

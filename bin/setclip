@@ -1,0 +1,27 @@
+#!/bin/sh
+set -eu
+
+if test $# -eq 0
+then
+    exec 3<&0
+else
+    exec 3<<__EOF__
+`cat "$@"`
+__EOF__
+fi
+
+if which pbcopy >/dev/null
+then
+    # MacOS pasteboard
+    pbcopy 0<&3
+
+elif test -w /dev/clipboard
+then
+    # Windows clipboard device
+    0<&3 sed -e 's/$/\r/' | tee /dev/clipboard
+
+else
+    0<&3 xclip -i -f -selection primary | \
+        xclip -i -f -selection clipboard
+fi
+exec 3<&-
