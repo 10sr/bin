@@ -1,0 +1,19 @@
+#!/bin/sh
+
+set -eu
+
+# TODO: Get filename from -f option if given
+makefile=Makefile
+
+while ! test -r "`pwd`"/$makefile
+do
+    _prev="`pwd`"
+    cd ..
+    if test "$_prev" == "`pwd`"
+    then
+        echo "$makefile not found in any parent directories" 1>&2
+        exit 1
+    fi
+done
+
+make "$@"
