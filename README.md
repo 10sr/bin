@@ -5,6 +5,14 @@ Misc script files.
 
 
 
+Install
+-------
+
+    brew install 10sr/pkg/bin
+    # Or brew reinstall 10sr/pkg/bin to update
+
+
+
 save.sh
 =======
 
