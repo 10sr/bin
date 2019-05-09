@@ -25,3 +25,4 @@ export GIT_INDEX_FILE=$gitdir/checkout-tree-$$.index
 git read-tree "$treeish"
 git checkout-index -a -f --prefix="$path"
 
+rm -r "$GIT_INDEX_FILE"
