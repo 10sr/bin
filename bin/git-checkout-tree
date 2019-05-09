@@ -1,0 +1,27 @@
+#!/bin/sh
+set -eux
+
+treeish=$1
+path=$2
+
+# Make path absolute
+path=$(realpath "$path")
+# Make sure that path ends with one slash
+path=$(echo "$path" | sed 's|/$||')/
+
+if test -e "$path"
+then
+    echo "Checking out to existing path is nat allowed"
+    exit 1
+fi
+
+# checkout-index refers to the path in working directory
+cd "`git rev-parse --show-toplevel`"
+
+gitdir=`git rev-parse --git-dir`
+
+export GIT_INDEX_FILE=$gitdir/checkout-tree-$$.index
+
+git read-tree "$treeish"
+git checkout-index -a -f --prefix="$path"
+
