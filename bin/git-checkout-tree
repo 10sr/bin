@@ -1,5 +1,5 @@
 #!/bin/sh
-set -eux
+set -eu
 
 treeish=$1
 path=$2
