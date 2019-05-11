@@ -1,5 +1,7 @@
 #!/bin/sh
 
+# TODO: Add clone subcommand
+
 _conf=memo
 
 get_path(){
