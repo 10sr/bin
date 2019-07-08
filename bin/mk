@@ -15,6 +15,10 @@ do
         exit 1
     fi
 done
-echo "[`basename "$0"`] Change directory to `pwd`" 1>&2
+
+# https://qiita.com/junkoda/items/2fede64043d13433cf8f
+echo "[`basename "$0"`] Entering directory '`pwd`'" 1>&2
 
 make "$@"
+
+echo "[`basename "$0"`] Leaving directory '`pwd`'" 1>&2
