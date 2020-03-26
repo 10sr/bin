@@ -31,7 +31,7 @@ __dt(){
 
     if test -n "$DTACH_CURRENT_SOCK"
     then
-        echo "dtach session cannot be nested." 1>&2
+        echo "ERR: dtach session cannot be nested." 1>&2
         return 1
     elif test -S "$soc"
     then
@@ -40,12 +40,12 @@ __dt(){
     then
         echo "dt: File named $soc already exists and is not a socket file."
         return 1
-    elif test $# -eq 0
-    then
-        # New session
-        # if no command given invoke current shell
-        DTACH_CURRENT_SOCK="$soc" dtach -c "$soc" -e ^^ "$SHELL"
     else
+        if test $# -eq 0
+        then
+            # if no command given invoke current shell
+            set "$SHELL"
+        fi
         # New session
         DTACH_CURRENT_SOCK="$soc" dtach -c "$soc" -e ^^ "$@"
     fi
