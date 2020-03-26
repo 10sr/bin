@@ -1,57 +1,53 @@
 #!/bin/sh
 set -eu
 
-__MY_DTACH=
-
+export DTACH_CURRENT_SOCK=${DTACH_CURRENT_SOCK:=}
 
 __dt(){
     # dt [-h] [<name>] [<command ...>]
-    __dtach_dir="${TMP}/dtach"
-    mkdir -p "${__dtach_dir}"
 
-    if test -n "${__MY_DTACH}"
+    if test -n "${DTACH_CURRENT_SOCK}"
     then
         # if already in dtach session print current session
-        soc_name="`basename "$__MY_DTACH"`"
-        echo "Current session: ${soc_name}"
+        soc_name="`basename "$DTACH_CURRENT_SOCK"`"
+        echo "Current dtach socket: ${soc_name}"
     fi
 
     if test $# -eq 0
     then
         # if no arg given show list of sessions
-        echo "Usage: ds [<session>]"
-        echo "Sessions:"
-        ls "${__dtach_dir}"
+        echo "Usage: dt [-h] [<sock_file>] [<command ...>]" 1>&2
         return 0
     elif test "$1" = "-h"
     then
         echo "dt: usage: dt [-h] [<name>] [<command ...>]" 1>&2
-        return 1
+        return 0
     fi
 
-    # set socket name
-    soc_name="${__dtach_dir}/$1"
+    # set socket path
+    # TODO: How to get absolute path of $1?
+    soc="$1"
     shift
 
-    if test -n "$__MY_DTACH"
+    if test -n "$DTACH_CURRENT_SOCK"
     then
         echo "dtach session cannot be nested." 1>&2
         return 1
-    elif test -S "$soc_name"
+    elif test -S "$soc"
     then
-        dtach -a "$soc_name" -e ^^
-    elif test -e "$soc_name"
+        dtach -a "$soc" -e ^^
+    elif test -e "$soc"
     then
-        echo "dt: File named $soc_name already exists."
+        echo "dt: File named $soc already exists and is not a socket file."
         return 1
     elif test $# -eq 0
     then
+        # New session
         # if no command given invoke current shell
-        __MY_DTACH="$soc_name" dtach -c "$soc_name" -e ^^ sh -c "$SHELL"
-        # echo "dt: Socket named $soc_name not exists and no command specified."
-        # return 1
+        DTACH_CURRENT_SOCK="$soc" dtach -c "$soc" -e ^^ "$SHELL"
     else
-        __MY_DTACH="$soc_name" dtach -c "$soc_name" -e ^^ "$@"
+        # New session
+        DTACH_CURRENT_SOCK="$soc" dtach -c "$soc" -e ^^ "$@"
     fi
 }
 
