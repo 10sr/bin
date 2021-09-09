@@ -9,7 +9,8 @@ Install
 -------
 
     brew install 10sr/pkg/bin
-    # Or brew reinstall 10sr/pkg/bin to update
+    # Force update
+    brew reinstall 10sr/pkg/bin
 
 
 
