@@ -1,5 +1,5 @@
 #!/bin/sh
-set -eux
+set -eu
 
 if test $# -ne 2
 then
@@ -11,3 +11,4 @@ num=$1
 localbranch=$2
 
 git fetch origin pull/$num/head:$localbranch
+git switch $localbranch
