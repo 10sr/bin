@@ -1,14 +1,14 @@
 #!/bin/sh
 set -eu
 
-if test $# -ne 2
+if test $# -lt 1
 then
-    echo "$0 NUM LOCALBRANCH" 1>&2
+    echo "$0 NUM [LOCALBRANCH]" 1>&2
     exit 1
 fi
 
 num=$1
-localbranch=$2
+localbranch=${2:-pr${num}}
 
 git fetch origin pull/$num/head:$localbranch
 git switch $localbranch
