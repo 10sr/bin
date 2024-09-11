@@ -1,0 +1,14 @@
+#!/bin/bash
+# git branch --set-upstream-to
+set -euo pipefail
+
+if test $# -lt 1
+then
+    echo "$0 <remote>/<branch>" 1>&2
+    exit 1
+fi
+
+target=$1
+current_branch=`git rev-parse --abbrev-ref HEAD`
+
+git branch --set-upstream-to $target $current_branch
