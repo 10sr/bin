@@ -1,0 +1,8 @@
+#!/bin/sh
+set -eux
+
+remote=${1:-origin}
+
+branch=`git rev-parse --abbrev-ref HEAD`
+
+git branch --set-upstream-to=$remote/$branch $branch
