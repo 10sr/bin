@@ -16,11 +16,17 @@ __dt(){
     if test $# -eq 0
     then
         # if no arg given show list of sessions
-        echo "Usage: dt [-h] [<sock_file>] [<command ...>]" 1>&2
+        echo "Usage: dt -h" 1>&2
+        echo "       dt <sock_file> [<command ...>]" 1>&2
+        echo "" 1>&2
+        echo "Use ctl-^ to detach." 1>&2
         return 0
     elif test "$1" = "-h"
     then
-        echo "dt: usage: dt [-h] [<name>] [<command ...>]" 1>&2
+        echo "Usage: dt -h" 1>&2
+        echo "       dt <sock_file> [<command ...>]" 1>&2
+        echo "" 1>&2
+        echo "Use ctl-^ to detach." 1>&2
         return 0
     fi
 
@@ -37,7 +43,7 @@ __dt(){
         if test $# -eq 0
         then
             # if no command given invoke current shell
-            set "$SHELL"
+            set "$SHELL" "-i"
         fi
         # New session
         exec env DTACH_CURRENT_SOCK="$soc" dtach -A "$soc" -e ^^ "$@"
